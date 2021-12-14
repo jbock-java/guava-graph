@@ -155,22 +155,6 @@ public abstract class ForwardingNavigableSet<E>
         return delegate().descendingSet();
     }
 
-    /**
-     * A sensible implementation of {@link NavigableSet#descendingSet} in terms of the other methods
-     * of {@link NavigableSet}, notably including {@link NavigableSet#descendingIterator}.
-     *
-     * <p>In many cases, you may wish to override {@link ForwardingNavigableSet#descendingSet} to
-     * forward to this implementation or a subclass thereof.
-     *
-     * @since 12.0
-     */
-    @Beta
-    protected class StandardDescendingSet extends Sets.DescendingSet<E> {
-        /** Constructor for use by subclasses. */
-        public StandardDescendingSet() {
-            super(ForwardingNavigableSet.this);
-        }
-    }
 
     @Override
     public Iterator<E> descendingIterator() {

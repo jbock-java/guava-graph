@@ -76,8 +76,6 @@ import static com.google.common.collect.CollectPreconditions.checkNonnegative;
  * any of its special operations, such as:
  *
  * <ul>
- *   <li>{@link #immutableSortedCopy}
- *   <li>{@link #isOrdered} / {@link #isStrictlyOrdered}
  *   <li>{@link #min} / {@link #max}
  * </ul>
  *
@@ -119,13 +117,6 @@ import static com.google.common.collect.CollectPreconditions.checkNonnegative;
  * well.
  *
  * <p><b>For Java 8 users</b>
- *
- * <p>If you are using Java 8, this class is now obsolete. Most of its functionality is now provided
- * by {@link java.util.stream.Stream Stream} and by {@link Comparator} itself, and the rest can now
- * be found as static methods in our new {@link Comparators} class. See each method below for
- * further instructions. Whenever possible, you should change any references of type {@code
- * Ordering} to be of type {@code Comparator} instead. However, at this time we have no plan to
- * <i>deprecate</i> this class.
  *
  * <p>Many replacements involve adopting {@code Stream}, and these changes can sometimes make your
  * code verbose. Whenever following this advice, you should check whether {@code Stream} could be
@@ -181,17 +172,6 @@ public abstract class Ordering<T> implements Comparator<T> {
     }
 
     /**
-     * Simply returns its argument.
-     *
-     * @deprecated no need to use this
-     */
-    @GwtCompatible(serializable = true)
-    @Deprecated
-    public static <T> Ordering<T> from(Ordering<T> ordering) {
-        return checkNotNull(ordering);
-    }
-
-    /**
      * Constructs a new instance of this class (only invokable by the subclass constructor, typically
      * implicit).
      */
@@ -229,40 +209,6 @@ public abstract class Ordering<T> implements Comparator<T> {
     @GwtCompatible(serializable = true)
     public <F> Ordering<F> onResultOf(Function<F, ? extends T> function) {
         return new ByFunctionOrdering<>(function, this);
-    }
-
-    <T2 extends T> Ordering<Entry<T2, ?>> onKeys() {
-        return onResultOf(Maps.<T2>keyFunction());
-    }
-
-    /**
-     * Returns a new ordering which sorts iterables by comparing corresponding elements pairwise until
-     * a nonzero result is found; imposes "dictionary order". If the end of one iterable is reached,
-     * but not the other, the shorter iterable is considered to be less than the longer one. For
-     * example, a lexicographical natural ordering over integers considers {@code [] < [1] < [1, 1] <
-     * [1, 2] < [2]}.
-     *
-     * <p>Note that {@code ordering.lexicographical().reverse()} is not equivalent to {@code
-     * ordering.reverse().lexicographical()} (consider how each would order {@code [1]} and {@code [1,
-     * 1]}).
-     *
-     * <p><b>Java 8 users:</b> Use {@link Comparators#lexicographical(Comparator)} instead.
-     *
-     * @since 2.0
-     */
-    @GwtCompatible(serializable = true)
-    // type parameter <S> lets us avoid the extra <String> in statements like:
-    // Ordering<Iterable<String>> o =
-    //     Ordering.<String>natural().lexicographical();
-    public <S extends T> Ordering<Iterable<S>> lexicographical() {
-        /*
-         * Note that technically the returned ordering should be capable of
-         * handling not just {@code Iterable<S>} instances, but also any {@code
-         * Iterable<? extends S>}. However, the need for this comes up so rarely
-         * that it doesn't justify making everyone else deal with the very ugly
-         * wildcard.
-         */
-        return new LexicographicalOrdering<S>(this);
     }
 
     // Regular instance methods
@@ -442,240 +388,6 @@ public abstract class Ordering<T> implements Comparator<T> {
         }
 
         return maxSoFar;
-    }
-
-    /**
-     * Returns the {@code k} least elements of the given iterable according to this ordering, in order
-     * from least to greatest. If there are fewer than {@code k} elements present, all will be
-     * included.
-     *
-     * <p>The implementation does not necessarily use a <i>stable</i> sorting algorithm; when multiple
-     * elements are equivalent, it is undefined which will come first.
-     *
-     * <p><b>Java 8 users:</b> Use {@code Streams.stream(iterable).collect(Comparators.least(k,
-     * thisComparator))} instead.
-     *
-     * @return an immutable {@code RandomAccess} list of the {@code k} least elements in ascending
-     *     order
-     * @throws IllegalArgumentException if {@code k} is negative
-     * @since 8.0
-     */
-    public <E extends T> List<E> leastOf(Iterable<E> iterable, int k) {
-        if (iterable instanceof Collection) {
-            Collection<E> collection = (Collection<E>) iterable;
-            if (collection.size() <= 2L * k) {
-                // In this case, just dumping the collection to an array and sorting is
-                // faster than using the implementation for Iterator, which is
-                // specialized for k much smaller than n.
-
-                @SuppressWarnings("unchecked") // c only contains E's and doesn't escape
-                E[] array = (E[]) collection.toArray();
-                Arrays.sort(array, this);
-                if (array.length > k) {
-                    array = Arrays.copyOf(array, k);
-                }
-                return Collections.unmodifiableList(Arrays.asList(array));
-            }
-        }
-        return leastOf(iterable.iterator(), k);
-    }
-
-    /**
-     * Returns the {@code k} least elements from the given iterator according to this ordering, in
-     * order from least to greatest. If there are fewer than {@code k} elements present, all will be
-     * included.
-     *
-     * <p>The implementation does not necessarily use a <i>stable</i> sorting algorithm; when multiple
-     * elements are equivalent, it is undefined which will come first.
-     *
-     * <p><b>Java 8 users:</b> Use {@code Streams.stream(iterator).collect(Comparators.least(k,
-     * thisComparator))} instead.
-     *
-     * @return an immutable {@code RandomAccess} list of the {@code k} least elements in ascending
-     *     order
-     * @throws IllegalArgumentException if {@code k} is negative
-     * @since 14.0
-     */
-    public <E extends T> List<E> leastOf(Iterator<E> iterator, int k) {
-        checkNotNull(iterator);
-        checkNonnegative(k, "k");
-
-        if (k == 0 || !iterator.hasNext()) {
-            return Collections.emptyList();
-        } else if (k >= Integer.MAX_VALUE / 2) {
-            // k is really large; just do a straightforward sorted-copy-and-sublist
-            ArrayList<E> list = Lists.newArrayList(iterator);
-            Collections.sort(list, this);
-            if (list.size() > k) {
-                list.subList(k, list.size()).clear();
-            }
-            list.trimToSize();
-            return Collections.unmodifiableList(list);
-        } else {
-            TopKSelector<E> selector = TopKSelector.least(k, this);
-            selector.offerAll(iterator);
-            return selector.topK();
-        }
-    }
-
-    /**
-     * Returns the {@code k} greatest elements of the given iterable according to this ordering, in
-     * order from greatest to least. If there are fewer than {@code k} elements present, all will be
-     * included.
-     *
-     * <p>The implementation does not necessarily use a <i>stable</i> sorting algorithm; when multiple
-     * elements are equivalent, it is undefined which will come first.
-     *
-     * <p><b>Java 8 users:</b> Use {@code Streams.stream(iterable).collect(Comparators.greatest(k,
-     * thisComparator))} instead.
-     *
-     * @return an immutable {@code RandomAccess} list of the {@code k} greatest elements in
-     *     <i>descending order</i>
-     * @throws IllegalArgumentException if {@code k} is negative
-     * @since 8.0
-     */
-    public <E extends T> List<E> greatestOf(Iterable<E> iterable, int k) {
-        // TODO(kevinb): see if delegation is hurting performance noticeably
-        // TODO(kevinb): if we change this implementation, add full unit tests.
-        return reverse().leastOf(iterable, k);
-    }
-
-    /**
-     * Returns the {@code k} greatest elements from the given iterator according to this ordering, in
-     * order from greatest to least. If there are fewer than {@code k} elements present, all will be
-     * included.
-     *
-     * <p>The implementation does not necessarily use a <i>stable</i> sorting algorithm; when multiple
-     * elements are equivalent, it is undefined which will come first.
-     *
-     * <p><b>Java 8 users:</b> Use {@code Streams.stream(iterator).collect(Comparators.greatest(k,
-     * thisComparator))} instead.
-     *
-     * @return an immutable {@code RandomAccess} list of the {@code k} greatest elements in
-     *     <i>descending order</i>
-     * @throws IllegalArgumentException if {@code k} is negative
-     * @since 14.0
-     */
-    public <E extends T> List<E> greatestOf(Iterator<E> iterator, int k) {
-        return reverse().leastOf(iterator, k);
-    }
-
-    /**
-     * Returns a <b>mutable</b> list containing {@code elements} sorted by this ordering; use this
-     * only when the resulting list may need further modification, or may contain {@code null}. The
-     * input is not modified. The returned list is serializable and has random access.
-     *
-     * <p>Unlike {@link Sets#newTreeSet(Iterable)}, this method does not discard elements that are
-     * duplicates according to the comparator. The sort performed is <i>stable</i>, meaning that such
-     * elements will appear in the returned list in the same order they appeared in {@code elements}.
-     *
-     * <p><b>Performance note:</b> According to our
-     * benchmarking
-     * on Open JDK 7, {@link #immutableSortedCopy} generally performs better (in both time and space)
-     * than this method, and this method in turn generally performs better than copying the list and
-     * calling {@link Collections#sort(List)}.
-     */
-    // TODO(kevinb): rerun benchmarks including new options
-    public <E extends T> List<E> sortedCopy(Iterable<E> elements) {
-        @SuppressWarnings("unchecked") // does not escape, and contains only E's
-        E[] array = (E[]) Iterables.toArray(elements);
-        Arrays.sort(array, this);
-        return Lists.newArrayList(Arrays.asList(array));
-    }
-
-    /**
-     * Returns an <b>immutable</b> list containing {@code elements} sorted by this ordering. The input
-     * is not modified.
-     *
-     * <p>Unlike {@link Sets#newTreeSet(Iterable)}, this method does not discard elements that are
-     * duplicates according to the comparator. The sort performed is <i>stable</i>, meaning that such
-     * elements will appear in the returned list in the same order they appeared in {@code elements}.
-     *
-     * <p><b>Performance note:</b> According to our
-     * benchmarking
-     * on Open JDK 7, this method is the most efficient way to make a sorted copy of a collection.
-     *
-     * @throws NullPointerException if any element of {@code elements} is {@code null}
-     * @since 3.0
-     */
-    // TODO(kevinb): rerun benchmarks including new options
-    @SuppressWarnings("nullness") // unsafe, but there's not much we can do about it now
-    public <E extends T> ImmutableList<E> immutableSortedCopy(Iterable<E> elements) {
-        return ImmutableList.sortedCopyOf(this, elements);
-    }
-
-    /**
-     * Returns {@code true} if each element in {@code iterable} after the first is greater than or
-     * equal to the element that preceded it, according to this ordering. Note that this is always
-     * true when the iterable has fewer than two elements.
-     *
-     * <p><b>Java 8 users:</b> Use the equivalent {@link Comparators#isInOrder(Iterable, Comparator)}
-     * instead, since the rest of {@code Ordering} is mostly obsolete (as explained in the class
-     * documentation).
-     */
-    public boolean isOrdered(Iterable<? extends T> iterable) {
-        Iterator<? extends T> it = iterable.iterator();
-        if (it.hasNext()) {
-            T prev = it.next();
-            while (it.hasNext()) {
-                T next = it.next();
-                if (compare(prev, next) > 0) {
-                    return false;
-                }
-                prev = next;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Returns {@code true} if each element in {@code iterable} after the first is <i>strictly</i>
-     * greater than the element that preceded it, according to this ordering. Note that this is always
-     * true when the iterable has fewer than two elements.
-     *
-     * <p><b>Java 8 users:</b> Use the equivalent {@link Comparators#isInStrictOrder(Iterable,
-     * Comparator)} instead, since the rest of {@code Ordering} is mostly obsolete (as explained in
-     * the class documentation).
-     */
-    public boolean isStrictlyOrdered(Iterable<? extends T> iterable) {
-        Iterator<? extends T> it = iterable.iterator();
-        if (it.hasNext()) {
-            T prev = it.next();
-            while (it.hasNext()) {
-                T next = it.next();
-                if (compare(prev, next) >= 0) {
-                    return false;
-                }
-                prev = next;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * {@link Collections#binarySearch(List, Object, Comparator) Searches} {@code sortedList} for
-     * {@code key} using the binary search algorithm. The list must be sorted using this ordering.
-     *
-     * @param sortedList the list to be searched
-     * @param key the key to be searched for
-     * @deprecated Use {@link Collections#binarySearch(List, Object, Comparator)} directly.
-     */
-    @Deprecated
-    public int binarySearch(
-            List<? extends T> sortedList, T key) {
-        return Collections.binarySearch(sortedList, key, this);
-    }
-
-    @VisibleForTesting
-    static class IncomparableValueException extends ClassCastException {
-        final Object value;
-
-        IncomparableValueException(Object value) {
-            super("Cannot compare value: " + value);
-            this.value = value;
-        }
-
-        private static final long serialVersionUID = 0;
     }
 
     // Never make these public

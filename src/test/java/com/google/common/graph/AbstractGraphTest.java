@@ -16,20 +16,18 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableSet;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import static com.google.common.graph.TestUtil.ERROR_NODE_NOT_IN_GRAPH;
 import static com.google.common.graph.TestUtil.assertNodeNotInGraphErrorMessage;
 import static com.google.common.graph.TestUtil.assertStronglyEquivalent;
 import static com.google.common.graph.TestUtil.sanityCheckSet;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
+
+import java.util.HashSet;
+import java.util.Set;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Abstract base class for testing implementations of {@link Graph} interface. Graph instances
@@ -363,7 +361,7 @@ public abstract class AbstractGraphTest {
         }
 
         addNode(N1);
-        ImmutableSet<Integer> nodes = ImmutableSet.copyOf(graph.nodes());
+        Set<Integer> nodes = Util.setOf(graph.nodes());
         assertThat(graphAsMutableGraph.addNode(N1)).isFalse();
         assertThat(graph.nodes()).containsExactlyElementsIn(nodes);
     }
@@ -408,7 +406,7 @@ public abstract class AbstractGraphTest {
         }
 
         addNode(N1);
-        ImmutableSet<Integer> nodes = ImmutableSet.copyOf(graph.nodes());
+        Set<Integer> nodes = Util.setOf(graph.nodes());
         assertThat(graphAsMutableGraph.removeNode(NODE_NOT_IN_GRAPH)).isFalse();
         assertThat(graph.nodes()).containsExactlyElementsIn(nodes);
     }

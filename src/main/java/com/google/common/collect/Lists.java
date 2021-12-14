@@ -53,7 +53,7 @@ import static com.google.common.collect.CollectPreconditions.checkRemove;
 
 /**
  * Static utility methods pertaining to {@link List} instances. Also see this class's counterparts
- * {@link Sets}, {@link Maps} and {@link Queues}.
+ * {@link Sets} and {@link Maps}.
  *
  * <p>See the Guava User Guide article on <a href=
  * "https://github.com/google/guava/wiki/CollectionUtilitiesExplained#lists"> {@code Lists}</a>.
@@ -394,9 +394,6 @@ public final class Lists {
      *
      * <p>If {@code fromList} implements {@link RandomAccess}, so will the returned list. The returned
      * list is threadsafe if the supplied list and function are.
-     *
-     * <p>If only a {@code Collection} or {@code Iterable} input is available, use {@link
-     * Collections2#transform} or {@link Iterables#transform}.
      *
      * <p><b>Note:</b> serializing the returned list is implemented by serializing {@code fromList},
      * its contents, and {@code function} -- <i>not</i> by serializing the transformed values. This

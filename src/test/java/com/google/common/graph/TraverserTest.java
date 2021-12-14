@@ -17,22 +17,23 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Ordering;
-import com.google.common.primitives.Chars;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.charactersOf;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multiset;
+import com.google.common.primitives.Chars;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public class TraverserTest {
@@ -1215,18 +1216,17 @@ public class TraverserTest {
      * <p>The {@code successors} are always returned in alphabetical order.
      */
     private static SuccessorsFunction<Character> createGraph(boolean directed, String... edges) {
-        ImmutableMultimap.Builder<Character, Character> graphMapBuilder = ImmutableMultimap.builder();
+        Multimap<Character, Character> graphMap = Multimap.create();
         for (String edge : edges) {
             checkArgument(
                     edge.length() == 2, "Expecting each edge to consist of 2 characters but got %s", edge);
             char node1 = edge.charAt(0);
             char node2 = edge.charAt(1);
-            graphMapBuilder.put(node1, node2);
+            graphMap.put(node1, node2);
             if (!directed) {
-                graphMapBuilder.put(node2, node1);
+                graphMap.put(node2, node1);
             }
         }
-        final ImmutableMultimap<Character, Character> graphMap = graphMapBuilder.build();
 
         return new SuccessorsFunction<Character>() {
             @Override
@@ -1235,9 +1235,13 @@ public class TraverserTest {
                         graphMap.containsKey(node) || graphMap.containsValue(node),
                         "Node %s is not an element of this graph",
                         node);
-                return Ordering.natural().immutableSortedCopy(graphMap.get(node));
+                return immutableSortedCopy(graphMap.get(node));
             }
         };
+    }
+
+    private static <E extends Comparable<E>> List<E> immutableSortedCopy(Set<E> set) {
+        return set.stream().sorted().collect(Collectors.toList());
     }
 
     private static ImmutableGraph<Character> createSingleRootGraph() {

@@ -116,7 +116,7 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
                                             (N predecessor) -> EndpointPair.ordered(predecessor, node)),
                                     Iterators.transform(
                                             // filter out 'node' from successors (already covered by predecessors, above)
-                                            Sets.difference(graph.successors(node), ImmutableSet.of(node)).iterator(),
+                                            Sets.difference(graph.successors(node), Set.of(node)).iterator(),
                                             (N successor) -> EndpointPair.ordered(node, successor))));
                 } else {
                     return Iterators.unmodifiableIterator(

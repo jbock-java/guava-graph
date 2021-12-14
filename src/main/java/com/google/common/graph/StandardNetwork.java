@@ -16,12 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableSet;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.GraphConstants.DEFAULT_EDGE_COUNT;
@@ -29,6 +23,10 @@ import static com.google.common.graph.GraphConstants.DEFAULT_NODE_COUNT;
 import static com.google.common.graph.GraphConstants.EDGE_NOT_IN_GRAPH;
 import static com.google.common.graph.GraphConstants.NODE_NOT_IN_GRAPH;
 import static java.util.Objects.requireNonNull;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Standard implementation of {@link Network} that supports the options supplied by {@link
@@ -150,7 +148,7 @@ class StandardNetwork<N, E> extends AbstractNetwork<N, E> {
     public Set<E> edgesConnecting(N nodeU, N nodeV) {
         NetworkConnections<N, E> connectionsU = checkedConnections(nodeU);
         if (!allowsSelfLoops && nodeU == nodeV) { // just an optimization, only check reference equality
-            return ImmutableSet.of();
+            return Set.of();
         }
         checkArgument(containsNode(nodeV), NODE_NOT_IN_GRAPH, nodeV);
         return connectionsU.edgesConnecting(nodeV);

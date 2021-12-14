@@ -34,10 +34,6 @@ import static com.google.common.base.Preconditions.checkPositionIndexes;
  * {@code String} and a {@code String} to a {@code long} that treat the {@code long} as an unsigned
  * number.
  *
- * <p>Users of these utilities must be <i>extremely careful</i> not to mix up signed and unsigned
- * {@code long} values. When possible, it is recommended that the {@link UnsignedLong} wrapper class
- * be used, at a small efficiency penalty, to enforce the distinction in the type system.
- *
  * <p>See the Guava User Guide article on <a
  * href="https://github.com/google/guava/wiki/PrimitivesExplained#unsigned-support">unsigned
  * primitive utilities</a>.
@@ -354,35 +350,6 @@ public final class UnsignedLongs {
         }
 
         return value;
-    }
-
-    /**
-     * Returns the unsigned {@code long} value represented by the given string.
-     *
-     * <p>Accepts a decimal, hexadecimal, or octal number given by specifying the following prefix:
-     *
-     * <ul>
-     *   <li>{@code 0x}<i>HexDigits</i>
-     *   <li>{@code 0X}<i>HexDigits</i>
-     *   <li>{@code #}<i>HexDigits</i>
-     *   <li>{@code 0}<i>OctalDigits</i>
-     * </ul>
-     *
-     * @throws NumberFormatException if the string does not contain a valid unsigned {@code long}
-     *     value
-     * @since 13.0
-     */
-    public static long decode(String stringValue) {
-        ParseRequest request = ParseRequest.fromString(stringValue);
-
-        try {
-            return parseUnsignedLong(request.rawValue, request.radix);
-        } catch (NumberFormatException e) {
-            NumberFormatException decodeException =
-                    new NumberFormatException("Error parsing value: " + stringValue);
-            decodeException.initCause(e);
-            throw decodeException;
-        }
     }
 
     /*

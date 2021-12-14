@@ -49,44 +49,6 @@ public final class Collections2 {
     }
 
     /**
-     * Returns the elements of {@code unfiltered} that satisfy a predicate. The returned collection is
-     * a live view of {@code unfiltered}; changes to one affect the other.
-     *
-     * <p>The resulting collection's iterator does not support {@code remove()}, but all other
-     * collection methods are supported. When given an element that doesn't satisfy the predicate, the
-     * collection's {@code add()} and {@code addAll()} methods throw an {@link
-     * IllegalArgumentException}. When methods such as {@code removeAll()} and {@code clear()} are
-     * called on the filtered collection, only elements that satisfy the filter will be removed from
-     * the underlying collection.
-     *
-     * <p>The returned collection isn't threadsafe or serializable, even if {@code unfiltered} is.
-     *
-     * <p>Many of the filtered collection's methods, such as {@code size()}, iterate across every
-     * element in the underlying collection and determine which elements satisfy the filter. When a
-     * live view is <i>not</i> needed, it may be faster to copy {@code Iterables.filter(unfiltered,
-     * predicate)} and use the copy.
-     *
-     * <p><b>Warning:</b> {@code predicate} must be <i>consistent with equals</i>, as documented at
-     * {@link Predicate#apply}. Do not provide a predicate such as {@code
-     * Predicates.instanceOf(ArrayList.class)}, which is inconsistent with equals. (See {@link
-     * Iterables#filter(Iterable, Class)} for related functionality.)
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@link java.util.stream.Stream#filter Stream.filter}.
-     */
-    // TODO(kevinb): how can we omit that Iterables link when building gwt
-    // javadoc?
-    public static <E> Collection<E> filter(
-            Collection<E> unfiltered, Predicate<? super E> predicate) {
-        if (unfiltered instanceof FilteredCollection) {
-            // Support clear(), removeAll(), and retainAll() when filtering a filtered
-            // collection.
-            return ((FilteredCollection<E>) unfiltered).createCombined(predicate);
-        }
-
-        return new FilteredCollection<E>(checkNotNull(unfiltered), checkNotNull(predicate));
-    }
-
-    /**
      * Delegates to {@link Collection#contains}. Returns {@code false} if the {@code contains} method
      * throws a {@code ClassCastException} or {@code NullPointerException}.
      */
@@ -119,11 +81,6 @@ public final class Collections2 {
         FilteredCollection(Collection<E> unfiltered, Predicate<? super E> predicate) {
             this.unfiltered = unfiltered;
             this.predicate = predicate;
-        }
-
-        FilteredCollection<E> createCombined(Predicate<? super E> newPredicate) {
-            return new FilteredCollection<E>(unfiltered, Predicates.<E>and(predicate, newPredicate));
-            // .<E> above needed to compile in JDK 5
         }
 
         @Override
@@ -245,12 +202,9 @@ public final class Collections2 {
      * <p>When a live view is <i>not</i> needed, it may be faster to copy the transformed collection
      * and use the copy.
      *
-     * <p>If the input {@code Collection} is known to be a {@code List}, consider {@link
-     * Lists#transform}. If only an {@code Iterable} is available, use {@link Iterables#transform}.
-     *
      * <p><b>{@code Stream} equivalent:</b> {@link java.util.stream.Stream#map Stream.map}.
      */
-    public static <F, T> Collection<T> transform(
+    static <F, T> Collection<T> transform(
             Collection<F> fromCollection, Function<? super F, T> function) {
         return new TransformedCollection<>(fromCollection, function);
     }

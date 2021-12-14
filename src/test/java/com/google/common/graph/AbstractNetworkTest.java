@@ -16,19 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
 import static com.google.common.graph.TestUtil.ERROR_NODE_NOT_IN_GRAPH;
 import static com.google.common.graph.TestUtil.assertEdgeNotInGraphErrorMessage;
 import static com.google.common.graph.TestUtil.assertNodeNotInGraphErrorMessage;
@@ -39,6 +26,18 @@ import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Abstract base class for testing implementations of {@link Network} interface. Network instances
@@ -245,7 +244,7 @@ public abstract class AbstractNetworkTest {
                 boolean connected = !edgesConnecting.isEmpty();
                 if (network.isDirected() || !isSelfLoop) {
                     assertThat(edgesConnecting)
-                            .isEqualTo(Sets.intersection(network.outEdges(node), network.inEdges(otherNode)));
+                            .isEqualTo(intersection(network.outEdges(node), network.inEdges(otherNode)));
                 }
                 if (!network.allowsParallelEdges()) {
                     assertThat(edgesConnecting.size()).isAtMost(1);
@@ -310,6 +309,12 @@ public abstract class AbstractNetworkTest {
             }
         }
     }
+
+    private static <E> Set<E> intersection(
+            final Set<E> set1, final Set<?> set2) {
+        return set1.stream().filter(set2::contains).collect(Collectors.toSet());
+    }
+
 
     /**
      * Verifies that the {@code Set} returned by {@code nodes} has the expected mutability property
@@ -687,7 +692,7 @@ public abstract class AbstractNetworkTest {
         }
 
         addNode(N1);
-        ImmutableSet<Integer> nodes = ImmutableSet.copyOf(networkAsMutableNetwork.nodes());
+        Set<Integer> nodes = Util.setOf(networkAsMutableNetwork.nodes());
         assertFalse(networkAsMutableNetwork.addNode(N1));
         assertThat(networkAsMutableNetwork.nodes()).containsExactlyElementsIn(nodes);
     }
@@ -714,7 +719,7 @@ public abstract class AbstractNetworkTest {
         }
 
         addNode(N1);
-        ImmutableSet<Integer> nodes = ImmutableSet.copyOf(networkAsMutableNetwork.nodes());
+        Set<Integer> nodes = Util.setOf(networkAsMutableNetwork.nodes());
         assertFalse(networkAsMutableNetwork.removeNode(NODE_NOT_IN_GRAPH));
         assertThat(networkAsMutableNetwork.nodes()).containsExactlyElementsIn(nodes);
     }
@@ -772,7 +777,7 @@ public abstract class AbstractNetworkTest {
         }
 
         addEdge(N1, N2, E12);
-        ImmutableSet<String> edges = ImmutableSet.copyOf(networkAsMutableNetwork.edges());
+        Set<String> edges = Util.setOf(networkAsMutableNetwork.edges());
         assertFalse(networkAsMutableNetwork.removeEdge(EDGE_NOT_IN_GRAPH));
         assertThat(networkAsMutableNetwork.edges()).containsExactlyElementsIn(edges);
     }
@@ -844,7 +849,7 @@ public abstract class AbstractNetworkTest {
         int threadCount = 20;
         ExecutorService executor = newFixedThreadPool(threadCount);
         final CyclicBarrier barrier = new CyclicBarrier(threadCount);
-        ImmutableList.Builder<Future<?>> futures = ImmutableList.builder();
+        List<Future<?>> futures = new ArrayList<>();
         for (int i = 0; i < threadCount; i++) {
             futures.add(
                     executor.submit(
@@ -889,7 +894,7 @@ public abstract class AbstractNetworkTest {
          * confirm that my change to MapIteratorCache fixes the TSAN error in the (larger) test it was
          * originally reported in.
          */
-        for (Future<?> future : futures.build()) {
+        for (Future<?> future : futures) {
             future.get();
         }
         executor.shutdown();

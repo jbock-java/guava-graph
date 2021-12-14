@@ -55,11 +55,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *       Collections#unmodifiableCollection}, whose contents change whenever the wrapped collection
  *       is modified.
  *   <li><b>Null-hostility.</b> This collection will never contain a null element.
- *   <li><b>Deterministic iteration.</b> The iteration order is always well-defined, depending on
- *       how the collection was created. Typically this is insertion order unless an explicit
- *       ordering is otherwise specified (e.g. {@link ImmutableSortedSet#naturalOrder}). See the
- *       appropriate factory method for details. View collections such as {@link
- *       ImmutableMultiset#elementSet} iterate in the same order as the parent, except as noted.
  *   <li><b>Thread safety.</b> It is safe to access this collection concurrently from multiple
  *       threads.
  *   <li><b>Integrity.</b> This type cannot be subclassed outside this package (which would allow

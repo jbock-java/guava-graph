@@ -18,7 +18,6 @@ package com.google.common.graph;
 
 import com.google.common.annotations.Beta;
 import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -220,7 +219,7 @@ public abstract class Traverser<N> {
      * @throws IllegalArgumentException if {@code startNode} is not an element of the graph
      */
     public final Iterable<N> breadthFirst(N startNode) {
-        return breadthFirst(ImmutableSet.of(startNode));
+        return breadthFirst(Set.of(startNode));
     }
 
     /**
@@ -234,7 +233,7 @@ public abstract class Traverser<N> {
      * @since 24.1
      */
     public final Iterable<N> breadthFirst(Iterable<? extends N> startNodes) {
-        ImmutableSet<N> validated = validate(startNodes);
+        Set<N> validated = validate(startNodes);
         return new Iterable<N>() {
             @Override
             public Iterator<N> iterator() {
@@ -275,7 +274,7 @@ public abstract class Traverser<N> {
      * @throws IllegalArgumentException if {@code startNode} is not an element of the graph
      */
     public final Iterable<N> depthFirstPreOrder(N startNode) {
-        return depthFirstPreOrder(ImmutableSet.of(startNode));
+        return depthFirstPreOrder(Set.of(startNode));
     }
 
     /**
@@ -289,7 +288,7 @@ public abstract class Traverser<N> {
      * @since 24.1
      */
     public final Iterable<N> depthFirstPreOrder(Iterable<? extends N> startNodes) {
-        ImmutableSet<N> validated = validate(startNodes);
+        Set<N> validated = validate(startNodes);
         return new Iterable<N>() {
             @Override
             public Iterator<N> iterator() {
@@ -330,7 +329,7 @@ public abstract class Traverser<N> {
      * @throws IllegalArgumentException if {@code startNode} is not an element of the graph
      */
     public final Iterable<N> depthFirstPostOrder(N startNode) {
-        return depthFirstPostOrder(ImmutableSet.of(startNode));
+        return depthFirstPostOrder(Set.of(startNode));
     }
 
     /**
@@ -344,7 +343,7 @@ public abstract class Traverser<N> {
      * @since 24.1
      */
     public final Iterable<N> depthFirstPostOrder(Iterable<? extends N> startNodes) {
-        ImmutableSet<N> validated = validate(startNodes);
+        Set<N> validated = validate(startNodes);
         return new Iterable<N>() {
             @Override
             public Iterator<N> iterator() {
@@ -356,8 +355,8 @@ public abstract class Traverser<N> {
     abstract Traversal<N> newTraversal();
 
     @SuppressWarnings("CheckReturnValue")
-    private ImmutableSet<N> validate(Iterable<? extends N> startNodes) {
-        ImmutableSet<N> copy = ImmutableSet.copyOf(startNodes);
+    private Set<N> validate(Iterable<? extends N> startNodes) {
+        Set<N> copy = Util.setOf(startNodes);
         for (N node : copy) {
             successorFunction.successors(node); // Will throw if node doesn't exist
         }

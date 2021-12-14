@@ -16,12 +16,10 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterators;
-
-import java.util.Set;
-
 import static com.google.common.truth.Truth.assertThat;
+
+import com.google.common.collect.Iterators;
+import java.util.Set;
 
 /** Utility methods used in various common.graph tests. */
 final class TestUtil {
@@ -85,7 +83,7 @@ final class TestUtil {
             assertThat(set).contains(element);
         }
         assertThat(set).doesNotContain(new Object());
-        assertThat(set).isEqualTo(ImmutableSet.copyOf(set));
+        assertThat(set).isEqualTo(Util.setOf(set));
         return set;
     }
 }

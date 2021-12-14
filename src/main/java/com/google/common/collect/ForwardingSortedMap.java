@@ -90,21 +90,6 @@ public abstract class ForwardingSortedMap<K, V>
         return delegate().tailMap(fromKey);
     }
 
-    /**
-     * A sensible implementation of {@link SortedMap#keySet} in terms of the methods of {@code
-     * ForwardingSortedMap}. In many cases, you may wish to override {@link
-     * ForwardingSortedMap#keySet} to forward to this implementation or a subclass thereof.
-     *
-     * @since 15.0
-     */
-    @Beta
-    protected class StandardKeySet extends Maps.SortedKeySet<K, V> {
-        /** Constructor for use by subclasses. */
-        public StandardKeySet() {
-            super(ForwardingSortedMap.this);
-        }
-    }
-
     // unsafe, but worst case is a CCE or NPE is thrown, which callers will be expecting
     @SuppressWarnings({"unchecked", "nullness"})
     static int unsafeCompare(

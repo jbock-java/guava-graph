@@ -14,24 +14,22 @@
 
 package com.google.common.primitives;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkElementIndex;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkPositionIndexes;
+
 import com.google.common.annotations.Beta;
 import com.google.common.base.Converter;
-
 import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.RandomAccess;
 import java.util.Spliterator;
 import java.util.Spliterators;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkElementIndex;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkPositionIndexes;
 
 /**
  * Static utility methods pertaining to {@code long} primitives, that are not already found in
@@ -603,188 +601,5 @@ public final class Longs {
             array[i] = array[j];
             array[j] = tmp;
         }
-    }
-
-    /**
-     * Returns an array containing each value of {@code collection}, converted to a {@code long} value
-     * in the manner of {@link Number#longValue}.
-     *
-     * <p>Elements are copied from the argument collection as if by {@code collection.toArray()}.
-     * Calling this method is as thread-safe as calling that method.
-     *
-     * @param collection a collection of {@code Number} instances
-     * @return an array containing the same values as {@code collection}, in the same order, converted
-     *     to primitives
-     * @throws NullPointerException if {@code collection} or any of its elements is null
-     * @since 1.0 (parameter was {@code Collection<Long>} before 12.0)
-     */
-    public static long[] toArray(Collection<? extends Number> collection) {
-        if (collection instanceof LongArrayAsList) {
-            return ((LongArrayAsList) collection).toLongArray();
-        }
-
-        Object[] boxedArray = collection.toArray();
-        int len = boxedArray.length;
-        long[] array = new long[len];
-        for (int i = 0; i < len; i++) {
-            // checkNotNull for GWT (do not optimize)
-            array[i] = ((Number) checkNotNull(boxedArray[i])).longValue();
-        }
-        return array;
-    }
-
-    /**
-     * Returns a fixed-size list backed by the specified array, similar to {@link
-     * Arrays#asList(Object[])}. The list supports {@link List#set(int, Object)}, but any attempt to
-     * set a value to {@code null} will result in a {@link NullPointerException}.
-     *
-     * <p>The returned list maintains the values, but not the identities, of {@code Long} objects
-     * written to or read from it. For example, whether {@code list.get(0) == list.get(0)} is true for
-     * the returned list is unspecified.
-     *
-     * <p><b>Note:</b> when possible, you should represent your data as an {@link ImmutableLongArray}
-     * instead, which has an {@link ImmutableLongArray#asList asList} view.
-     *
-     * @param backingArray the array to back the list
-     * @return a list view of the array
-     */
-    public static List<Long> asList(long... backingArray) {
-        if (backingArray.length == 0) {
-            return Collections.emptyList();
-        }
-        return new LongArrayAsList(backingArray);
-    }
-
-        private static class LongArrayAsList extends AbstractList<Long>
-            implements RandomAccess, Serializable {
-        final long[] array;
-        final int start;
-        final int end;
-
-        LongArrayAsList(long[] array) {
-            this(array, 0, array.length);
-        }
-
-        LongArrayAsList(long[] array, int start, int end) {
-            this.array = array;
-            this.start = start;
-            this.end = end;
-        }
-
-        @Override
-        public int size() {
-            return end - start;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public Long get(int index) {
-            checkElementIndex(index, size());
-            return array[start + index];
-        }
-
-        @Override
-        public Spliterator.OfLong spliterator() {
-            return Spliterators.spliterator(array, start, end, 0);
-        }
-
-        @Override
-        public boolean contains(Object target) {
-            // Overridden to prevent a ton of boxing
-            return (target instanceof Long) && Longs.indexOf(array, (Long) target, start, end) != -1;
-        }
-
-        @Override
-        public int indexOf(Object target) {
-            // Overridden to prevent a ton of boxing
-            if (target instanceof Long) {
-                int i = Longs.indexOf(array, (Long) target, start, end);
-                if (i >= 0) {
-                    return i - start;
-                }
-            }
-            return -1;
-        }
-
-        @Override
-        public int lastIndexOf(Object target) {
-            // Overridden to prevent a ton of boxing
-            if (target instanceof Long) {
-                int i = Longs.lastIndexOf(array, (Long) target, start, end);
-                if (i >= 0) {
-                    return i - start;
-                }
-            }
-            return -1;
-        }
-
-        @Override
-        public Long set(int index, Long element) {
-            checkElementIndex(index, size());
-            long oldValue = array[start + index];
-            // checkNotNull for GWT (do not optimize)
-            array[start + index] = checkNotNull(element);
-            return oldValue;
-        }
-
-        @Override
-        public List<Long> subList(int fromIndex, int toIndex) {
-            int size = size();
-            checkPositionIndexes(fromIndex, toIndex, size);
-            if (fromIndex == toIndex) {
-                return Collections.emptyList();
-            }
-            return new LongArrayAsList(array, start + fromIndex, start + toIndex);
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            if (object == this) {
-                return true;
-            }
-            if (object instanceof LongArrayAsList) {
-                LongArrayAsList that = (LongArrayAsList) object;
-                int size = size();
-                if (that.size() != size) {
-                    return false;
-                }
-                for (int i = 0; i < size; i++) {
-                    if (array[start + i] != that.array[that.start + i]) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            return super.equals(object);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = 1;
-            for (int i = start; i < end; i++) {
-                result = 31 * result + Longs.hashCode(array[i]);
-            }
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder builder = new StringBuilder(size() * 10);
-            builder.append('[').append(array[start]);
-            for (int i = start + 1; i < end; i++) {
-                builder.append(", ").append(array[i]);
-            }
-            return builder.append(']').toString();
-        }
-
-        long[] toLongArray() {
-            return Arrays.copyOfRange(array, start, end);
-        }
-
-        private static final long serialVersionUID = 0;
     }
 }

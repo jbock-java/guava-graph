@@ -19,7 +19,6 @@ package com.google.common.graph;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
@@ -195,7 +194,7 @@ public final class Graphs {
      */
     public static <N> Set<N> reachableNodes(Graph<N> graph, N node) {
         checkArgument(graph.nodes().contains(node), NODE_NOT_IN_GRAPH, node);
-        return ImmutableSet.copyOf(Traverser.forGraph(graph).breadthFirst(node));
+        return Util.setOf(Traverser.forGraph(graph).breadthFirst(node));
     }
 
     // Graph mutation methods

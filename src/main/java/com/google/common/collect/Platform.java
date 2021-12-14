@@ -76,14 +76,6 @@ final class Platform {
     }
 
     /**
-     * Returns the platform preferred set implementation that preserves insertion order when used only
-     * for insertions.
-     */
-    static <E> Set<E> preservesInsertionOrderOnAddsSet() {
-        return Sets.newLinkedHashSet();
-    }
-
-    /**
      * Returns a new array of the given length with the same type as a reference array.
      *
      * @param reference any array of the desired type

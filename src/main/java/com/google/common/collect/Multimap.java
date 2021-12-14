@@ -16,14 +16,13 @@
 
 package com.google.common.collect;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.BiConsumer;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A collection that maps keys to values, similar to {@link Map}, but in which each key may be
@@ -70,11 +69,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * naturally <i>not</i> views.
  *
  * <p><b>Subinterfaces</b>
- *
- * <p>Instead of using the {@code Multimap} interface directly, prefer the subinterfaces {@link
- * ListMultimap} and {@link SetMultimap}. These take their names from the fact that the collections
- * they return from {@code get} behave like (and, of course, implement) {@link List} and {@link
- * Set}, respectively.
  *
  * <p>For example, the "presidents" code snippet above used a {@code ListMultimap}; if it had used a
  * {@code SetMultimap} instead, two presidents would have vanished, and last names might or might
@@ -313,15 +307,6 @@ public interface Multimap<K, V> {
     /**
      * Compares the specified object with this multimap for equality. Two multimaps are equal when
      * their map views, as returned by {@link #asMap}, are also equal.
-     *
-     * <p>In general, two multimaps with identical key-value mappings may or may not be equal,
-     * depending on the implementation. For example, two {@link SetMultimap} instances with the same
-     * key-value mappings are equal, but equality of two {@link ListMultimap} instances depends on the
-     * ordering of the values for each key.
-     *
-     * <p>A non-empty {@link SetMultimap} cannot be equal to a non-empty {@link ListMultimap}, since
-     * their {@link #asMap} views contain unequal collections as values. However, any two empty
-     * multimaps are equal, because they both have empty {@link #asMap} views.
      */
     @Override
     boolean equals(Object obj);
@@ -331,11 +316,6 @@ public interface Multimap<K, V> {
      *
      * <p>The hash code of a multimap is defined as the hash code of the map view, as returned by
      * {@link Multimap#asMap}.
-     *
-     * <p>In general, two multimaps with identical key-value mappings may or may not have the same
-     * hash codes, depending on the implementation. For example, two {@link SetMultimap} instances
-     * with the same key-value mappings will have the same {@code hashCode}, but the {@code hashCode}
-     * of {@link ListMultimap} instances depends on the ordering of the values for each key.
      */
     @Override
     int hashCode();

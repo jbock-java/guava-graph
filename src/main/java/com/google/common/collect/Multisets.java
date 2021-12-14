@@ -170,24 +170,6 @@ public final class Multisets {
     }
 
     /**
-     * Returns an unmodifiable view of the specified sorted multiset. Query operations on the returned
-     * multiset "read through" to the specified multiset, and attempts to modify the returned multiset
-     * result in an {@link UnsupportedOperationException}.
-     *
-     * <p>The returned multiset will be serializable if the specified multiset is serializable.
-     *
-     * @param sortedMultiset the sorted multiset for which an unmodifiable view is to be generated
-     * @return an unmodifiable view of the multiset
-     * @since 11.0
-     */
-    @Beta
-    public static <E> SortedMultiset<E> unmodifiableSortedMultiset(
-            SortedMultiset<E> sortedMultiset) {
-        // it's in its own file so it can be emulated for GWT
-        return new UnmodifiableSortedMultiset<E>(checkNotNull(sortedMultiset));
-    }
-
-    /**
      * Returns an immutable multiset entry with the specified element and count. The entry will be
      * serializable if {@code e} is.
      *
@@ -245,11 +227,6 @@ public final class Multisets {
      * <p>Many of the filtered multiset's methods, such as {@code size()}, iterate across every
      * element in the underlying multiset and determine which elements satisfy the filter. When a live
      * view is <i>not</i> needed, it may be faster to copy the returned multiset and use the copy.
-     *
-     * <p><b>Warning:</b> {@code predicate} must be <i>consistent with equals</i>, as documented at
-     * {@link Predicate#apply}. Do not provide a predicate such as {@code
-     * Predicates.instanceOf(ArrayList.class)}, which is inconsistent with equals. (See {@link
-     * Iterables#filter(Iterable, Class)} for related functionality.)
      *
      * @since 14.0
      */

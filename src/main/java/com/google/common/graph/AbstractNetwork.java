@@ -16,26 +16,24 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.math.IntMath;
-
-import java.util.AbstractSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.GraphConstants.ENDPOINTS_MISMATCH;
 import static com.google.common.graph.GraphConstants.MULTIPLE_EDGES_CONNECTING;
 import static java.util.Collections.unmodifiableSet;
+
+import com.google.common.annotations.Beta;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.math.IntMath;
+import java.util.AbstractSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * This class provides a skeletal implementation of {@link Network}. It is recommended to extend
@@ -167,7 +165,7 @@ public abstract class AbstractNetwork<N, E> implements Network<N, E> {
         EndpointPair<N> endpointPair = incidentNodes(edge); // Verifies that edge is in this network.
         Set<E> endpointPairIncidentEdges =
                 Sets.union(incidentEdges(endpointPair.nodeU()), incidentEdges(endpointPair.nodeV()));
-        return Sets.difference(endpointPairIncidentEdges, ImmutableSet.of(edge));
+        return Sets.difference(endpointPairIncidentEdges, Set.of(edge));
     }
 
     @Override

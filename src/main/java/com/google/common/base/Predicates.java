@@ -167,9 +167,6 @@ public final class Predicates {
      * the given class. If the object being tested is {@code null} this predicate evaluates to {@code
      * false}.
      *
-     * <p>If you want to filter an {@code Iterable} to narrow its type, consider using {@link
-     * com.google.common.collect.Iterables#filter(Iterable, Class)} in preference.
-     *
      * <p><b>Warning:</b> contrary to the typical assumptions about predicates (as documented at
      * {@link Predicate#apply}), the returned predicate may not be <i>consistent with equals</i>. For
      * example, {@code instanceOf(ArrayList.class)} will yield different results for the two equal

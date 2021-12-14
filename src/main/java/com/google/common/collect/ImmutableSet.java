@@ -16,28 +16,24 @@
 
 package com.google.common.collect;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.CollectPreconditions.checkNonnegative;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.math.IntMath;
 import com.google.common.primitives.Ints;
-
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.stream.Collector;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.CollectPreconditions.checkNonnegative;
-import static java.util.Objects.requireNonNull;
 
 /**
  * A {@link Set} whose contents will never change, with many other important properties detailed at
@@ -50,18 +46,6 @@ import static java.util.Objects.requireNonNull;
 public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements Set<E> {
     static final int SPLITERATOR_CHARACTERISTICS =
             ImmutableCollection.SPLITERATOR_CHARACTERISTICS | Spliterator.DISTINCT;
-
-    /**
-     * Returns a {@code Collector} that accumulates the input elements into a new {@code
-     * ImmutableSet}. Elements appear in the resulting set in the encounter order of the stream; if
-     * the stream contains duplicates (according to {@link Object#equals(Object)}), only the first
-     * duplicate in encounter order will appear in the result.
-     *
-     * @since 21.0
-     */
-    public static <E> Collector<E, ?, ImmutableSet<E>> toImmutableSet() {
-        return CollectCollectors.toImmutableSet();
-    }
 
     /**
      * Returns the empty immutable set. Preferred over {@link Collections#emptySet} for code
@@ -79,223 +63,8 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
      * Collections#singleton} for code consistency, {@code null} rejection, and because the return
      * type conveys the immutability guarantee.
      */
-    public static <E> ImmutableSet<E> of(E element) {
+    static <E> ImmutableSet<E> of(E element) {
         return new SingletonImmutableSet<E>(element);
-    }
-
-    /**
-     * Returns an immutable set containing the given elements, minus duplicates, in the order each was
-     * first specified. That is, if multiple elements are {@linkplain Object#equals equal}, all except
-     * the first are ignored.
-     */
-    public static <E> ImmutableSet<E> of(E e1, E e2) {
-        return construct(2, 2, e1, e2);
-    }
-
-    /**
-     * Returns an immutable set containing the given elements, minus duplicates, in the order each was
-     * first specified. That is, if multiple elements are {@linkplain Object#equals equal}, all except
-     * the first are ignored.
-     */
-    public static <E> ImmutableSet<E> of(E e1, E e2, E e3) {
-        return construct(3, 3, e1, e2, e3);
-    }
-
-    /**
-     * Returns an immutable set containing the given elements, minus duplicates, in the order each was
-     * first specified. That is, if multiple elements are {@linkplain Object#equals equal}, all except
-     * the first are ignored.
-     */
-    public static <E> ImmutableSet<E> of(E e1, E e2, E e3, E e4) {
-        return construct(4, 4, e1, e2, e3, e4);
-    }
-
-    /**
-     * Returns an immutable set containing the given elements, minus duplicates, in the order each was
-     * first specified. That is, if multiple elements are {@linkplain Object#equals equal}, all except
-     * the first are ignored.
-     */
-    public static <E> ImmutableSet<E> of(E e1, E e2, E e3, E e4, E e5) {
-        return construct(5, 5, e1, e2, e3, e4, e5);
-    }
-
-    /**
-     * Returns an immutable set containing the given elements, minus duplicates, in the order each was
-     * first specified. That is, if multiple elements are {@linkplain Object#equals equal}, all except
-     * the first are ignored.
-     *
-     * <p>The array {@code others} must not be longer than {@code Integer.MAX_VALUE - 6}.
-     *
-     * @since 3.0 (source-compatible since 2.0)
-     */
-    @SafeVarargs // For Eclipse. For internal javac we have disabled this pointless type of warning.
-    public static <E> ImmutableSet<E> of(E e1, E e2, E e3, E e4, E e5, E e6, E... others) {
-        checkArgument(
-                others.length <= Integer.MAX_VALUE - 6, "the total number of elements must fit in an int");
-        final int paramCount = 6;
-        Object[] elements = new Object[paramCount + others.length];
-        elements[0] = e1;
-        elements[1] = e2;
-        elements[2] = e3;
-        elements[3] = e4;
-        elements[4] = e5;
-        elements[5] = e6;
-        System.arraycopy(others, 0, elements, paramCount, others.length);
-        return construct(elements.length, elements.length, elements);
-    }
-
-    /**
-     * Constructs an {@code ImmutableSet} from the first {@code n} elements of the specified array,
-     * which we have no particular reason to believe does or does not contain duplicates. If {@code k}
-     * is the size of the returned {@code ImmutableSet}, then the unique elements of {@code elements}
-     * will be in the first {@code k} positions, and {@code elements[i] == null} for {@code k <= i <
-     * n}.
-     *
-     * <p>This may modify {@code elements}. Additionally, if {@code n == elements.length} and {@code
-     * elements} contains no duplicates, {@code elements} may be used without copying in the returned
-     * {@code ImmutableSet}, in which case the caller must not modify it.
-     *
-     * <p>{@code elements} may contain only values of type {@code E}.
-     *
-     * @throws NullPointerException if any of the first {@code n} elements of {@code elements} is null
-     */
-    private static <E> ImmutableSet<E> constructUnknownDuplication(int n, Object... elements) {
-        // Guess the size is "halfway between" all duplicates and no duplicates, on a log scale.
-        return construct(
-                n,
-                Math.max(
-                        ImmutableCollection.Builder.DEFAULT_INITIAL_CAPACITY,
-                        IntMath.sqrt(n, RoundingMode.CEILING)),
-                elements);
-    }
-
-    /**
-     * Constructs an {@code ImmutableSet} from the first {@code n} elements of the specified array. If
-     * {@code k} is the size of the returned {@code ImmutableSet}, then the unique elements of {@code
-     * elements} will be in the first {@code k} positions, and {@code elements[i] == null} for {@code
-     * k <= i < n}.
-     *
-     * <p>This may modify {@code elements}. Additionally, if {@code n == elements.length} and {@code
-     * elements} contains no duplicates, {@code elements} may be used without copying in the returned
-     * {@code ImmutableSet}, in which case it may no longer be modified.
-     *
-     * <p>{@code elements} may contain only values of type {@code E}.
-     *
-     * @throws NullPointerException if any of the first {@code n} elements of {@code elements} is null
-     */
-    private static <E> ImmutableSet<E> construct(int n, int expectedSize, Object... elements) {
-        switch (n) {
-            case 0:
-                return of();
-            case 1:
-                @SuppressWarnings("unchecked") // safe; elements contains only E's
-                E elem = (E) elements[0];
-                return of(elem);
-            default:
-                SetBuilderImpl<E> builder = new RegularSetBuilderImpl<E>(expectedSize);
-                for (int i = 0; i < n; i++) {
-                    @SuppressWarnings("unchecked")
-                    E e = (E) checkNotNull(elements[i]);
-                    builder = builder.add(e);
-                }
-                return builder.review().build();
-        }
-    }
-
-    /**
-     * Returns an immutable set containing each of {@code elements}, minus duplicates, in the order
-     * each appears first in the source collection.
-     *
-     * <p><b>Performance note:</b> This method will sometimes recognize that the actual copy operation
-     * is unnecessary; for example, {@code copyOf(copyOf(anArrayList))} will copy the data only once.
-     * This reduces the expense of habitually making defensive copies at API boundaries. However, the
-     * precise conditions for skipping the copy operation are undefined.
-     *
-     * @throws NullPointerException if any of {@code elements} is null
-     * @since 7.0 (source-compatible since 2.0)
-     */
-    public static <E> ImmutableSet<E> copyOf(Collection<? extends E> elements) {
-        /*
-         * TODO(lowasser): consider checking for ImmutableAsList here
-         * TODO(lowasser): consider checking for Multiset here
-         */
-        // Don't refer to ImmutableSortedSet by name so it won't pull in all that code
-        if (elements instanceof ImmutableSet && !(elements instanceof SortedSet)) {
-            @SuppressWarnings("unchecked") // all supported methods are covariant
-            ImmutableSet<E> set = (ImmutableSet<E>) elements;
-            if (!set.isPartialView()) {
-                return set;
-            }
-        } else if (elements instanceof EnumSet) {
-            return copyOfEnumSet((EnumSet) elements);
-        }
-        Object[] array = elements.toArray();
-        if (elements instanceof Set) {
-            // assume probably no duplicates (though it might be using different equality semantics)
-            return construct(array.length, array.length, array);
-        } else {
-            return constructUnknownDuplication(array.length, array);
-        }
-    }
-
-    /**
-     * Returns an immutable set containing each of {@code elements}, minus duplicates, in the order
-     * each appears first in the source iterable. This method iterates over {@code elements} only
-     * once.
-     *
-     * <p><b>Performance note:</b> This method will sometimes recognize that the actual copy operation
-     * is unnecessary; for example, {@code copyOf(copyOf(anArrayList))} should copy the data only
-     * once. This reduces the expense of habitually making defensive copies at API boundaries.
-     * However, the precise conditions for skipping the copy operation are undefined.
-     *
-     * @throws NullPointerException if any of {@code elements} is null
-     */
-    public static <E> ImmutableSet<E> copyOf(Iterable<? extends E> elements) {
-        return (elements instanceof Collection)
-                ? copyOf((Collection<? extends E>) elements)
-                : copyOf(elements.iterator());
-    }
-
-    /**
-     * Returns an immutable set containing each of {@code elements}, minus duplicates, in the order
-     * each appears first in the source iterator.
-     *
-     * @throws NullPointerException if any of {@code elements} is null
-     */
-    public static <E> ImmutableSet<E> copyOf(Iterator<? extends E> elements) {
-        // We special-case for 0 or 1 elements, but anything further is madness.
-        if (!elements.hasNext()) {
-            return of();
-        }
-        E first = elements.next();
-        if (!elements.hasNext()) {
-            return of(first);
-        } else {
-            return new ImmutableSet.Builder<E>().add(first).addAll(elements).build();
-        }
-    }
-
-    /**
-     * Returns an immutable set containing each of {@code elements}, minus duplicates, in the order
-     * each appears first in the source array.
-     *
-     * @throws NullPointerException if any of {@code elements} is null
-     * @since 3.0
-     */
-    public static <E> ImmutableSet<E> copyOf(E[] elements) {
-        switch (elements.length) {
-            case 0:
-                return of();
-            case 1:
-                return of(elements[0]);
-            default:
-                return constructUnknownDuplication(elements.length, elements.clone());
-        }
-    }
-
-    @SuppressWarnings("rawtypes") // necessary to compile against Java 8
-    private static ImmutableSet copyOfEnumSet(EnumSet enumSet) {
-        return ImmutableEnumSet.asImmutable(EnumSet.copyOf(enumSet));
     }
 
     ImmutableSet() {
@@ -330,7 +99,7 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
     @Override
     public abstract UnmodifiableIterator<E> iterator();
 
-        abstract static class CachingAsList<E> extends ImmutableSet<E> {
+    abstract static class CachingAsList<E> extends ImmutableSet<E> {
         private transient ImmutableList<E> asList;
 
         @Override
@@ -392,32 +161,6 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
     }
 
     /**
-     * Returns a new builder. The generated builder is equivalent to the builder created by the {@link
-     * Builder} constructor.
-     */
-    public static <E> Builder<E> builder() {
-        return new Builder<E>();
-    }
-
-    /**
-     * Returns a new builder, expecting the specified number of distinct elements to be added.
-     *
-     * <p>If {@code expectedSize} is exactly the number of distinct elements added to the builder
-     * before {@link Builder#build} is called, the builder is likely to perform better than an unsized
-     * {@link #builder()} would have.
-     *
-     * <p>It is not specified if any performance benefits apply if {@code expectedSize} is close to,
-     * but not exactly, the number of distinct elements added to the builder.
-     *
-     * @since 23.1
-     */
-    @Beta
-    public static <E> Builder<E> builderWithExpectedSize(int expectedSize) {
-        checkNonnegative(expectedSize, "expectedSize");
-        return new Builder<E>(expectedSize);
-    }
-
-    /**
      * A builder for creating {@code ImmutableSet} instances. Example:
      *
      * <pre>{@code
@@ -458,12 +201,6 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
 
         Builder(@SuppressWarnings("unused") boolean subclass) {
             this.impl = null; // unused
-        }
-
-        @VisibleForTesting
-        void forceJdk() {
-            requireNonNull(impl); // see the comment on the field
-            this.impl = new JdkBackedSetBuilderImpl<E>(impl);
         }
 
         final void copyIfNecessary() {
@@ -510,22 +247,6 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
         @Override
         public Builder<E> addAll(Iterator<? extends E> elements) {
             super.addAll(elements);
-            return this;
-        }
-
-        Builder<E> combine(Builder<E> other) {
-            requireNonNull(impl);
-            requireNonNull(other.impl);
-            /*
-             * For discussion of requireNonNull, see the comment on the field.
-             *
-             * (And I don't believe there's any situation in which we call x.combine(y) when x is a plain
-             * ImmutableSet.Builder but y is an ImmutableSortedSet.Builder (or vice versa). Certainly
-             * ImmutableSortedSet.Builder.combine() is written as if its argument will never be a plain
-             * ImmutableSet.Builder: It casts immediately to ImmutableSortedSet.Builder.)
-             */
-            copyIfNecessary();
-            this.impl = this.impl.combine(other.impl);
             return this;
         }
 

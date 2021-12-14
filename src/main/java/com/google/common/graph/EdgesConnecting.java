@@ -21,7 +21,10 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.UnmodifiableIterator;
 
 import java.util.AbstractSet;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -45,10 +48,10 @@ final class EdgesConnecting<E> extends AbstractSet<E> {
     }
 
     @Override
-    public UnmodifiableIterator<E> iterator() {
+    public Iterator<E> iterator() {
         E connectingEdge = getConnectingEdge();
         return (connectingEdge == null)
-                ? ImmutableSet.<E>of().iterator()
+                ? Collections.emptyIterator()
                 : Iterators.singletonIterator(connectingEdge);
     }
 

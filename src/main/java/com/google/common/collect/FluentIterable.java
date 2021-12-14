@@ -297,32 +297,6 @@ public abstract class FluentIterable<E> implements Iterable<E> {
     }
 
     /**
-     * Returns a fluent iterable containing no elements.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@link Stream#empty}.
-     *
-     * @since 20.0
-     */
-    @Beta
-    public static <E> FluentIterable<E> of() {
-        return FluentIterable.from(Collections.<E>emptyList());
-    }
-
-    /**
-     * Returns a fluent iterable containing the specified elements in order.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@link java.util.stream.Stream#of(Object[])
-     * Stream.of(T...)}.
-     *
-     * @since 20.0
-     */
-    @Beta
-    public static <E> FluentIterable<E> of(
-            E element, E... elements) {
-        return from(Lists.asList(element, elements));
-    }
-
-    /**
      * Returns a string representation of this fluent iterable, with the format {@code [e1, e2, ...,
      * en]}.
      *
@@ -380,34 +354,6 @@ public abstract class FluentIterable<E> implements Iterable<E> {
     @Beta
     public final FluentIterable<E> append(E... elements) {
         return FluentIterable.concat(getDelegate(), Arrays.asList(elements));
-    }
-
-    /**
-     * Returns the elements from this fluent iterable that satisfy a predicate. The resulting fluent
-     * iterable's iterator does not support {@code remove()}.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@link Stream#filter} (same).
-     */
-    public final FluentIterable<E> filter(Predicate<? super E> predicate) {
-        return from(Iterables.filter(getDelegate(), predicate));
-    }
-
-    /**
-     * Returns the elements from this fluent iterable that are instances of class {@code type}.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@code stream.filter(type::isInstance).map(type::cast)}.
-     * This does perform a little more work than necessary, so another option is to insert an
-     * unchecked cast at some later point:
-     *
-     * <pre>
-     * {@code @SuppressWarnings("unchecked") // safe because of ::isInstance check
-     * ImmutableList<NewType> result =
-     *     (ImmutableList) stream.filter(NewType.class::isInstance).collect(toImmutableList());}
-     * </pre>
-     */
-    @GwtIncompatible // Class.isInstance
-    public final <T> FluentIterable<T> filter(Class<T> type) {
-        return from(Iterables.filter(getDelegate(), type));
     }
 
     /**

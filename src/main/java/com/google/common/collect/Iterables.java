@@ -482,140 +482,6 @@ public final class Iterables {
     }
 
     /**
-     * Combines multiple iterables into a single iterable. The returned iterable has an iterator that
-     * traverses the elements of each iterable in {@code inputs}. The input iterators are not polled
-     * until necessary.
-     *
-     * <p>The returned iterable's iterator supports {@code remove()} when the corresponding input
-     * iterator supports it. The methods of the returned iterable may throw {@code
-     * NullPointerException} if any of the input iterators is null.
-     *
-     * <p><b>Java 8 users:</b> The {@code Stream} equivalent of this method is {@code
-     * streamOfStreams.flatMap(s -> s)}.
-     */
-    public static <T> Iterable<T> concat(
-            Iterable<? extends Iterable<? extends T>> inputs) {
-        return FluentIterable.concat(inputs);
-    }
-
-    /**
-     * Divides an iterable into unmodifiable sublists of the given size (the final iterable may be
-     * smaller). For example, partitioning an iterable containing {@code [a, b, c, d, e]} with a
-     * partition size of 3 yields {@code [[a, b, c], [d, e]]} -- an outer iterable containing two
-     * inner lists of three and two elements, all in the original order.
-     *
-     * <p>Iterators returned by the returned iterable do not support the {@link Iterator#remove()}
-     * method. The returned lists implement {@link RandomAccess}, whether or not the input list does.
-     *
-     * <p><b>Note:</b> The current implementation eagerly allocates storage for {@code size} elements.
-     * As a consequence, passing values like {@code Integer.MAX_VALUE} can lead to {@link
-     * OutOfMemoryError}.
-     *
-     * <p><b>Note:</b> if {@code iterable} is a {@link List}, use {@link Lists#partition(List, int)}
-     * instead.
-     *
-     * @param iterable the iterable to return a partitioned view of
-     * @param size the desired size of each partition (the last may be smaller)
-     * @return an iterable of unmodifiable lists containing the elements of {@code iterable} divided
-     *     into partitions
-     * @throws IllegalArgumentException if {@code size} is nonpositive
-     */
-    public static <T> Iterable<List<T>> partition(
-            final Iterable<T> iterable, final int size) {
-        checkNotNull(iterable);
-        checkArgument(size > 0);
-        return new FluentIterable<List<T>>() {
-            @Override
-            public Iterator<List<T>> iterator() {
-                return Iterators.partition(iterable.iterator(), size);
-            }
-        };
-    }
-
-    /**
-     * Divides an iterable into unmodifiable sublists of the given size, padding the final iterable
-     * with null values if necessary. For example, partitioning an iterable containing {@code [a, b,
-     * c, d, e]} with a partition size of 3 yields {@code [[a, b, c], [d, e, null]]} -- an outer
-     * iterable containing two inner lists of three elements each, all in the original order.
-     *
-     * <p>Iterators returned by the returned iterable do not support the {@link Iterator#remove()}
-     * method.
-     *
-     * @param iterable the iterable to return a partitioned view of
-     * @param size the desired size of each partition
-     * @return an iterable of unmodifiable lists containing the elements of {@code iterable} divided
-     *     into partitions (the final iterable may have trailing null elements)
-     * @throws IllegalArgumentException if {@code size} is nonpositive
-     */
-    public static <T> Iterable<List<T>> paddedPartition(
-            final Iterable<T> iterable, final int size) {
-        checkNotNull(iterable);
-        checkArgument(size > 0);
-        return new FluentIterable<List<T>>() {
-            @Override
-            public Iterator<List<T>> iterator() {
-                return Iterators.paddedPartition(iterable.iterator(), size);
-            }
-        };
-    }
-
-    /**
-     * Returns a view of {@code unfiltered} containing all elements that satisfy the input predicate
-     * {@code retainIfTrue}. The returned iterable's iterator does not support {@code remove()}.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@link Stream#filter}.
-     */
-    public static <T> Iterable<T> filter(
-            final Iterable<T> unfiltered, final Predicate<? super T> retainIfTrue) {
-        checkNotNull(unfiltered);
-        checkNotNull(retainIfTrue);
-        return new FluentIterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return Iterators.filter(unfiltered.iterator(), retainIfTrue);
-            }
-
-            @Override
-            public void forEach(Consumer<? super T> action) {
-                checkNotNull(action);
-                unfiltered.forEach(
-                        (T a) -> {
-                            if (retainIfTrue.test(a)) {
-                                action.accept(a);
-                            }
-                        });
-            }
-
-            @Override
-            public Spliterator<T> spliterator() {
-                return CollectSpliterators.filter(unfiltered.spliterator(), retainIfTrue);
-            }
-        };
-    }
-
-    /**
-     * Returns a view of {@code unfiltered} containing all elements that are of the type {@code
-     * desiredType}. The returned iterable's iterator does not support {@code remove()}.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@code stream.filter(type::isInstance).map(type::cast)}.
-     * This does perform a little more work than necessary, so another option is to insert an
-     * unchecked cast at some later point:
-     *
-     * <pre>
-     * {@code @SuppressWarnings("unchecked") // safe because of ::isInstance check
-     * ImmutableList<NewType> result =
-     *     (ImmutableList) stream.filter(NewType.class::isInstance).collect(toImmutableList());}
-     * </pre>
-     */
-    @SuppressWarnings("unchecked")
-    @GwtIncompatible // Class.isInstance
-    public static <T> Iterable<T> filter(final Iterable<?> unfiltered, final Class<T> desiredType) {
-        checkNotNull(unfiltered);
-        checkNotNull(desiredType);
-        return (Iterable<T>) filter(unfiltered, Predicates.instanceOf(desiredType));
-    }
-
-    /**
      * Returns {@code true} if any element in {@code iterable} satisfies the predicate.
      *
      * <p><b>{@code Stream} equivalent:</b> {@link Stream#anyMatch}.
@@ -634,20 +500,6 @@ public final class Iterables {
     public static <T> boolean all(
             Iterable<T> iterable, Predicate<? super T> predicate) {
         return Iterators.all(iterable.iterator(), predicate);
-    }
-
-    /**
-     * Returns the first element in {@code iterable} that satisfies the given predicate; use this
-     * method only when such an element is known to exist. If it is possible that <i>no</i> element
-     * will match, use {@link #tryFind} or {@link #find(Iterable, Predicate, Object)} instead.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@code stream.filter(predicate).findFirst().get()}
-     *
-     * @throws NoSuchElementException if no element in {@code iterable} matches the given predicate
-     */
-    public static <T> T find(
-            Iterable<T> iterable, Predicate<? super T> predicate) {
-        return Iterators.find(iterable.iterator(), predicate);
     }
 
     /**
@@ -683,45 +535,12 @@ public final class Iterables {
     }
 
     /**
-     * Returns an {@link Optional} containing the first element in {@code iterable} that satisfies the
-     * given predicate, if such an element exists.
-     *
-     * <p><b>Warning:</b> avoid using a {@code predicate} that matches {@code null}. If {@code null}
-     * is matched in {@code iterable}, a NullPointerException will be thrown.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@code stream.filter(predicate).findFirst()}
-     *
-     * @since 11.0
-     */
-    public static <T> Optional<T> tryFind(Iterable<T> iterable, Predicate<? super T> predicate) {
-        return Iterators.tryFind(iterable.iterator(), predicate);
-    }
-
-    /**
-     * Returns the index in {@code iterable} of the first element that satisfies the provided {@code
-     * predicate}, or {@code -1} if the Iterable has no such elements.
-     *
-     * <p>More formally, returns the lowest index {@code i} such that {@code
-     * predicate.apply(Iterables.get(iterable, i))} returns {@code true}, or {@code -1} if there is no
-     * such index.
-     *
-     * @since 2.0
-     */
-    public static <T> int indexOf(
-            Iterable<T> iterable, Predicate<? super T> predicate) {
-        return Iterators.indexOf(iterable.iterator(), predicate);
-    }
-
-    /**
      * Returns a view containing the result of applying {@code function} to each element of {@code
      * fromIterable}.
      *
      * <p>The returned iterable's iterator supports {@code remove()} if {@code fromIterable}'s
      * iterator does. After a successful {@code remove()} call, {@code fromIterable} no longer
      * contains the corresponding element.
-     *
-     * <p>If the input {@code Iterable} is known to be a {@code List} or other {@code Collection},
-     * consider {@link Lists#transform} and {@link Collections2#transform}.
      *
      * <p><b>{@code Stream} equivalent:</b> {@link Stream#map}
      */
@@ -1042,23 +861,6 @@ public final class Iterables {
      *
      * @since 11.0
      */
-    @Beta
-    public static <T> Iterable<T> mergeSorted(
-            final Iterable<? extends Iterable<? extends T>> iterables,
-            final Comparator<? super T> comparator) {
-        checkNotNull(iterables, "iterables");
-        checkNotNull(comparator, "comparator");
-        Iterable<T> iterable =
-                new FluentIterable<T>() {
-                    @Override
-                    public Iterator<T> iterator() {
-                        return Iterators.mergeSorted(
-                                Iterables.transform(iterables, Iterables.<T>toIterator()), comparator);
-                    }
-                };
-        return new UnmodifiableIterable<>(iterable);
-    }
-
     // TODO(user): Is this the best place for this? Move to fluent functions?
     // Useful as a public method?
     static <T>

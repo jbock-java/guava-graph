@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Laurence Gonsalves
  * @since 2.0
  */
-public final class Objects extends ExtraObjectsMethodsForWeb {
+public final class Objects {
     private Objects() {
     }
 

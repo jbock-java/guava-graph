@@ -16,13 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableSet;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
-import java.util.Set;
-
 import static com.google.common.graph.Graphs.copyOf;
 import static com.google.common.graph.Graphs.inducedSubgraph;
 import static com.google.common.graph.Graphs.reachableNodes;
@@ -30,6 +23,11 @@ import static com.google.common.graph.Graphs.transitiveClosure;
 import static com.google.common.graph.Graphs.transpose;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
+
+import java.util.Set;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Tests for {@link Graphs}. Tests assume that the implementation of the method {@code addEdge} adds
@@ -338,7 +336,7 @@ public class GraphsTest {
 
     @Test
     public void inducedSubgraph_graph() {
-        Set<Integer> nodeSubset = ImmutableSet.of(N1, N2, N4);
+        Set<Integer> nodeSubset = Set.of(N1, N2, N4);
 
         MutableGraph<Integer> directedGraph = GraphBuilder.directed().allowsSelfLoops(true).build();
         directedGraph.putEdge(N1, N2);
@@ -357,7 +355,7 @@ public class GraphsTest {
 
     @Test
     public void inducedSubgraph_valueGraph() {
-        Set<Integer> nodeSubset = ImmutableSet.of(N1, N2, N4);
+        Set<Integer> nodeSubset = Set.of(N1, N2, N4);
 
         MutableValueGraph<Integer, String> directedGraph =
                 ValueGraphBuilder.directed().allowsSelfLoops(true).build();
@@ -378,7 +376,7 @@ public class GraphsTest {
 
     @Test
     public void inducedSubgraph_network() {
-        Set<Integer> nodeSubset = ImmutableSet.of(N1, N2, N4);
+        Set<Integer> nodeSubset = Set.of(N1, N2, N4);
 
         MutableNetwork<Integer, String> directedGraph =
                 NetworkBuilder.directed().allowsSelfLoops(true).build();
@@ -402,7 +400,7 @@ public class GraphsTest {
         MutableNetwork<Integer, String> undirectedGraph = NetworkBuilder.undirected().build();
 
         try {
-            inducedSubgraph(undirectedGraph, ImmutableSet.of(N1));
+            inducedSubgraph(undirectedGraph, Set.of(N1));
             fail("Should have rejected getting induced subgraph with node not in original graph.");
         } catch (IllegalArgumentException expected) {
         }
@@ -473,7 +471,7 @@ public class GraphsTest {
         assertThat(directedGraph.nodes()).isEmpty();
         assertThat(directedGraph.edges()).isEmpty();
         assertThat(directedGraph.addEdge(N1, N2, E12)).isTrue();
-        assertThat(directedGraph.edgesConnecting(N1, N2)).isEqualTo(ImmutableSet.of(E12));
+        assertThat(directedGraph.edgesConnecting(N1, N2)).isEqualTo(Set.of(E12));
         assertThat(directedGraph.edgesConnecting(N2, N1)).isEmpty();
 
         // By default, parallel edges are not allowed.
@@ -499,8 +497,8 @@ public class GraphsTest {
         assertThat(undirectedGraph.nodes()).isEmpty();
         assertThat(undirectedGraph.edges()).isEmpty();
         assertThat(undirectedGraph.addEdge(N1, N2, E12)).isTrue();
-        assertThat(undirectedGraph.edgesConnecting(N1, N2)).isEqualTo(ImmutableSet.of(E12));
-        assertThat(undirectedGraph.edgesConnecting(N2, N1)).isEqualTo(ImmutableSet.of(E12));
+        assertThat(undirectedGraph.edgesConnecting(N1, N2)).isEqualTo(Set.of(E12));
+        assertThat(undirectedGraph.edgesConnecting(N2, N1)).isEqualTo(Set.of(E12));
 
         // By default, parallel edges are not allowed.
         try {
@@ -531,7 +529,7 @@ public class GraphsTest {
                 NetworkBuilder.directed().allowsParallelEdges(true).build();
         assertThat(directedMultigraph.addEdge(N1, N2, E12)).isTrue();
         assertThat(directedMultigraph.addEdge(N1, N2, E12_A)).isTrue();
-        assertThat(directedMultigraph.edgesConnecting(N1, N2)).isEqualTo(ImmutableSet.of(E12, E12_A));
+        assertThat(directedMultigraph.edgesConnecting(N1, N2)).isEqualTo(Set.of(E12, E12_A));
         assertThat(directedMultigraph.edgesConnecting(N2, N1)).isEmpty();
     }
 
@@ -543,7 +541,7 @@ public class GraphsTest {
         assertThat(undirectedMultigraph.addEdge(N1, N2, E12_A)).isTrue();
         assertThat(undirectedMultigraph.addEdge(N2, N1, E21)).isTrue();
         assertThat(undirectedMultigraph.edgesConnecting(N1, N2))
-                .isEqualTo(ImmutableSet.of(E12, E12_A, E21));
+                .isEqualTo(Set.of(E12, E12_A, E21));
     }
 
     @Test
@@ -551,7 +549,7 @@ public class GraphsTest {
         MutableNetwork<Integer, String> directedGraph =
                 NetworkBuilder.directed().expectedNodeCount(NODE_COUNT).build();
         assertThat(directedGraph.addEdge(N1, N2, E12)).isTrue();
-        assertThat(directedGraph.edgesConnecting(N1, N2)).isEqualTo(ImmutableSet.of(E12));
+        assertThat(directedGraph.edgesConnecting(N1, N2)).isEqualTo(Set.of(E12));
         assertThat(directedGraph.edgesConnecting(N2, N1)).isEmpty();
     }
 
@@ -560,8 +558,8 @@ public class GraphsTest {
         MutableNetwork<Integer, String> undirectedGraph =
                 NetworkBuilder.undirected().expectedNodeCount(NODE_COUNT).build();
         assertThat(undirectedGraph.addEdge(N1, N2, E12)).isTrue();
-        assertThat(undirectedGraph.edgesConnecting(N1, N2)).isEqualTo(ImmutableSet.of(E12));
-        assertThat(undirectedGraph.edgesConnecting(N2, N1)).isEqualTo(ImmutableSet.of(E12));
+        assertThat(undirectedGraph.edgesConnecting(N1, N2)).isEqualTo(Set.of(E12));
+        assertThat(undirectedGraph.edgesConnecting(N2, N1)).isEqualTo(Set.of(E12));
     }
 
     @Test
@@ -579,7 +577,7 @@ public class GraphsTest {
         MutableNetwork<Integer, String> directedGraph =
                 NetworkBuilder.directed().expectedEdgeCount(EDGE_COUNT).build();
         assertThat(directedGraph.addEdge(N1, N2, E12)).isTrue();
-        assertThat(directedGraph.edgesConnecting(N1, N2)).isEqualTo(ImmutableSet.of(E12));
+        assertThat(directedGraph.edgesConnecting(N1, N2)).isEqualTo(Set.of(E12));
         assertThat(directedGraph.edgesConnecting(N2, N1)).isEmpty();
     }
 
@@ -588,8 +586,8 @@ public class GraphsTest {
         MutableNetwork<Integer, String> undirectedGraph =
                 NetworkBuilder.undirected().expectedEdgeCount(EDGE_COUNT).build();
         assertThat(undirectedGraph.addEdge(N1, N2, E12)).isTrue();
-        assertThat(undirectedGraph.edgesConnecting(N1, N2)).isEqualTo(ImmutableSet.of(E12));
-        assertThat(undirectedGraph.edgesConnecting(N2, N1)).isEqualTo(ImmutableSet.of(E12));
+        assertThat(undirectedGraph.edgesConnecting(N1, N2)).isEqualTo(Set.of(E12));
+        assertThat(undirectedGraph.edgesConnecting(N2, N1)).isEqualTo(Set.of(E12));
     }
 
     @Test

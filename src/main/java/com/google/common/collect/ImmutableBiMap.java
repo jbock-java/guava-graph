@@ -39,27 +39,9 @@ import static java.util.Objects.requireNonNull;
  * @since 2.0
  */
 @GwtCompatible(serializable = true, emulated = true)
-public abstract class ImmutableBiMap<K, V> extends ImmutableBiMapFauxverideShim<K, V>
+public abstract class ImmutableBiMap<K, V> extends ImmutableMap<K, V>
         implements BiMap<K, V> {
 
-    /**
-     * Returns a {@link Collector} that accumulates elements into an {@code ImmutableBiMap} whose keys
-     * and values are the result of applying the provided mapping functions to the input elements.
-     * Entries appear in the result {@code ImmutableBiMap} in encounter order.
-     *
-     * <p>If the mapped keys or values contain duplicates (according to {@link Object#equals(Object)},
-     * an {@code IllegalArgumentException} is thrown when the collection operation is performed. (This
-     * differs from the {@code Collector} returned by {@link Collectors#toMap(Function, Function)},
-     * which throws an {@code IllegalStateException}.)
-     *
-     * @since 21.0
-     */
-    public static <T, K, V>
-    Collector<T, ?, ImmutableBiMap<K, V>> toImmutableBiMap(
-            Function<? super T, ? extends K> keyFunction,
-            Function<? super T, ? extends V> valueFunction) {
-        return CollectCollectors.toImmutableBiMap(keyFunction, valueFunction);
-    }
 
     /**
      * Returns the empty bimap.

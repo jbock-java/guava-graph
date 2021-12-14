@@ -63,7 +63,7 @@ public final class EndpointPairTest {
         EndpointPair<String> unordered = EndpointPair.unordered("chicken", "egg");
         assertThat(unordered.isOrdered()).isFalse();
         assertThat(unordered).containsExactly("chicken", "egg");
-        assertThat(ImmutableSet.of(unordered.nodeU(), unordered.nodeV()))
+        assertThat(Set.of(unordered.nodeU(), unordered.nodeV()))
                 .containsExactly("chicken", "egg");
         assertThat(unordered.adjacentNode(unordered.nodeU())).isEqualTo(unordered.nodeV());
         assertThat(unordered.adjacentNode(unordered.nodeV())).isEqualTo(unordered.nodeU());

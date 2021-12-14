@@ -52,43 +52,6 @@ import static java.util.Objects.requireNonNull;
 public abstract class ImmutableMap<K, V> implements Map<K, V> {
 
     /**
-     * Returns a {@link Collector} that accumulates elements into an {@code ImmutableMap} whose keys
-     * and values are the result of applying the provided mapping functions to the input elements.
-     * Entries appear in the result {@code ImmutableMap} in encounter order.
-     *
-     * <p>If the mapped keys contain duplicates (according to {@link Object#equals(Object)}, an {@code
-     * IllegalArgumentException} is thrown when the collection operation is performed. (This differs
-     * from the {@code Collector} returned by {@link Collectors#toMap(Function, Function)}, which
-     * throws an {@code IllegalStateException}.)
-     *
-     * @since 21.0
-     */
-    public static <T, K, V>
-    Collector<T, ?, ImmutableMap<K, V>> toImmutableMap(
-            Function<? super T, ? extends K> keyFunction,
-            Function<? super T, ? extends V> valueFunction) {
-        return CollectCollectors.toImmutableMap(keyFunction, valueFunction);
-    }
-
-    /**
-     * Returns a {@link Collector} that accumulates elements into an {@code ImmutableMap} whose keys
-     * and values are the result of applying the provided mapping functions to the input elements.
-     *
-     * <p>If the mapped keys contain duplicates (according to {@link Object#equals(Object)}), the
-     * values are merged using the specified merging function. Entries will appear in the encounter
-     * order of the first occurrence of the key.
-     *
-     * @since 21.0
-     */
-    public static <T, K, V>
-    Collector<T, ?, ImmutableMap<K, V>> toImmutableMap(
-            Function<? super T, ? extends K> keyFunction,
-            Function<? super T, ? extends V> valueFunction,
-            BinaryOperator<V> mergeFunction) {
-        return CollectCollectors.toImmutableMap(keyFunction, valueFunction, mergeFunction);
-    }
-
-    /**
      * Returns the empty map. This map behaves and performs comparably to {@link
      * Collections#emptyMap}, and is preferable mainly for consistency and maintainability of your
      * code.
@@ -379,9 +342,7 @@ public abstract class ImmutableMap<K, V> implements Map<K, V> {
      * were inserted into the builder, equivalently to {@code LinkedHashMap}. For example, in the
      * above example, {@code WORD_TO_INT.entrySet()} is guaranteed to iterate over the entries in the
      * order {@code "one"=1, "two"=2, "three"=3}, and {@code keySet()} and {@code values()} respect
-     * the same order. If you want a different order, consider using {@link ImmutableSortedMap} to
-     * sort by keys, or call {@link #orderEntriesByValue(Comparator)}, which changes this builder to
-     * sort entries by value.
+     * the same order.
      *
      * <p>Builder instances can be reused - it is safe to call {@link #buildOrThrow} multiple times to
      * build multiple maps in series. Each map is a superset of the maps created before it.

@@ -42,61 +42,6 @@ public final class Strings {
         return Platform.nullToEmpty(string);
     }
 
-    /**
-     * Returns the given string if it is nonempty; {@code null} otherwise.
-     *
-     * @param string the string to test and possibly return
-     * @return {@code string} itself if it is nonempty; {@code null} if it is empty or null
-     */
-    public static String emptyToNull(String string) {
-        return Platform.emptyToNull(string);
-    }
-
-    /**
-     * Returns {@code true} if the given string is null or is the empty string.
-     *
-     * <p>Consider normalizing your string references with {@link #nullToEmpty}. If you do, you can
-     * use {@link String#isEmpty()} instead of this method, and you won't need special null-safe forms
-     * of methods like {@link String#toUpperCase} either. Or, if you'd like to normalize "in the other
-     * direction," converting empty strings to {@code null}, you can use {@link #emptyToNull}.
-     *
-     * @param string a string reference to check
-     * @return {@code true} if the string is null or is the empty string
-     */
-    public static boolean isNullOrEmpty(String string) {
-        return Platform.stringIsNullOrEmpty(string);
-    }
-
-    /**
-     * Returns a string, of length at least {@code minLength}, consisting of {@code string} prepended
-     * with as many copies of {@code padChar} as are necessary to reach that length. For example,
-     *
-     * <ul>
-     *   <li>{@code padStart("7", 3, '0')} returns {@code "007"}
-     *   <li>{@code padStart("2010", 3, '0')} returns {@code "2010"}
-     * </ul>
-     *
-     * <p>See {@link java.util.Formatter} for a richer set of formatting capabilities.
-     *
-     * @param string the string which should appear at the end of the result
-     * @param minLength the minimum length the resulting string must have. Can be zero or negative, in
-     *     which case the input string is always returned.
-     * @param padChar the character to insert at the beginning of the result until the minimum length
-     *     is reached
-     * @return the padded string
-     */
-    public static String padStart(String string, int minLength, char padChar) {
-        checkNotNull(string); // eager for GWT.
-        if (string.length() >= minLength) {
-            return string;
-        }
-        StringBuilder sb = new StringBuilder(minLength);
-        for (int i = string.length(); i < minLength; i++) {
-            sb.append(padChar);
-        }
-        sb.append(string);
-        return sb.toString();
-    }
 
     /**
      * Returns a string, of length at least {@code minLength}, consisting of {@code string} appended

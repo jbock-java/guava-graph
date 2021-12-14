@@ -16,16 +16,15 @@
 
 package com.google.common.collect;
 
-import com.google.common.annotations.Beta;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2.FilteredCollection;
-import com.google.common.math.IntMath;
-
 import java.util.AbstractSet;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,13 +40,9 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.CollectPreconditions.checkNonnegative;
-
 /**
  * Static utility methods pertaining to {@link Set} instances. Also see this class's counterparts
- * {@link Lists}, {@link Maps} and {@link Queues}.
+ * {@link Lists} and {@link Maps}.
  *
  * <p>See the Guava User Guide article on <a href=
  * "https://github.com/google/guava/wiki/CollectionUtilitiesExplained#sets"> {@code Sets}</a>.
@@ -98,46 +93,6 @@ public final class Sets {
     // LinkedHashSet
 
     /**
-     * Creates a <i>mutable</i>, empty {@code LinkedHashSet} instance.
-     *
-     * <p><b>Note:</b> if mutability is not required, use {@link ImmutableSet#of()} instead.
-     *
-     * <p><b>Note for Java 7 and later:</b> this method is now unnecessary and should be treated as
-     * deprecated. Instead, use the {@code LinkedHashSet} constructor directly, taking advantage of
-     * the new <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
-     *
-     * @return a new, empty {@code LinkedHashSet}
-     */
-    public static <E> LinkedHashSet<E> newLinkedHashSet() {
-        return new LinkedHashSet<E>();
-    }
-
-    /**
-     * Creates a <i>mutable</i> {@code LinkedHashSet} instance containing the given elements in order.
-     *
-     * <p><b>Note:</b> if mutability is not required and the elements are non-null, use {@link
-     * ImmutableSet#copyOf(Iterable)} instead.
-     *
-     * <p><b>Note for Java 7 and later:</b> if {@code elements} is a {@link Collection}, you don't
-     * need this method. Instead, use the {@code LinkedHashSet} constructor directly, taking advantage
-     * of the new <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
-     *
-     * <p>Overall, this method is not very useful and will likely be deprecated in the future.
-     *
-     * @param elements the elements that the set should contain, in order
-     * @return a new {@code LinkedHashSet} containing those elements (minus duplicates)
-     */
-    public static <E> LinkedHashSet<E> newLinkedHashSet(
-            Iterable<? extends E> elements) {
-        if (elements instanceof Collection) {
-            return new LinkedHashSet<E>((Collection<? extends E>) elements);
-        }
-        LinkedHashSet<E> set = newLinkedHashSet();
-        Iterables.addAll(set, elements);
-        return set;
-    }
-
-    /**
      * Creates a {@code LinkedHashSet} instance, with a high enough "initial capacity" that it
      * <i>should</i> hold {@code expectedSize} elements without growth. This behavior cannot be
      * broadly guaranteed, but it is observed to be true for OpenJDK 1.7. It also can't be guaranteed
@@ -155,84 +110,6 @@ public final class Sets {
     }
 
     // TreeSet
-
-    /**
-     * Creates a <i>mutable</i>, empty {@code TreeSet} instance sorted by the natural sort ordering of
-     * its elements.
-     *
-     * <p><b>Note:</b> if mutability is not required, use {@link ImmutableSortedSet#of()} instead.
-     *
-     * <p><b>Note for Java 7 and later:</b> this method is now unnecessary and should be treated as
-     * deprecated. Instead, use the {@code TreeSet} constructor directly, taking advantage of the new
-     * <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
-     *
-     * @return a new, empty {@code TreeSet}
-     */
-    public static <E extends Comparable> TreeSet<E> newTreeSet() {
-        return new TreeSet<E>();
-    }
-
-    /**
-     * Creates a <i>mutable</i> {@code TreeSet} instance containing the given elements sorted by their
-     * natural ordering.
-     *
-     * <p><b>Note:</b> if mutability is not required, use {@link ImmutableSortedSet#copyOf(Iterable)}
-     * instead.
-     *
-     * <p><b>Note:</b> If {@code elements} is a {@code SortedSet} with an explicit comparator, this
-     * method has different behavior than {@link TreeSet#TreeSet(SortedSet)}, which returns a {@code
-     * TreeSet} with that comparator.
-     *
-     * <p><b>Note for Java 7 and later:</b> this method is now unnecessary and should be treated as
-     * deprecated. Instead, use the {@code TreeSet} constructor directly, taking advantage of the new
-     * <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
-     *
-     * <p>This method is just a small convenience for creating an empty set and then calling {@link
-     * Iterables#addAll}. This method is not very useful and will likely be deprecated in the future.
-     *
-     * @param elements the elements that the set should contain
-     * @return a new {@code TreeSet} containing those elements (minus duplicates)
-     */
-    public static <E extends Comparable> TreeSet<E> newTreeSet(Iterable<? extends E> elements) {
-        TreeSet<E> set = newTreeSet();
-        Iterables.addAll(set, elements);
-        return set;
-    }
-
-    /**
-     * Returns a set backed by the specified map. The resulting set displays the same ordering,
-     * concurrency, and performance characteristics as the backing map. In essence, this factory
-     * method provides a {@link Set} implementation corresponding to any {@link Map} implementation.
-     * There is no need to use this method on a {@link Map} implementation that already has a
-     * corresponding {@link Set} implementation (such as {@link java.util.HashMap} or {@link
-     * java.util.TreeMap}).
-     *
-     * <p>Each method invocation on the set returned by this method results in exactly one method
-     * invocation on the backing map or its {@code keySet} view, with one exception. The {@code
-     * addAll} method is implemented as a sequence of {@code put} invocations on the backing map.
-     *
-     * <p>The specified map must be empty at the time this method is invoked, and should not be
-     * accessed directly after this method returns. These conditions are ensured if the map is created
-     * empty, passed directly to this method, and no reference to the map is retained, as illustrated
-     * in the following code fragment:
-     *
-     * <pre>{@code
-     * Set<Object> identityHashSet = Sets.newSetFromMap(
-     *     new IdentityHashMap<Object, Boolean>());
-     * }</pre>
-     *
-     * <p>The returned set is serializable if the backing map is.
-     *
-     * @param map the backing map
-     * @return the set backed by the map
-     * @throws IllegalArgumentException if {@code map} is not empty
-     * @deprecated Use {@link Collections#newSetFromMap} instead.
-     */
-    @Deprecated
-    public static <E> Set<E> newSetFromMap(
-            Map<E, Boolean> map) {
-        return Collections.newSetFromMap(map);
-    }
 
     /**
      * An unmodifiable view of a set which may be backed by other sets; this view will change as the
@@ -437,7 +314,7 @@ public final class Sets {
      *
      * <p>This is unfortunate, but should come up only very rarely.
      */
-    public static <E> SetView<E> intersection(
+    static <E> SetView<E> intersection(
             final Set<E> set1, final Set<?> set2) {
         checkNotNull(set1, "set1");
         checkNotNull(set2, "set2");
@@ -567,75 +444,6 @@ public final class Sets {
     }
 
     /**
-     * Returns an unmodifiable <b>view</b> of the symmetric difference of two sets. The returned set
-     * contains all elements that are contained in either {@code set1} or {@code set2} but not in
-     * both. The iteration order of the returned set is undefined.
-     *
-     * <p>Results are undefined if {@code set1} and {@code set2} are sets based on different
-     * equivalence relations, for example if {@code set1} is a {@link HashSet} and {@code set2} is a
-     * {@link TreeSet} or the {@link Map#keySet} of an {@code IdentityHashMap}.
-     *
-     * @since 3.0
-     */
-    public static <E> SetView<E> symmetricDifference(
-            final Set<? extends E> set1, final Set<? extends E> set2) {
-        checkNotNull(set1, "set1");
-        checkNotNull(set2, "set2");
-
-        return new SetView<E>() {
-            @Override
-            public UnmodifiableIterator<E> iterator() {
-                final Iterator<? extends E> itr1 = set1.iterator();
-                final Iterator<? extends E> itr2 = set2.iterator();
-                return new AbstractIterator<E>() {
-                    @Override
-                    public E computeNext() {
-                        while (itr1.hasNext()) {
-                            E elem1 = itr1.next();
-                            if (!set2.contains(elem1)) {
-                                return elem1;
-                            }
-                        }
-                        while (itr2.hasNext()) {
-                            E elem2 = itr2.next();
-                            if (!set1.contains(elem2)) {
-                                return elem2;
-                            }
-                        }
-                        return endOfData();
-                    }
-                };
-            }
-
-            @Override
-            public int size() {
-                int size = 0;
-                for (E e : set1) {
-                    if (!set2.contains(e)) {
-                        size++;
-                    }
-                }
-                for (E e : set2) {
-                    if (!set1.contains(e)) {
-                        size++;
-                    }
-                }
-                return size;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return set1.equals(set2);
-            }
-
-            @Override
-            public boolean contains(Object element) {
-                return set1.contains(element) ^ set2.contains(element);
-            }
-        };
-    }
-
-    /**
      * Returns the elements of {@code unfiltered} that satisfy a predicate. The returned set is a live
      * view of {@code unfiltered}; changes to one affect the other.
      *
@@ -651,11 +459,6 @@ public final class Sets {
      * the underlying set and determine which elements satisfy the filter. When a live view is
      * <i>not</i> needed, it may be faster to copy {@code Iterables.filter(unfiltered, predicate)} and
      * use the copy.
-     *
-     * <p><b>Warning:</b> {@code predicate} must be <i>consistent with equals</i>, as documented at
-     * {@link Predicate#apply}. Do not provide a predicate such as {@code
-     * Predicates.instanceOf(ArrayList.class)}, which is inconsistent with equals. (See {@link
-     * Iterables#filter(Iterable, Class)} for related functionality.)
      *
      * <p><b>Java 8 users:</b> many use cases for this method are better addressed by {@link
      * java.util.stream.Stream#filter}. This method is not being deprecated, but we gently encourage
@@ -695,14 +498,9 @@ public final class Sets {
      * <i>not</i> needed, it may be faster to copy {@code Iterables.filter(unfiltered, predicate)} and
      * use the copy.
      *
-     * <p><b>Warning:</b> {@code predicate} must be <i>consistent with equals</i>, as documented at
-     * {@link Predicate#apply}. Do not provide a predicate such as {@code
-     * Predicates.instanceOf(ArrayList.class)}, which is inconsistent with equals. (See {@link
-     * Iterables#filter(Iterable, Class)} for related functionality.)
-     *
      * @since 11.0
      */
-    public static <E> SortedSet<E> filter(
+    static <E> SortedSet<E> filter(
             SortedSet<E> unfiltered, Predicate<? super E> predicate) {
         if (unfiltered instanceof FilteredSet) {
             // Support clear(), removeAll(), and retainAll() when filtering a filtered
@@ -732,16 +530,10 @@ public final class Sets {
      * <i>not</i> needed, it may be faster to copy {@code Iterables.filter(unfiltered, predicate)} and
      * use the copy.
      *
-     * <p><b>Warning:</b> {@code predicate} must be <i>consistent with equals</i>, as documented at
-     * {@link Predicate#apply}. Do not provide a predicate such as {@code
-     * Predicates.instanceOf(ArrayList.class)}, which is inconsistent with equals. (See {@link
-     * Iterables#filter(Iterable, Class)} for related functionality.)
-     *
      * @since 14.0
      */
-    @GwtIncompatible // NavigableSet
     @SuppressWarnings("unchecked")
-    public static <E> NavigableSet<E> filter(
+    static <E> NavigableSet<E> filter(
             NavigableSet<E> unfiltered, Predicate<? super E> predicate) {
         if (unfiltered instanceof FilteredSet) {
             // Support clear(), removeAll(), and retainAll() when filtering a filtered
@@ -1001,129 +793,6 @@ public final class Sets {
         }
     }
 
-    /**
-     * Returns the set of all subsets of {@code set} of size {@code size}. For example, {@code
-     * combinations(ImmutableSet.of(1, 2, 3), 2)} returns the set {@code {{1, 2}, {1, 3}, {2, 3}}}.
-     *
-     * <p>Elements appear in these subsets in the same iteration order as they appeared in the input
-     * set. The order in which these subsets appear in the outer set is undefined.
-     *
-     * <p>The returned set and its constituent sets use {@code equals} to decide whether two elements
-     * are identical, even if the input set uses a different concept of equivalence.
-     *
-     * <p><i>Performance notes:</i> the memory usage of the returned set is only {@code O(n)}. When
-     * the result set is constructed, the input set is merely copied. Only as the result set is
-     * iterated are the individual subsets created. Each of these subsets occupies an additional O(n)
-     * memory but only for as long as the user retains a reference to it. That is, the set returned by
-     * {@code combinations} does not retain the individual subsets.
-     *
-     * @param set the set of elements to take combinations of
-     * @param size the number of elements per combination
-     * @return the set of all combinations of {@code size} elements from {@code set}
-     * @throws IllegalArgumentException if {@code size} is not between 0 and {@code set.size()}
-     *     inclusive
-     * @throws NullPointerException if {@code set} is or contains {@code null}
-     * @since 23.0
-     */
-    @Beta
-    public static <E> Set<Set<E>> combinations(Set<E> set, final int size) {
-        final ImmutableMap<E, Integer> index = Maps.indexMap(set);
-        checkNonnegative(size, "size");
-        checkArgument(size <= index.size(), "size (%s) must be <= set.size() (%s)", size, index.size());
-        if (size == 0) {
-            return ImmutableSet.<Set<E>>of(ImmutableSet.<E>of());
-        } else if (size == index.size()) {
-            return ImmutableSet.<Set<E>>of(index.keySet());
-        }
-        return new AbstractSet<Set<E>>() {
-            @Override
-            public boolean contains(Object o) {
-                if (o instanceof Set) {
-                    Set<?> s = (Set<?>) o;
-                    return s.size() == size && index.keySet().containsAll(s);
-                }
-                return false;
-            }
-
-            @Override
-            public Iterator<Set<E>> iterator() {
-                return new AbstractIterator<Set<E>>() {
-                    final BitSet bits = new BitSet(index.size());
-
-                    @Override
-                    protected Set<E> computeNext() {
-                        if (bits.isEmpty()) {
-                            bits.set(0, size);
-                        } else {
-                            int firstSetBit = bits.nextSetBit(0);
-                            int bitToFlip = bits.nextClearBit(firstSetBit);
-
-                            if (bitToFlip == index.size()) {
-                                return endOfData();
-                            }
-
-                            /*
-                             * The current set in sorted order looks like
-                             * {firstSetBit, firstSetBit + 1, ..., bitToFlip - 1, ...}
-                             * where it does *not* contain bitToFlip.
-                             *
-                             * The next combination is
-                             *
-                             * {0, 1, ..., bitToFlip - firstSetBit - 2, bitToFlip, ...}
-                             *
-                             * This is lexicographically next if you look at the combinations in descending order
-                             * e.g. {2, 1, 0}, {3, 1, 0}, {3, 2, 0}, {3, 2, 1}, {4, 1, 0}...
-                             */
-
-                            bits.set(0, bitToFlip - firstSetBit - 1);
-                            bits.clear(bitToFlip - firstSetBit - 1, bitToFlip);
-                            bits.set(bitToFlip);
-                        }
-                        final BitSet copy = (BitSet) bits.clone();
-                        return new AbstractSet<E>() {
-                            @Override
-                            public boolean contains(Object o) {
-                                Integer i = index.get(o);
-                                return i != null && copy.get(i);
-                            }
-
-                            @Override
-                            public Iterator<E> iterator() {
-                                return new AbstractIterator<E>() {
-                                    int i = -1;
-
-                                    @Override
-                                    protected E computeNext() {
-                                        i = copy.nextSetBit(i + 1);
-                                        if (i == -1) {
-                                            return endOfData();
-                                        }
-                                        return index.keySet().asList().get(i);
-                                    }
-                                };
-                            }
-
-                            @Override
-                            public int size() {
-                                return size;
-                            }
-                        };
-                    }
-                };
-            }
-
-            @Override
-            public int size() {
-                return IntMath.binomial(index.size(), size);
-            }
-
-            @Override
-            public String toString() {
-                return "Sets.combinations(" + index.keySet() + ", " + size + ")";
-            }
-        };
-    }
-
     /** An implementation for {@link Set#hashCode()}. */
     static int hashCodeImpl(Set<?> s) {
         int hashCode = 0;
@@ -1304,141 +973,6 @@ public final class Sets {
             return Iterators.removeAll(set.iterator(), collection);
         } else {
             return removeAllImpl(set, collection.iterator());
-        }
-    }
-
-    @GwtIncompatible // NavigableSet
-    static class DescendingSet<E> extends ForwardingNavigableSet<E> {
-        private final NavigableSet<E> forward;
-
-        DescendingSet(NavigableSet<E> forward) {
-            this.forward = forward;
-        }
-
-        @Override
-        protected NavigableSet<E> delegate() {
-            return forward;
-        }
-
-        @Override
-        public E lower(E e) {
-            return forward.higher(e);
-        }
-
-        @Override
-        public E floor(E e) {
-            return forward.ceiling(e);
-        }
-
-        @Override
-        public E ceiling(E e) {
-            return forward.floor(e);
-        }
-
-        @Override
-        public E higher(E e) {
-            return forward.lower(e);
-        }
-
-        @Override
-        public E pollFirst() {
-            return forward.pollLast();
-        }
-
-        @Override
-        public E pollLast() {
-            return forward.pollFirst();
-        }
-
-        @Override
-        public NavigableSet<E> descendingSet() {
-            return forward;
-        }
-
-        @Override
-        public Iterator<E> descendingIterator() {
-            return forward.iterator();
-        }
-
-        @Override
-        public NavigableSet<E> subSet(
-                E fromElement,
-                boolean fromInclusive,
-                E toElement,
-                boolean toInclusive) {
-            return forward.subSet(toElement, toInclusive, fromElement, fromInclusive).descendingSet();
-        }
-
-        @Override
-        public SortedSet<E> subSet(E fromElement, E toElement) {
-            return standardSubSet(fromElement, toElement);
-        }
-
-        @Override
-        public NavigableSet<E> headSet(E toElement, boolean inclusive) {
-            return forward.tailSet(toElement, inclusive).descendingSet();
-        }
-
-        @Override
-        public SortedSet<E> headSet(E toElement) {
-            return standardHeadSet(toElement);
-        }
-
-        @Override
-        public NavigableSet<E> tailSet(E fromElement, boolean inclusive) {
-            return forward.headSet(fromElement, inclusive).descendingSet();
-        }
-
-        @Override
-        public SortedSet<E> tailSet(E fromElement) {
-            return standardTailSet(fromElement);
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public Comparator<? super E> comparator() {
-            Comparator<? super E> forwardComparator = forward.comparator();
-            if (forwardComparator == null) {
-                return (Comparator) Ordering.natural().reverse();
-            } else {
-                return reverse(forwardComparator);
-            }
-        }
-
-        // If we inline this, we get a javac error.
-        private static <T> Ordering<T> reverse(Comparator<T> forward) {
-            return Ordering.from(forward).reverse();
-        }
-
-        @Override
-        public E first() {
-            return forward.last();
-        }
-
-        @Override
-        public E last() {
-            return forward.first();
-        }
-
-        @Override
-        public Iterator<E> iterator() {
-            return forward.descendingIterator();
-        }
-
-        @Override
-        public Object[] toArray() {
-            return standardToArray();
-        }
-
-        @Override
-        @SuppressWarnings("nullness") // b/192354773 in our checker affects toArray declarations
-        public <T> T[] toArray(T[] array) {
-            return standardToArray(array);
-        }
-
-        @Override
-        public String toString() {
-            return standardToString();
         }
     }
 }

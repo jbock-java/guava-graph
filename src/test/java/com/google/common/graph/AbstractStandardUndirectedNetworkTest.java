@@ -16,16 +16,14 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.truth.Truth8;
-import org.junit.After;
-import org.junit.Test;
-
-import java.util.Set;
-
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import com.google.common.truth.Truth8;
+import java.util.Set;
+import org.junit.After;
+import org.junit.Test;
 
 /**
  * Abstract base class for testing undirected {@link Network} implementations defined in this
@@ -447,7 +445,7 @@ public abstract class AbstractStandardUndirectedNetworkTest extends AbstractNetw
         }
 
         assertThat(networkAsMutableNetwork.addEdge(N1, N2, E12)).isTrue();
-        ImmutableSet<String> edges = ImmutableSet.copyOf(network.edges());
+        Set<String> edges = Util.setOf(network.edges());
         assertThat(networkAsMutableNetwork.addEdge(N1, N2, E12)).isFalse();
         assertThat(network.edges()).containsExactlyElementsIn(edges);
         assertThat(networkAsMutableNetwork.addEdge(N2, N1, E12)).isFalse();
@@ -584,7 +582,7 @@ public abstract class AbstractStandardUndirectedNetworkTest extends AbstractNetw
         }
 
         addEdge(N1, N1, E11);
-        ImmutableSet<String> edges = ImmutableSet.copyOf(network.edges());
+        Set<String> edges = Util.setOf(network.edges());
         assertThat(networkAsMutableNetwork.addEdge(N1, N1, E11)).isFalse();
         assertThat(network.edges()).containsExactlyElementsIn(edges);
     }
