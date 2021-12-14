@@ -42,7 +42,6 @@ import java.util.function.Consumer;
  * @since 2.0
  */
 @GwtCompatible(serializable = true, emulated = true)
-@SuppressWarnings("serial") // we're overriding default serialization
 public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements Set<E> {
     static final int SPLITERATOR_CHARACTERISTICS =
             ImmutableCollection.SPLITERATOR_CHARACTERISTICS | Spliterator.DISTINCT;

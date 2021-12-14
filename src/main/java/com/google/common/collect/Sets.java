@@ -16,11 +16,9 @@
 
 package com.google.common.collect;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2.FilteredCollection;
@@ -33,7 +31,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.NavigableSet;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -513,39 +510,6 @@ public final class Sets {
         return new FilteredSortedSet<E>(checkNotNull(unfiltered), checkNotNull(predicate));
     }
 
-    /**
-     * Returns the elements of a {@code NavigableSet}, {@code unfiltered}, that satisfy a predicate.
-     * The returned set is a live view of {@code unfiltered}; changes to one affect the other.
-     *
-     * <p>The resulting set's iterator does not support {@code remove()}, but all other set methods
-     * are supported. When given an element that doesn't satisfy the predicate, the set's {@code
-     * add()} and {@code addAll()} methods throw an {@link IllegalArgumentException}. When methods
-     * such as {@code removeAll()} and {@code clear()} are called on the filtered set, only elements
-     * that satisfy the filter will be removed from the underlying set.
-     *
-     * <p>The returned set isn't threadsafe or serializable, even if {@code unfiltered} is.
-     *
-     * <p>Many of the filtered set's methods, such as {@code size()}, iterate across every element in
-     * the underlying set and determine which elements satisfy the filter. When a live view is
-     * <i>not</i> needed, it may be faster to copy {@code Iterables.filter(unfiltered, predicate)} and
-     * use the copy.
-     *
-     * @since 14.0
-     */
-    @SuppressWarnings("unchecked")
-    static <E> NavigableSet<E> filter(
-            NavigableSet<E> unfiltered, Predicate<? super E> predicate) {
-        if (unfiltered instanceof FilteredSet) {
-            // Support clear(), removeAll(), and retainAll() when filtering a filtered
-            // collection.
-            FilteredSet<E> filtered = (FilteredSet<E>) unfiltered;
-            Predicate<E> combinedPredicate = Predicates.<E>and(filtered.predicate, predicate);
-            return new FilteredNavigableSet<E>((NavigableSet<E>) filtered.unfiltered, combinedPredicate);
-        }
-
-        return new FilteredNavigableSet<E>(checkNotNull(unfiltered), checkNotNull(predicate));
-    }
-
     private static class FilteredSet<E> extends FilteredCollection<E>
             implements Set<E> {
         FilteredSet(Set<E> unfiltered, Predicate<? super E> predicate) {
@@ -606,190 +570,6 @@ public final class Sets {
                 }
                 sortedUnfiltered = sortedUnfiltered.headSet(element);
             }
-        }
-    }
-
-    @GwtIncompatible // NavigableSet
-    private static class FilteredNavigableSet<E> extends FilteredSortedSet<E>
-            implements NavigableSet<E> {
-        FilteredNavigableSet(NavigableSet<E> unfiltered, Predicate<? super E> predicate) {
-            super(unfiltered, predicate);
-        }
-
-        NavigableSet<E> unfiltered() {
-            return (NavigableSet<E>) unfiltered;
-        }
-
-        @Override
-        public E lower(E e) {
-            return Iterators.find(unfiltered().headSet(e, false).descendingIterator(), predicate, null);
-        }
-
-        @Override
-        public E floor(E e) {
-            return Iterators.find(unfiltered().headSet(e, true).descendingIterator(), predicate, null);
-        }
-
-        @Override
-        public E ceiling(E e) {
-            return Iterables.find(unfiltered().tailSet(e, true), predicate, null);
-        }
-
-        @Override
-        public E higher(E e) {
-            return Iterables.find(unfiltered().tailSet(e, false), predicate, null);
-        }
-
-        @Override
-        public E pollFirst() {
-            return Iterables.removeFirstMatching(unfiltered(), predicate);
-        }
-
-        @Override
-        public E pollLast() {
-            return Iterables.removeFirstMatching(unfiltered().descendingSet(), predicate);
-        }
-
-        @Override
-        public NavigableSet<E> descendingSet() {
-            return Sets.filter(unfiltered().descendingSet(), predicate);
-        }
-
-        @Override
-        public Iterator<E> descendingIterator() {
-            return Iterators.filter(unfiltered().descendingIterator(), predicate);
-        }
-
-        @Override
-        public E last() {
-            return Iterators.find(unfiltered().descendingIterator(), predicate);
-        }
-
-        @Override
-        public NavigableSet<E> subSet(
-                E fromElement,
-                boolean fromInclusive,
-                E toElement,
-                boolean toInclusive) {
-            return filter(
-                    unfiltered().subSet(fromElement, fromInclusive, toElement, toInclusive), predicate);
-        }
-
-        @Override
-        public NavigableSet<E> headSet(E toElement, boolean inclusive) {
-            return filter(unfiltered().headSet(toElement, inclusive), predicate);
-        }
-
-        @Override
-        public NavigableSet<E> tailSet(E fromElement, boolean inclusive) {
-            return filter(unfiltered().tailSet(fromElement, inclusive), predicate);
-        }
-    }
-
-    private static final class SubSet<E> extends AbstractSet<E> {
-        private final ImmutableMap<E, Integer> inputSet;
-        private final int mask;
-
-        SubSet(ImmutableMap<E, Integer> inputSet, int mask) {
-            this.inputSet = inputSet;
-            this.mask = mask;
-        }
-
-        @Override
-        public Iterator<E> iterator() {
-            return new UnmodifiableIterator<E>() {
-                final ImmutableList<E> elements = inputSet.keySet().asList();
-                int remainingSetBits = mask;
-
-                @Override
-                public boolean hasNext() {
-                    return remainingSetBits != 0;
-                }
-
-                @Override
-                public E next() {
-                    int index = Integer.numberOfTrailingZeros(remainingSetBits);
-                    if (index == 32) {
-                        throw new NoSuchElementException();
-                    }
-                    remainingSetBits &= ~(1 << index);
-                    return elements.get(index);
-                }
-            };
-        }
-
-        @Override
-        public int size() {
-            return Integer.bitCount(mask);
-        }
-
-        @Override
-        public boolean contains(Object o) {
-            Integer index = inputSet.get(o);
-            return index != null && (mask & (1 << index)) != 0;
-        }
-    }
-
-    private static final class PowerSet<E> extends AbstractSet<Set<E>> {
-        final ImmutableMap<E, Integer> inputSet;
-
-        PowerSet(Set<E> input) {
-            checkArgument(
-                    input.size() <= 30, "Too many elements to create power set: %s > 30", input.size());
-            this.inputSet = Maps.indexMap(input);
-        }
-
-        @Override
-        public int size() {
-            return 1 << inputSet.size();
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public Iterator<Set<E>> iterator() {
-            return new AbstractIndexedListIterator<Set<E>>(size()) {
-                @Override
-                protected Set<E> get(final int setBits) {
-                    return new SubSet<E>(inputSet, setBits);
-                }
-            };
-        }
-
-        @Override
-        public boolean contains(Object obj) {
-            if (obj instanceof Set) {
-                Set<?> set = (Set<?>) obj;
-                return inputSet.keySet().containsAll(set);
-            }
-            return false;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof PowerSet) {
-                PowerSet<?> that = (PowerSet<?>) obj;
-                return inputSet.keySet().equals(that.inputSet.keySet());
-            }
-            return super.equals(obj);
-        }
-
-        @Override
-        public int hashCode() {
-            /*
-             * The sum of the sums of the hash codes in each subset is just the sum of
-             * each input element's hash code times the number of sets that element
-             * appears in. Each element appears in exactly half of the 2^n sets, so:
-             */
-            return inputSet.keySet().hashCode() << (inputSet.size() - 1);
-        }
-
-        @Override
-        public String toString() {
-            return "powerSet(" + inputSet + ")";
         }
     }
 

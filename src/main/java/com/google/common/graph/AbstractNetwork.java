@@ -31,9 +31,11 @@ import com.google.common.collect.Sets;
 import com.google.common.math.IntMath;
 import java.util.AbstractSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class provides a skeletal implementation of {@link Network}. It is recommended to extend
@@ -173,8 +175,8 @@ public abstract class AbstractNetwork<N, E> implements Network<N, E> {
         Set<E> outEdgesU = outEdges(nodeU);
         Set<E> inEdgesV = inEdges(nodeV);
         return outEdgesU.size() <= inEdgesV.size()
-                ? unmodifiableSet(Sets.filter(outEdgesU, connectedPredicate(nodeU, nodeV)))
-                : unmodifiableSet(Sets.filter(inEdgesV, connectedPredicate(nodeV, nodeU)));
+                ? outEdgesU.stream().filter(connectedPredicate(nodeU, nodeV)).collect(Collectors.toCollection(LinkedHashSet::new))
+                : inEdgesV.stream().filter(connectedPredicate(nodeU, nodeV)).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override
