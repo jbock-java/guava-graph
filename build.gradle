@@ -60,7 +60,6 @@ test {
     testLogging {
         events('failed')
     }
-    excludes << '**/*Tester.class'
     setFailFast(true)
 }
 

@@ -258,9 +258,6 @@ public abstract class FluentIterable<E> implements Iterable<E> {
      * iterator supports it. The methods of the returned iterable may throw {@code
      * NullPointerException} if any of the input iterators is {@code null}.
      *
-     * <p><b>{@code Stream} equivalent:</b> {@code streamOfStreams.flatMap(s -> s)} or {@code
-     * streamOfIterables.flatMap(Streams::stream)}. (See {@link Streams#stream}.)
-     *
      * @since 20.0
      */
     @Beta

@@ -18,6 +18,8 @@ package com.google.common.graph;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.truth.Truth8;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -452,7 +454,7 @@ public final class ValueGraphTest {
         int threadCount = 20;
         ExecutorService executor = newFixedThreadPool(threadCount);
         final CyclicBarrier barrier = new CyclicBarrier(threadCount);
-        ImmutableList.Builder<Future<?>> futures = ImmutableList.builder();
+        List<Future<?>> futures = new ArrayList<>();
         for (int i = 0; i < threadCount; i++) {
             futures.add(
                     executor.submit(
@@ -475,7 +477,7 @@ public final class ValueGraphTest {
         }
 
         // For more about this test, see the equivalent in AbstractNetworkTest.
-        for (Future<?> future : futures.build()) {
+        for (Future<?> future : futures) {
             future.get();
         }
         executor.shutdown();

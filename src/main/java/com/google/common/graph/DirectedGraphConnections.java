@@ -181,8 +181,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
         checkNotNull(successorNodeToValueFn);
 
         Map<N, Object> adjacentNodeValues = new HashMap<>();
-        ImmutableList.Builder<NodeConnection<N>> orderedNodeConnectionsBuilder =
-                ImmutableList.builder();
+        List<NodeConnection<N>> orderedNodeConnectionsBuilder = new ArrayList<>();
         int predecessorCount = 0;
         int successorCount = 0;
 
@@ -225,7 +224,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
 
         return new DirectedGraphConnections<>(
                 adjacentNodeValues,
-                orderedNodeConnectionsBuilder.build(),
+                orderedNodeConnectionsBuilder,
                 predecessorCount,
                 successorCount);
     }
