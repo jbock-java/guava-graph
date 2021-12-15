@@ -116,49 +116,6 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
         }
     }
 
-    abstract static class Indexed<E> extends CachingAsList<E> {
-        abstract E get(int index);
-
-        @Override
-        public UnmodifiableIterator<E> iterator() {
-            return asList().iterator();
-        }
-
-        @Override
-        public Spliterator<E> spliterator() {
-            return CollectSpliterators.indexed(size(), SPLITERATOR_CHARACTERISTICS, this::get);
-        }
-
-        @Override
-        public void forEach(Consumer<? super E> consumer) {
-            checkNotNull(consumer);
-            int n = size();
-            for (int i = 0; i < n; i++) {
-                consumer.accept(get(i));
-            }
-        }
-
-        @Override
-        int copyIntoArray(Object[] dst, int offset) {
-            return asList().copyIntoArray(dst, offset);
-        }
-
-        @Override
-        ImmutableList<E> createAsList() {
-            return new ImmutableAsList<E>() {
-                @Override
-                public E get(int index) {
-                    return Indexed.this.get(index);
-                }
-
-                @Override
-                Indexed<E> delegateCollection() {
-                    return Indexed.this;
-                }
-            };
-        }
-    }
-
     /**
      * A builder for creating {@code ImmutableSet} instances. Example:
      *
@@ -300,19 +257,6 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
          * SetBuilderImpl, since we may switch implementations if e.g. hash flooding is detected.
          */
         abstract SetBuilderImpl<E> add(E e);
-
-        /** Adds all the elements from the specified SetBuilderImpl to this SetBuilderImpl. */
-        final SetBuilderImpl<E> combine(SetBuilderImpl<E> other) {
-            SetBuilderImpl<E> result = this;
-            for (int i = 0; i < other.distinct; i++) {
-                /*
-                 * requireNonNull is safe because we ensure that the first `distinct` elements have been
-                 * populated.
-                 */
-                result = result.add(requireNonNull(other.dedupedElements[i]));
-            }
-            return result;
-        }
 
         /**
          * Creates a new copy of this SetBuilderImpl. Modifications to that SetBuilderImpl will not

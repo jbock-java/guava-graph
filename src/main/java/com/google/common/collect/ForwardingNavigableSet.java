@@ -17,10 +17,8 @@
 package com.google.common.collect;
 
 import com.google.common.annotations.Beta;
-
 import java.util.Iterator;
 import java.util.NavigableSet;
-import java.util.SortedSet;
 
 /**
  * A navigable set which forwards all its method calls to another navigable set. Subclasses should
@@ -184,43 +182,13 @@ public abstract class ForwardingNavigableSet<E>
         return tailSet(fromElement, fromInclusive).headSet(toElement, toInclusive);
     }
 
-    /**
-     * A sensible definition of {@link #subSet(Object, Object)} in terms of the {@link #subSet(Object,
-     * boolean, Object, boolean)} method. If you override {@link #subSet(Object, boolean, Object,
-     * boolean)}, you may wish to override {@link #subSet(Object, Object)} to forward to this
-     * implementation.
-     */
-    @Override
-    protected SortedSet<E> standardSubSet(
-            E fromElement, E toElement) {
-        return subSet(fromElement, true, toElement, false);
-    }
-
     @Override
     public NavigableSet<E> headSet(E toElement, boolean inclusive) {
         return delegate().headSet(toElement, inclusive);
     }
 
-    /**
-     * A sensible definition of {@link #headSet(Object)} in terms of the {@link #headSet(Object,
-     * boolean)} method. If you override {@link #headSet(Object, boolean)}, you may wish to override
-     * {@link #headSet(Object)} to forward to this implementation.
-     */
-    protected SortedSet<E> standardHeadSet(E toElement) {
-        return headSet(toElement, false);
-    }
-
     @Override
     public NavigableSet<E> tailSet(E fromElement, boolean inclusive) {
         return delegate().tailSet(fromElement, inclusive);
-    }
-
-    /**
-     * A sensible definition of {@link #tailSet(Object)} in terms of the {@link #tailSet(Object,
-     * boolean)} method. If you override {@link #tailSet(Object, boolean)}, you may wish to override
-     * {@link #tailSet(Object)} to forward to this implementation.
-     */
-    protected SortedSet<E> standardTailSet(E fromElement) {
-        return tailSet(fromElement, true);
     }
 }

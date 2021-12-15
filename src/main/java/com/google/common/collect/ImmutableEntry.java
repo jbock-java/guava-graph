@@ -20,7 +20,6 @@ import com.google.common.annotations.GwtCompatible;
 
 import java.io.Serializable;
 
-/** @see com.google.common.collect.Maps#immutableEntry(Object, Object) */
 @GwtCompatible(serializable = true)
 class ImmutableEntry<K, V>
         extends AbstractMapEntry<K, V> implements Serializable {

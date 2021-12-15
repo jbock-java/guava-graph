@@ -36,9 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * guarantees detailed below.
  *
  * <p><b>Warning:</b> avoid <i>direct</i> usage of {@link ImmutableCollection} as a type (just as
- * with {@link Collection} itself). Prefer subtypes such as {@link ImmutableSet} or {@link
- * ImmutableList}, which have well-defined {@link #equals} semantics, thus avoiding a common source
- * of bugs and confusion.
+ * with {@link Collection} itself).
  *
  * <p><b>About <i>all</i> {@code Immutable-} collections</b>
  *
@@ -64,10 +62,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p><b>"Interfaces", not implementations</b>
  *
  * <p>These are classes instead of interfaces to prevent external subtyping, but should be thought
- * of as interfaces in every important sense. Each public class such as {@link ImmutableSet} is a
- * <i>type</i> offering meaningful behavioral guarantees. This is substantially different from the
- * case of (say) {@link HashSet}, which is an <i>implementation</i>, with semantics that were
- * largely defined by its supertype.
+ * of as interfaces in every important sense.
  *
  * <p>For field types and method return types, you should generally use the immutable type (such as
  * {@link ImmutableList}) instead of the general collection interface type (such as {@link List}).

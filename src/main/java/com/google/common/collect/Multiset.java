@@ -407,9 +407,7 @@ public interface Multiset<E> extends Collection<E> {
      * {@inheritDoc}
      *
      * <p><b>Note:</b> This method ignores how often any element might appear in {@code c}, and only
-     * cares whether or not an element appears at all. If you wish to remove one occurrence in this
-     * multiset for every occurrence in {@code c}, see {@link Multisets#removeOccurrences(Multiset,
-     * Multiset)}.
+     * cares whether or not an element appears at all.
      *
      * <p>This method refines {@link Collection#removeAll} to further specify that it <b>may not</b>
      * throw an exception in response to any of {@code elements} being null or of the wrong type.
@@ -421,14 +419,10 @@ public interface Multiset<E> extends Collection<E> {
      * {@inheritDoc}
      *
      * <p><b>Note:</b> This method ignores how often any element might appear in {@code c}, and only
-     * cares whether or not an element appears at all. If you wish to remove one occurrence in this
-     * multiset for every occurrence in {@code c}, see {@link Multisets#retainOccurrences(Multiset,
-     * Multiset)}.
+     * cares whether or not an element appears at all.
      *
      * <p>This method refines {@link Collection#retainAll} to further specify that it <b>may not</b>
      * throw an exception in response to any of {@code elements} being null or of the wrong type.
-     *
-     * @see Multisets#retainOccurrences(Multiset, Multiset)
      */
     @Override
     boolean retainAll(Collection<?> c);

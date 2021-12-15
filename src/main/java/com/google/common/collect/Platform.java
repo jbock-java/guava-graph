@@ -33,48 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @GwtCompatible(emulated = true)
 final class Platform {
 
-    /** Returns the platform preferred implementation of a map based on a hash table. */
-    static <K, V>
-    Map<K, V> newHashMapWithExpectedSize(int expectedSize) {
-        return Maps.newHashMapWithExpectedSize(expectedSize);
-    }
-
-    /**
-     * Returns the platform preferred implementation of an insertion ordered map based on a hash
-     * table.
-     */
-    static <K, V>
-    Map<K, V> newLinkedHashMapWithExpectedSize(int expectedSize) {
-        return Maps.newLinkedHashMapWithExpectedSize(expectedSize);
-    }
-
-    /** Returns the platform preferred implementation of a set based on a hash table. */
-    static <E> Set<E> newHashSetWithExpectedSize(int expectedSize) {
-        return Sets.newHashSetWithExpectedSize(expectedSize);
-    }
-
-    /** Returns the platform preferred implementation of a thread-safe hash set. */
-    static <E> Set<E> newConcurrentHashSet() {
-        return ConcurrentHashMap.newKeySet();
-    }
-
-    /**
-     * Returns the platform preferred implementation of an insertion ordered set based on a hash
-     * table.
-     */
-    static <E> Set<E> newLinkedHashSetWithExpectedSize(int expectedSize) {
-        return Sets.newLinkedHashSetWithExpectedSize(expectedSize);
-    }
-
-    /**
-     * Returns the platform preferred map implementation that preserves insertion order when used only
-     * for insertions.
-     */
-    static <K, V>
-    Map<K, V> preservesInsertionOrderOnPutsMap() {
-        return new LinkedHashMap<>();
-    }
-
     /**
      * Returns a new array of the given length with the same type as a reference array.
      *

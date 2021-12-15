@@ -16,6 +16,9 @@
 
 package com.google.common.collect;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -26,10 +29,6 @@ import java.util.function.IntFunction;
 import java.util.function.LongConsumer;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.NullnessCasts.uncheckedCastNullableTToT;
 
 /** Spliterator utilities for {@code common.collect} internals. */
 final class CollectSpliterators {
@@ -157,7 +156,7 @@ final class CollectSpliterators {
                 while (fromSpliterator.tryAdvance(this)) {
                     try {
                         // The cast is safe because tryAdvance puts a T into `holder`.
-                        T next = uncheckedCastNullableTToT(holder);
+                        T next = holder;
                         if (predicate.test(next)) {
                             action.accept(next);
                             return true;

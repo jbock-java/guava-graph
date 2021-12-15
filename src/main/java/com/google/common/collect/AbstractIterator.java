@@ -16,10 +16,9 @@
 
 package com.google.common.collect;
 
-import java.util.NoSuchElementException;
-
 import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.NullnessCasts.uncheckedCastNullableTToT;
+
+import java.util.NoSuchElementException;
 
 /**
  * This class provides a skeletal implementation of the {@code Iterator} interface, to make this
@@ -148,24 +147,8 @@ public abstract class AbstractIterator<T> extends UnmodifiableIterator<T> {
             throw new NoSuchElementException();
         }
         state = State.NOT_READY;
-        // Safe because hasNext() ensures that tryToComputeNext() has put a T into `next`.
-        T result = uncheckedCastNullableTToT(next);
+        T result = next;
         next = null;
         return result;
-    }
-
-    /**
-     * Returns the next element in the iteration without advancing the iteration, according to the
-     * contract of {@link PeekingIterator#peek()}.
-     *
-     * <p>Implementations of {@code AbstractIterator} that wish to expose this functionality should
-     * implement {@code PeekingIterator}.
-     */
-    public final T peek() {
-        if (!hasNext()) {
-            throw new NoSuchElementException();
-        }
-        // Safe because hasNext() ensures that tryToComputeNext() has put a T into `next`.
-        return uncheckedCastNullableTToT(next);
     }
 }

@@ -100,38 +100,4 @@ public abstract class ForwardingSortedMap<K, V>
             return ((Comparator<Object>) comparator).compare(o1, o2);
         }
     }
-
-    /**
-     * A sensible definition of {@link #containsKey} in terms of the {@code firstKey()} method of
-     * {@link #tailMap}. If you override {@link #tailMap}, you may wish to override {@link
-     * #containsKey} to forward to this implementation.
-     *
-     * @since 7.0
-     */
-    @Override
-    @Beta
-    protected boolean standardContainsKey(Object key) {
-        try {
-            // any CCE or NPE will be caught
-            @SuppressWarnings({"unchecked", "nullness"})
-            SortedMap<Object, V> self = (SortedMap<Object, V>) this;
-            Object ceilingKey = self.tailMap(key).firstKey();
-            return unsafeCompare(comparator(), ceilingKey, key) == 0;
-        } catch (ClassCastException | NoSuchElementException | NullPointerException e) {
-            return false;
-        }
-    }
-
-    /**
-     * A sensible default implementation of {@link #subMap(Object, Object)} in terms of {@link
-     * #headMap(Object)} and {@link #tailMap(Object)}. In some situations, you may wish to override
-     * {@link #subMap(Object, Object)} to forward to this implementation.
-     *
-     * @since 7.0
-     */
-    @Beta
-    protected SortedMap<K, V> standardSubMap(K fromKey, K toKey) {
-        checkArgument(unsafeCompare(comparator(), fromKey, toKey) <= 0, "fromKey must be <= toKey");
-        return tailMap(fromKey).headMap(toKey);
-    }
 }

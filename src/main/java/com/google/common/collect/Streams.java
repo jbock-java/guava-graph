@@ -16,9 +16,10 @@
 
 package com.google.common.collect;
 
-import com.google.common.annotations.Beta;
-import com.google.common.math.LongMath;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
+import com.google.common.annotations.Beta;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
@@ -30,22 +31,15 @@ import java.util.PrimitiveIterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.Spliterators.AbstractSpliterator;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
-import java.util.stream.BaseStream;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.NullnessCasts.uncheckedCastNullableTToT;
-import static java.util.Objects.requireNonNull;
 
 /**
  * Static utility methods related to {@code Stream} instances.
@@ -203,7 +197,7 @@ public final class Streams {
                 if (fromSpliterator.tryAdvance(this)) {
                     try {
                         // The cast is safe because tryAdvance puts a T into `holder`.
-                        action.accept(function.apply(uncheckedCastNullableTToT(holder), index++));
+                        action.accept(function.apply(holder, index++));
                         return true;
                     } finally {
                         holder = null;

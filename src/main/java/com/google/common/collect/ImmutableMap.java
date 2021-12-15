@@ -566,36 +566,6 @@ public abstract class ImmutableMap<K, V> implements Map<K, V> {
 
     static final Entry<?, ?>[] EMPTY_ENTRY_ARRAY = new Entry<?, ?>[0];
 
-    abstract static class IteratorBasedImmutableMap<K, V> extends ImmutableMap<K, V> {
-        abstract UnmodifiableIterator<Entry<K, V>> entryIterator();
-
-        @Override
-        ImmutableSet<K> createKeySet() {
-            return new ImmutableMapKeySet<>(this);
-        }
-
-        @Override
-        ImmutableSet<Entry<K, V>> createEntrySet() {
-            class EntrySetImpl extends ImmutableMapEntrySet<K, V> {
-                @Override
-                ImmutableMap<K, V> map() {
-                    return IteratorBasedImmutableMap.this;
-                }
-
-                @Override
-                public UnmodifiableIterator<Entry<K, V>> iterator() {
-                    return entryIterator();
-                }
-            }
-            return new EntrySetImpl();
-        }
-
-        @Override
-        ImmutableCollection<V> createValues() {
-            return new ImmutableMapValues<>(this);
-        }
-    }
-
     ImmutableMap() {
     }
 

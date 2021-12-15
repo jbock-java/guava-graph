@@ -16,20 +16,18 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableSet;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.graph.GraphConstants.ENDPOINTS_MISMATCH;
+
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.math.IntMath;
 import com.google.common.primitives.Ints;
-
 import java.util.AbstractSet;
 import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.graph.GraphConstants.ENDPOINTS_MISMATCH;
 
 /**
  * This class provides a skeletal implementation of {@link BaseGraph}.
@@ -116,7 +114,7 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
                                             (N predecessor) -> EndpointPair.ordered(predecessor, node)),
                                     Iterators.transform(
                                             // filter out 'node' from successors (already covered by predecessors, above)
-                                            Sets.difference(graph.successors(node), Set.of(node)).iterator(),
+                                            Util.difference(graph.successors(node), Set.of(node)).iterator(),
                                             (N successor) -> EndpointPair.ordered(node, successor))));
                 } else {
                     return Iterators.unmodifiableIterator(

@@ -44,8 +44,6 @@ import java.util.function.UnaryOperator;
  * <p>See the Guava User Guide article on <a href=
  * "https://github.com/google/guava/wiki/ImmutableCollectionsExplained"> immutable collections</a>.
  *
- * @see ImmutableMap
- * @see ImmutableSet
  * @author Kevin Bourrillion
  * @since 2.0
  */

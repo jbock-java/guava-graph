@@ -18,9 +18,7 @@ package com.google.common.collect;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Predicates.compose;
 import static com.google.common.collect.CollectPreconditions.checkNonnegative;
-import static com.google.common.collect.NullnessCasts.uncheckedCastNullableTToT;
 
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
@@ -83,11 +81,6 @@ public final class Maps {
                 return entry.getValue();
             }
         };
-    }
-
-    @SuppressWarnings("unchecked")
-    static <K> Function<Entry<K, ?>, K> keyFunction() {
-        return (Function) EntryFunction.KEY;
     }
 
     @SuppressWarnings("unchecked")
@@ -188,15 +181,6 @@ public final class Maps {
         // Comparator<Class<?>> comparator = null;
         // Map<Class<? extends Throwable>, String> map = newTreeMap(comparator);
         return new TreeMap<>(comparator);
-    }
-
-    private static <K, V> Map<K, V> unmodifiableMap(
-            Map<K, ? extends V> map) {
-        if (map instanceof SortedMap) {
-            return Collections.unmodifiableSortedMap((SortedMap<K, ? extends V>) map);
-        } else {
-            return Collections.unmodifiableMap(map);
-        }
     }
 
     /**
@@ -903,7 +887,7 @@ public final class Maps {
             V1 value = fromMap.get(key);
             if (value != null || fromMap.containsKey(key)) {
                 // The cast is safe because of the containsKey check.
-                return transformer.transformEntry((K) key, uncheckedCastNullableTToT(value));
+                return transformer.transformEntry((K) key, value);
             }
             return defaultValue;
         }
@@ -914,7 +898,7 @@ public final class Maps {
         public V2 remove(Object key) {
             return fromMap.containsKey(key)
                     // The cast is safe because of the containsKey check.
-                    ? transformer.transformEntry((K) key, uncheckedCastNullableTToT(fromMap.remove(key)))
+                    ? transformer.transformEntry((K) key, fromMap.remove(key))
                     : null;
         }
 
@@ -1127,16 +1111,6 @@ public final class Maps {
         }
     }
 
-    static <K> Predicate<Entry<K, ?>> keyPredicateOnEntries(
-            Predicate<? super K> keyPredicate) {
-        return compose(keyPredicate, Maps.<K>keyFunction());
-    }
-
-    static <V> Predicate<Entry<?, V>> valuePredicateOnEntries(
-            Predicate<? super V> valuePredicate) {
-        return compose(valuePredicate, Maps.<V>valueFunction());
-    }
-
     /**
      * Returns a sorted map containing the mappings in {@code unfiltered} that satisfy a predicate.
      * The returned map is a live view of {@code unfiltered}; changes to one affect the other.
@@ -1174,53 +1148,6 @@ public final class Maps {
     }
 
     /**
-     * Returns a bimap containing the mappings in {@code unfiltered} that satisfy a predicate. The
-     * returned bimap is a live view of {@code unfiltered}; changes to one affect the other.
-     *
-     * <p>The resulting bimap's {@code keySet()}, {@code entrySet()}, and {@code values()} views have
-     * iterators that don't support {@code remove()}, but all other methods are supported by the bimap
-     * and its views. When given a key/value pair that doesn't satisfy the predicate, the bimap's
-     * {@code put()}, {@code forcePut()} and {@code putAll()} methods throw an {@link
-     * IllegalArgumentException}. Similarly, the map's entries have an {@link Entry#setValue} method
-     * that throws an {@link IllegalArgumentException} when the existing key and the provided value
-     * don't satisfy the predicate.
-     *
-     * <p>When methods such as {@code removeAll()} and {@code clear()} are called on the filtered
-     * bimap or its views, only mappings that satisfy the filter will be removed from the underlying
-     * bimap.
-     *
-     * <p>The returned bimap isn't threadsafe or serializable, even if {@code unfiltered} is.
-     *
-     * <p>Many of the filtered bimap's methods, such as {@code size()}, iterate across every key/value
-     * mapping in the underlying bimap and determine which satisfy the filter. When a live view is
-     * <i>not</i> needed, it may be faster to copy the filtered bimap and use the copy.
-     *
-     * <p><b>Warning:</b> {@code entryPredicate} must be <i>consistent with equals </i>, as documented
-     * at {@link Predicate#apply}.
-     *
-     * @since 14.0
-     */
-    public static <K, V> BiMap<K, V> filterEntries(
-            BiMap<K, V> unfiltered, Predicate<? super Entry<K, V>> entryPredicate) {
-        checkNotNull(unfiltered);
-        checkNotNull(entryPredicate);
-        return (unfiltered instanceof FilteredEntryBiMap)
-                ? filterFiltered((FilteredEntryBiMap<K, V>) unfiltered, entryPredicate)
-                : new FilteredEntryBiMap<K, V>(unfiltered, entryPredicate);
-    }
-
-    /**
-     * Support {@code clear()}, {@code removeAll()}, and {@code retainAll()} when filtering a filtered
-     * sorted map.
-     */
-    private static <K, V>
-    SortedMap<K, V> filterFiltered(
-            FilteredEntrySortedMap<K, V> map, Predicate<? super Entry<K, V>> entryPredicate) {
-        Predicate<Entry<K, V>> predicate = Predicates.<Entry<K, V>>and(map.predicate, entryPredicate);
-        return new FilteredEntrySortedMap<>(map.sortedMap(), predicate);
-    }
-
-    /**
      * Support {@code clear()}, {@code removeAll()}, and {@code retainAll()} when filtering a filtered
      * navigable map.
      */
@@ -1231,17 +1158,6 @@ public final class Maps {
         Predicate<Entry<K, V>> predicate =
                 Predicates.<Entry<K, V>>and(map.entryPredicate, entryPredicate);
         return new FilteredEntryNavigableMap<>(map.unfiltered, predicate);
-    }
-
-    /**
-     * Support {@code clear()}, {@code removeAll()}, and {@code retainAll()} when filtering a filtered
-     * map.
-     */
-    private static <K, V>
-    BiMap<K, V> filterFiltered(
-            FilteredEntryBiMap<K, V> map, Predicate<? super Entry<K, V>> entryPredicate) {
-        Predicate<Entry<K, V>> predicate = Predicates.<Entry<K, V>>and(map.predicate, entryPredicate);
-        return new FilteredEntryBiMap<>(map.unfiltered(), predicate);
     }
 
     private abstract static class AbstractFilteredMap<
@@ -1485,103 +1401,6 @@ public final class Maps {
             public <T> T[] toArray(T[] array) {
                 return Lists.newArrayList(iterator()).toArray(array);
             }
-        }
-    }
-
-    private static class FilteredEntrySortedMap<
-            K, V>
-            extends FilteredEntryMap<K, V> implements SortedMap<K, V> {
-
-        FilteredEntrySortedMap(
-                SortedMap<K, V> unfiltered, Predicate<? super Entry<K, V>> entryPredicate) {
-            super(unfiltered, entryPredicate);
-        }
-
-        SortedMap<K, V> sortedMap() {
-            return (SortedMap<K, V>) unfiltered;
-        }
-
-        @Override
-        public SortedSet<K> keySet() {
-            return (SortedSet<K>) super.keySet();
-        }
-
-        @Override
-        SortedSet<K> createKeySet() {
-            return new SortedKeySet();
-        }
-
-        class SortedKeySet extends KeySet implements SortedSet<K> {
-            @Override
-            public Comparator<? super K> comparator() {
-                return sortedMap().comparator();
-            }
-
-            @Override
-            public SortedSet<K> subSet(
-                    K fromElement, K toElement) {
-                return (SortedSet<K>) subMap(fromElement, toElement).keySet();
-            }
-
-            @Override
-            public SortedSet<K> headSet(K toElement) {
-                return (SortedSet<K>) headMap(toElement).keySet();
-            }
-
-            @Override
-            public SortedSet<K> tailSet(K fromElement) {
-                return (SortedSet<K>) tailMap(fromElement).keySet();
-            }
-
-            @Override
-            public K first() {
-                return firstKey();
-            }
-
-            @Override
-            public K last() {
-                return lastKey();
-            }
-        }
-
-        @Override
-        public Comparator<? super K> comparator() {
-            return sortedMap().comparator();
-        }
-
-        @Override
-        public K firstKey() {
-            // correctly throws NoSuchElementException when filtered map is empty.
-            return keySet().iterator().next();
-        }
-
-        @Override
-        public K lastKey() {
-            SortedMap<K, V> headMap = sortedMap();
-            while (true) {
-                // correctly throws NoSuchElementException when filtered map is empty.
-                K key = headMap.lastKey();
-                // The cast is safe because the key is taken from the map.
-                if (apply(key, uncheckedCastNullableTToT(unfiltered.get(key)))) {
-                    return key;
-                }
-                headMap = sortedMap().headMap(key);
-            }
-        }
-
-        @Override
-        public SortedMap<K, V> headMap(K toKey) {
-            return new FilteredEntrySortedMap<>(sortedMap().headMap(toKey), predicate);
-        }
-
-        @Override
-        public SortedMap<K, V> subMap(K fromKey, K toKey) {
-            return new FilteredEntrySortedMap<>(sortedMap().subMap(fromKey, toKey), predicate);
-        }
-
-        @Override
-        public SortedMap<K, V> tailMap(K fromKey) {
-            return new FilteredEntrySortedMap<>(sortedMap().tailMap(fromKey), predicate);
         }
     }
 

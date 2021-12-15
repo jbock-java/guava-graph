@@ -24,6 +24,7 @@ import com.google.common.collect.Ordering;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.TreeMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -192,7 +193,7 @@ public final class ElementOrder<T> {
             case STABLE:
                 return Maps.newLinkedHashMapWithExpectedSize(expectedSize);
             case SORTED:
-                return Maps.newTreeMap(comparator());
+                return new TreeMap<>(comparator());
             default:
                 throw new AssertionError();
         }

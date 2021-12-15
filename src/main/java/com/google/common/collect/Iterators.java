@@ -16,7 +16,12 @@
 
 package com.google.common.collect;
 
-import com.google.common.annotations.Beta;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Predicates.instanceOf;
+import static com.google.common.collect.CollectPreconditions.checkRemove;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.Function;
@@ -25,28 +30,16 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.primitives.Ints;
-
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-import java.util.PriorityQueue;
-import java.util.Queue;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Predicates.instanceOf;
-import static com.google.common.collect.CollectPreconditions.checkRemove;
-import static com.google.common.collect.NullnessCasts.uncheckedCastNullableTToT;
-import static java.util.Objects.requireNonNull;
 
 /**
  * This class contains static utility methods that operate on or return objects of type {@link
@@ -72,8 +65,6 @@ public final class Iterators {
 
     /**
      * Returns the empty iterator.
-     *
-     * <p>The {@link Iterable} equivalent of this method is {@link ImmutableSet#of()}.
      */
     static <T> UnmodifiableIterator<T> emptyIterator() {
         return emptyListIterator();
@@ -81,8 +72,6 @@ public final class Iterators {
 
     /**
      * Returns the empty iterator.
-     *
-     * <p>The {@link Iterable} equivalent of this method is {@link ImmutableSet#of()}.
      */
     // Casting to any type is safe since there are no actual elements.
     @SuppressWarnings("unchecked")
@@ -1025,9 +1014,6 @@ public final class Iterators {
      *
      * <p><b>Note:</b> It is often preferable to represent your data using a collection type, for
      * example using {@link Arrays#asList(Object[])}, making this method unnecessary.
-     *
-     * <p>The {@code Iterable} equivalent of this method is either {@link Arrays#asList(Object[])},
-     * {@link ImmutableList#copyOf(Object[])}}, or {@link ImmutableList#of}.
      */
     @SafeVarargs
     public static <T> UnmodifiableIterator<T> forArray(T... array) {

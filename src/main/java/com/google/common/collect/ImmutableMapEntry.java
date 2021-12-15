@@ -22,10 +22,7 @@ import static com.google.common.collect.CollectPreconditions.checkEntryNotNull;
 
 /**
  * Implementation of {@code Entry} for {@link ImmutableMap} that adds extra methods to traverse hash
- * buckets for the key and the value. This allows reuse in {@link RegularImmutableMap} and {@link
- * RegularImmutableBiMap}, which don't have to recopy the entries created by their {@code Builder}
- * implementations.
- *
+ * buckets for the key and the value.
  * <p>This base implementation has no key or value pointers, so instances of ImmutableMapEntry (but
  * not its subclasses) can be reused when copied from one ImmutableMap to another.
  *

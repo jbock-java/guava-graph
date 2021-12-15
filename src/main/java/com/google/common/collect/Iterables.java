@@ -794,41 +794,6 @@ public final class Iterables {
         };
     }
 
-    /**
-     * Returns a view of the supplied iterable that wraps each generated {@link Iterator} through
-     * {@link Iterators#consumingIterator(Iterator)}.
-     *
-     * <p>Note: If {@code iterable} is a {@link Queue}, the returned iterable will get entries from
-     * {@link Queue#remove()} since {@link Queue}'s iteration order is undefined. Calling {@link
-     * Iterator#hasNext()} on a generated iterator from the returned iterable may cause an item to be
-     * immediately dequeued for return on a subsequent call to {@link Iterator#next()}.
-     *
-     * @param iterable the iterable to wrap
-     * @return a view of the supplied iterable that wraps each generated iterator through {@link
-     *     Iterators#consumingIterator(Iterator)}; for queues, an iterable that generates iterators
-     *     that return and consume the queue's elements in queue order
-     * @see Iterators#consumingIterator(Iterator)
-     * @since 2.0
-     */
-    public static <T> Iterable<T> consumingIterable(
-            final Iterable<T> iterable) {
-        checkNotNull(iterable);
-
-        return new FluentIterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return (iterable instanceof Queue)
-                        ? new ConsumingQueueIterator<>((Queue<T>) iterable)
-                        : Iterators.consumingIterator(iterable.iterator());
-            }
-
-            @Override
-            public String toString() {
-                return "Iterables.consumingIterable(...)";
-            }
-        };
-    }
-
     // Methods only in Iterables, not in Iterators
 
     /**
