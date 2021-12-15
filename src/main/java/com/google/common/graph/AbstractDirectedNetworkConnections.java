@@ -58,7 +58,7 @@ abstract class AbstractDirectedNetworkConnections<N, E> implements NetworkConnec
 
     @Override
     public Set<N> adjacentNodes() {
-        return Sets.union(predecessors(), successors());
+        return Util.union(predecessors(), successors());
     }
 
     @Override
@@ -69,7 +69,7 @@ abstract class AbstractDirectedNetworkConnections<N, E> implements NetworkConnec
                 Iterable<E> incidentEdges =
                         (selfLoopCount == 0)
                                 ? Iterables.concat(inEdgeMap.keySet(), outEdgeMap.keySet())
-                                : Sets.union(inEdgeMap.keySet(), outEdgeMap.keySet());
+                                : Util.union(inEdgeMap.keySet(), outEdgeMap.keySet());
                 return Iterators.unmodifiableIterator(incidentEdges.iterator());
             }
 

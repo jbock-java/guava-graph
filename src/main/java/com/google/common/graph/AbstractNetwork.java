@@ -167,8 +167,8 @@ public abstract class AbstractNetwork<N, E> implements Network<N, E> {
     public Set<E> adjacentEdges(E edge) {
         EndpointPair<N> endpointPair = incidentNodes(edge); // Verifies that edge is in this network.
         Set<E> endpointPairIncidentEdges =
-                Sets.union(incidentEdges(endpointPair.nodeU()), incidentEdges(endpointPair.nodeV()));
-        return Sets.difference(endpointPairIncidentEdges, Set.of(edge));
+                Util.union(incidentEdges(endpointPair.nodeU()), incidentEdges(endpointPair.nodeV()));
+        return Util.difference(endpointPairIncidentEdges, Set.of(edge));
     }
 
     @Override

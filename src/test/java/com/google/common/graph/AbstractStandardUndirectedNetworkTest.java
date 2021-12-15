@@ -116,8 +116,10 @@ public abstract class AbstractStandardUndirectedNetworkTest extends AbstractNetw
             adjacentEdges.add(E23);
             fail(ERROR_MODIFIABLE_COLLECTION);
         } catch (UnsupportedOperationException e) {
+            assertThat(adjacentEdges).isEmpty();
+            assertThat(network.adjacentEdges(E12)).isEmpty();
             addEdge(N2, N3, E23);
-            assertThat(network.adjacentEdges(E12)).containsExactlyElementsIn(adjacentEdges);
+            assertThat(network.adjacentEdges(E12)).containsExactlyElementsIn(Set.of("2-3"));
         }
     }
 
