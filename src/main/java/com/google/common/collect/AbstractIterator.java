@@ -93,10 +93,6 @@ public abstract class AbstractIterator<T> extends UnmodifiableIterator<T> {
      * {@code next} invocation that invoked this method. Any further attempts to use the iterator will
      * result in an {@link IllegalStateException}.
      *
-     * <p>The implementation of this method may not invoke the {@code hasNext}, {@code next}, or
-     * {@link #peek()} methods on this instance; if it does, an {@code IllegalStateException} will
-     * result.
-     *
      * @return the next element if there was one. If {@code endOfData} was called during execution,
      *     the return value will be ignored.
      * @throws RuntimeException if any unrecoverable error happens. This exception will propagate
