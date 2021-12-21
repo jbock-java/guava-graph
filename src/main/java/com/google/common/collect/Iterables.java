@@ -640,8 +640,6 @@ public final class Iterables {
      * Returns the last element of {@code iterable}. If {@code iterable} is a {@link List} with {@link
      * RandomAccess} support, then this operation is guaranteed to be {@code O(1)}.
      *
-     * <p><b>{@code Stream} equivalent:</b> {@link Streams#findLast Streams.findLast(stream).get()}
-     *
      * @return the last element of {@code iterable}
      * @throws NoSuchElementException if the iterable is empty
      */

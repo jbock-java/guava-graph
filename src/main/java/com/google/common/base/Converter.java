@@ -50,9 +50,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>Getting a converter:
  *
  * <ul>
- *   <li>Use a provided converter implementation, such as {@link Enums#stringConverter}, {@link
- *       com.google.common.primitives.Ints#stringConverter Ints.stringConverter} or the {@linkplain
- *       #reverse reverse} views of these.
  *   <li>Extend this class and implement its {@link #doForward} and {@link #doBackward} methods.
  *   <li><b>Java 8 users:</b> you may prefer to pass two lambda expressions or method references to
  *       the {@link #from from} factory method.

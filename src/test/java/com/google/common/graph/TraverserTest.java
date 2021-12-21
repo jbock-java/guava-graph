@@ -17,23 +17,24 @@
 
 package com.google.common.graph;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Lists.charactersOf;
-import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
-
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
-import com.google.common.primitives.Chars;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
 
 @RunWith(JUnit4.class)
 public class TraverserTest {
@@ -1252,8 +1253,17 @@ public class TraverserTest {
 
     private static void assertEqualCharNodes(Iterable<Character> result, String expectedCharacters) {
         assertThat(ImmutableList.copyOf(result))
-                .containsExactlyElementsIn(Chars.asList(expectedCharacters.toCharArray()))
+                .containsExactlyElementsIn(charactersOf(expectedCharacters))
                 .inOrder();
+    }
+
+    private static List<Character> charactersOf(String expectedCharacters) {
+        char[] backingArray = expectedCharacters.toCharArray();
+        ArrayList<Character> characters = new ArrayList<>(backingArray.length);
+        for (char c : backingArray) {
+            characters.add(c);
+        }
+        return characters;
     }
 
     private static class RequestSavingGraph implements SuccessorsFunction<Character> {
