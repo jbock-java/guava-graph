@@ -18,11 +18,9 @@ package com.google.common.collect;
 
 import com.google.common.annotations.GwtCompatible;
 
-import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;

@@ -20,7 +20,6 @@ package com.google.common.graph;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import org.junit.Test;
 import org.junit.runner.RunWith;

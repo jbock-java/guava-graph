@@ -61,19 +61,6 @@ public final class Collections2 {
         }
     }
 
-    /**
-     * Delegates to {@link Collection#remove}. Returns {@code false} if the {@code remove} method
-     * throws a {@code ClassCastException} or {@code NullPointerException}.
-     */
-    static boolean safeRemove(Collection<?> collection, Object object) {
-        checkNotNull(collection);
-        try {
-            return collection.remove(object);
-        } catch (ClassCastException | NullPointerException e) {
-            return false;
-        }
-    }
-
     static class FilteredCollection<E> extends AbstractCollection<E> {
         final Collection<E> unfiltered;
         final Predicate<? super E> predicate;

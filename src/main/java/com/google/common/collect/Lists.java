@@ -16,33 +16,24 @@
 
 package com.google.common.collect;
 
-import com.google.common.annotations.Beta;
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.annotations.GwtIncompatible;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.math.IntMath;
 import com.google.common.primitives.Ints;
 
-import java.io.Serializable;
 import java.math.RoundingMode;
 import java.util.AbstractList;
-import java.util.AbstractSequentialList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.RandomAccess;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Predicate;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkElementIndex;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkPositionIndex;
@@ -111,29 +102,6 @@ public final class Lists {
 
     /**
      * Creates a <i>mutable</i> {@code ArrayList} instance containing the given elements; a very thin
-     * shortcut for creating an empty list then calling {@link Iterables#addAll}.
-     *
-     * <p><b>Note:</b> if mutability is not required and the elements are non-null, use {@link
-     * ImmutableList#copyOf(Iterable)} instead. (Or, change {@code elements} to be a {@link
-     * FluentIterable} and call {@code elements.toList()}.)
-     *
-     * <p><b>Note for Java 7 and later:</b> if {@code elements} is a {@link Collection}, you don't
-     * need this method. Use the {@code ArrayList} {@linkplain ArrayList#ArrayList(Collection)
-     * constructor} directly, taking advantage of the new <a href="http://goo.gl/iz2Wi">"diamond"
-     * syntax</a>.
-     */
-    @GwtCompatible(serializable = true)
-    public static <E> ArrayList<E> newArrayList(
-            Iterable<? extends E> elements) {
-        checkNotNull(elements); // for GWT
-        // Let ArrayList's sizing logic work, if possible
-        return (elements instanceof Collection)
-                ? new ArrayList<>((Collection<? extends E>) elements)
-                : newArrayList(elements.iterator());
-    }
-
-    /**
-     * Creates a <i>mutable</i> {@code ArrayList} instance containing the given elements; a very thin
      * shortcut for creating an empty list and then calling {@link Iterators#addAll}.
      *
      * <p><b>Note:</b> if mutability is not required and the elements are non-null, use {@link
@@ -183,90 +151,6 @@ public final class Lists {
         @Override
         public boolean isEmpty() {
             return list.isEmpty();
-        }
-    }
-
-    /**
-     * Returns a view of the specified string as an immutable list of {@code Character} values.
-     *
-     * @since 7.0
-     */
-    public static ImmutableList<Character> charactersOf(String string) {
-        return new StringAsImmutableList(checkNotNull(string));
-    }
-
-    /**
-     * Returns a view of the specified {@code CharSequence} as a {@code List<Character>}, viewing
-     * {@code sequence} as a sequence of Unicode code units. The view does not support any
-     * modification operations, but reflects any changes to the underlying character sequence.
-     *
-     * @param sequence the character sequence to view as a {@code List} of characters
-     * @return an {@code List<Character>} view of the character sequence
-     * @since 7.0
-     */
-    @Beta
-    public static List<Character> charactersOf(CharSequence sequence) {
-        return new CharSequenceAsList(checkNotNull(sequence));
-    }
-
-    @SuppressWarnings("serial") // serialized using ImmutableList serialization
-    private static final class StringAsImmutableList extends ImmutableList<Character> {
-
-        private final String string;
-
-        StringAsImmutableList(String string) {
-            this.string = string;
-        }
-
-        @Override
-        public int indexOf(Object object) {
-            return (object instanceof Character) ? string.indexOf((Character) object) : -1;
-        }
-
-        @Override
-        public int lastIndexOf(Object object) {
-            return (object instanceof Character) ? string.lastIndexOf((Character) object) : -1;
-        }
-
-        @Override
-        public ImmutableList<Character> subList(int fromIndex, int toIndex) {
-            checkPositionIndexes(fromIndex, toIndex, size()); // for GWT
-            return charactersOf(string.substring(fromIndex, toIndex));
-        }
-
-        @Override
-        boolean isPartialView() {
-            return false;
-        }
-
-        @Override
-        public Character get(int index) {
-            checkElementIndex(index, size()); // for GWT
-            return string.charAt(index);
-        }
-
-        @Override
-        public int size() {
-            return string.length();
-        }
-    }
-
-    private static final class CharSequenceAsList extends AbstractList<Character> {
-        private final CharSequence sequence;
-
-        CharSequenceAsList(CharSequence sequence) {
-            this.sequence = sequence;
-        }
-
-        @Override
-        public Character get(int index) {
-            checkElementIndex(index, size()); // for GWT
-            return sequence.charAt(index);
-        }
-
-        @Override
-        public int size() {
-            return sequence.length();
         }
     }
 

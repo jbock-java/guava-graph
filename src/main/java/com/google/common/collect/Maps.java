@@ -1541,64 +1541,6 @@ public final class Maps {
         }
     }
 
-    static final class FilteredEntryBiMap<K, V>
-            extends FilteredEntryMap<K, V> implements BiMap<K, V> {
-        private final BiMap<V, K> inverse;
-
-        private static <K, V>
-        Predicate<Entry<V, K>> inversePredicate(
-                final Predicate<? super Entry<K, V>> forwardPredicate) {
-            return new Predicate<Entry<V, K>>() {
-                @Override
-                public boolean apply(Entry<V, K> input) {
-                    return forwardPredicate.apply(Maps.immutableEntry(input.getValue(), input.getKey()));
-                }
-            };
-        }
-
-        FilteredEntryBiMap(BiMap<K, V> delegate, Predicate<? super Entry<K, V>> predicate) {
-            super(delegate, predicate);
-            this.inverse =
-                    new FilteredEntryBiMap<>(delegate.inverse(), inversePredicate(predicate), this);
-        }
-
-        private FilteredEntryBiMap(
-                BiMap<K, V> delegate, Predicate<? super Entry<K, V>> predicate, BiMap<V, K> inverse) {
-            super(delegate, predicate);
-            this.inverse = inverse;
-        }
-
-        BiMap<K, V> unfiltered() {
-            return (BiMap<K, V>) unfiltered;
-        }
-
-        @Override
-        public V forcePut(K key, V value) {
-            checkArgument(apply(key, value));
-            return unfiltered().forcePut(key, value);
-        }
-
-        @Override
-        public void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
-            unfiltered()
-                    .replaceAll(
-                            (key, value) ->
-                                    predicate.apply(Maps.immutableEntry(key, value))
-                                            ? function.apply(key, value)
-                                            : value);
-        }
-
-        @Override
-        public BiMap<V, K> inverse() {
-            return inverse;
-        }
-
-        @Override
-        public Set<V> values() {
-            return inverse.keySet();
-        }
-    }
-
     /**
      * Returns an unmodifiable view of the specified navigable map. Query operations on the returned
      * map read through to the specified map, and attempts to modify the returned map, whether direct
@@ -1880,42 +1822,6 @@ public final class Maps {
         } catch (ClassCastException | NullPointerException e) {
             return null;
         }
-    }
-
-    /**
-     * Delegates to {@link Map#containsKey}. Returns {@code false} on {@code ClassCastException} and
-     * {@code NullPointerException}.
-     */
-    static boolean safeContainsKey(Map<?, ?> map, Object key) {
-        checkNotNull(map);
-        try {
-            return map.containsKey(key);
-        } catch (ClassCastException | NullPointerException e) {
-            return false;
-        }
-    }
-
-    /**
-     * Delegates to {@link Map#remove}. Returns {@code null} on {@code ClassCastException} and {@code
-     * NullPointerException}.
-     */
-    static <V> V safeRemove(Map<?, V> map, Object key) {
-        checkNotNull(map);
-        try {
-            return map.remove(key);
-        } catch (ClassCastException | NullPointerException e) {
-            return null;
-        }
-    }
-
-    /** An admittedly inefficient implementation of {@link Map#containsKey}. */
-    static boolean containsKeyImpl(Map<?, ?> map, Object key) {
-        return Iterators.contains(keyIterator(map.entrySet().iterator()), key);
-    }
-
-    /** An implementation of {@link Map#containsValue}. */
-    static boolean containsValueImpl(Map<?, ?> map, Object value) {
-        return Iterators.contains(valueIterator(map.entrySet().iterator()), value);
     }
 
     /** An implementation of {@link Map#equals}. */
