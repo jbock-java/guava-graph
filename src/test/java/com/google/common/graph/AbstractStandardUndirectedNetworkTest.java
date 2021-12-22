@@ -24,6 +24,7 @@ import com.google.common.truth.Truth8;
 import java.util.Set;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Abstract base class for testing undirected {@link Network} implementations defined in this
@@ -197,8 +198,8 @@ public abstract class AbstractStandardUndirectedNetworkTest extends AbstractNetw
     @Test
     public void edges_containsOrderMismatch() {
         addEdge(N1, N2, E12);
-        assertThat(network.asGraph().edges()).contains(ENDPOINTS_N2N1);
-        assertThat(network.asGraph().edges()).contains(ENDPOINTS_N1N2);
+        Assertions.assertTrue(network.asGraph().edges().contains(ENDPOINTS_N2N1));
+        Assertions.assertTrue(network.asGraph().edges().contains(ENDPOINTS_N1N2));
     }
 
     @Test
