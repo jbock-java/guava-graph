@@ -18,6 +18,7 @@ package com.google.common.graph;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -215,7 +216,7 @@ public final class EndpointPairTest {
         assertThat(edges).contains(EndpointPair.unordered(N2, N1)); // equal to unordered(N1, N2)
 
         // ordered endpoints OK for undirected graph (because ordering is irrelevant)
-        assertThat(edges).contains(EndpointPair.ordered(N1, N2));
+        Assertions.assertTrue(edges.contains(EndpointPair.ordered(N1, N2)));
 
         assertThat(edges).doesNotContain(EndpointPair.unordered(N2, N2)); // edge not present
         assertThat(edges).doesNotContain(EndpointPair.unordered(N3, N4)); // nodes not in graph
