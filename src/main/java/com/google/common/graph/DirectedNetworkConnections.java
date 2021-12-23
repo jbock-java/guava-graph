@@ -16,15 +16,14 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
-
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.graph.GraphConstants.EXPECTED_DEGREE;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * An implementation of {@link NetworkConnections} for directed networks.
@@ -41,27 +40,30 @@ final class DirectedNetworkConnections<N, E> extends AbstractDirectedNetworkConn
 
     static <N, E> DirectedNetworkConnections<N, E> of() {
         return new DirectedNetworkConnections<>(
-                HashBiMap.<E, N>create(EXPECTED_DEGREE), HashBiMap.<E, N>create(EXPECTED_DEGREE), 0);
+                new LinkedHashMap<>(), new LinkedHashMap<>(), 0);
     }
 
     static <N, E> DirectedNetworkConnections<N, E> ofImmutable(
             Map<E, N> inEdges, Map<E, N> outEdges, int selfLoopCount) {
         return new DirectedNetworkConnections<>(
-                ImmutableBiMap.copyOf(inEdges), ImmutableBiMap.copyOf(outEdges), selfLoopCount);
+                Collections.unmodifiableMap(new LinkedHashMap<>(inEdges)),
+                Collections.unmodifiableMap(new LinkedHashMap<>(outEdges)), selfLoopCount);
     }
 
     @Override
     public Set<N> predecessors() {
-        return Collections.unmodifiableSet(((BiMap<E, N>) inEdgeMap).values());
+        return Collections.unmodifiableSet(new LinkedHashSet<>(inEdgeMap.values()));
     }
 
     @Override
     public Set<N> successors() {
-        return Collections.unmodifiableSet(((BiMap<E, N>) outEdgeMap).values());
+        return Collections.unmodifiableSet(new LinkedHashSet<>(outEdgeMap.values()));
     }
 
     @Override
     public Set<E> edgesConnecting(N node) {
-        return new EdgesConnecting<>(((BiMap<E, N>) outEdgeMap).inverse(), node);
+        Map<N, E> inverse = outEdgeMap.entrySet().stream()
+                .collect(collectingAndThen(toMap(Map.Entry::getValue, Map.Entry::getKey), LinkedHashMap::new));
+        return new EdgesConnecting<>(inverse, node);
     }
 }

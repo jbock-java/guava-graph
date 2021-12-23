@@ -58,7 +58,7 @@ final class UndirectedGraphConnections<N, V> implements GraphConnections<N, V> {
     }
 
     static <N, V> UndirectedGraphConnections<N, V> ofImmutable(Map<N, V> adjacentNodeValues) {
-        return new UndirectedGraphConnections<>(ImmutableMap.copyOf(adjacentNodeValues));
+        return new UndirectedGraphConnections<>(Collections.unmodifiableMap(new LinkedHashMap<>(adjacentNodeValues)));
     }
 
     @Override

@@ -17,7 +17,6 @@
 package com.google.common.graph;
 
 import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.UnmodifiableIterator;
 
 import java.util.AbstractSet;
 import java.util.Iterator;
@@ -46,7 +45,7 @@ abstract class MultiEdgesConnecting<E> extends AbstractSet<E> {
     }
 
     @Override
-    public UnmodifiableIterator<E> iterator() {
+    public Iterator<E> iterator() {
         Iterator<? extends Entry<E, ?>> entries = outEdgeToNode.entrySet().iterator();
         return new AbstractIterator<E>() {
             @Override

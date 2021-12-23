@@ -16,15 +16,14 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
-
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.graph.GraphConstants.EXPECTED_DEGREE;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * An implementation of {@link NetworkConnections} for undirected networks.
@@ -40,20 +39,22 @@ final class UndirectedNetworkConnections<N, E> extends AbstractUndirectedNetwork
     }
 
     static <N, E> UndirectedNetworkConnections<N, E> of() {
-        return new UndirectedNetworkConnections<>(HashBiMap.<E, N>create(EXPECTED_DEGREE));
+        return new UndirectedNetworkConnections<>(new LinkedHashMap<>());
     }
 
     static <N, E> UndirectedNetworkConnections<N, E> ofImmutable(Map<E, N> incidentEdges) {
-        return new UndirectedNetworkConnections<>(ImmutableBiMap.copyOf(incidentEdges));
+        return new UndirectedNetworkConnections<>(Collections.unmodifiableMap(new LinkedHashMap<>(incidentEdges)));
     }
 
     @Override
     public Set<N> adjacentNodes() {
-        return Collections.unmodifiableSet(((BiMap<E, N>) incidentEdgeMap).values());
+        return Collections.unmodifiableSet(new LinkedHashSet<>(incidentEdgeMap.values()));
     }
 
     @Override
     public Set<E> edgesConnecting(N node) {
-        return new EdgesConnecting<>(((BiMap<E, N>) incidentEdgeMap).inverse(), node);
+        Map<N, E> inverse = incidentEdgeMap.entrySet().stream()
+                .collect(collectingAndThen(toMap(Map.Entry::getValue, Map.Entry::getKey), LinkedHashMap::new));
+        return new EdgesConnecting<>(inverse, node);
     }
 }

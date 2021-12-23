@@ -16,18 +16,18 @@
 
 package com.google.common.graph;
 
+import com.google.common.collect.Iterators;
+import com.google.common.math.IntMath;
+import com.google.common.primitives.Ints;
+
+import java.util.AbstractSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.graph.GraphConstants.ENDPOINTS_MISMATCH;
-
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Sets;
-import com.google.common.collect.UnmodifiableIterator;
-import com.google.common.math.IntMath;
-import com.google.common.primitives.Ints;
-import java.util.AbstractSet;
-import java.util.Set;
 
 /**
  * This class provides a skeletal implementation of {@link BaseGraph}.
@@ -63,7 +63,7 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
     public Set<EndpointPair<N>> edges() {
         return new AbstractSet<EndpointPair<N>>() {
             @Override
-            public UnmodifiableIterator<EndpointPair<N>> iterator() {
+            public Iterator<EndpointPair<N>> iterator() {
                 return EndpointPairIterator.of(AbstractBaseGraph.this);
             }
 
@@ -105,7 +105,7 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
         checkArgument(nodes().contains(node), "Node %s is not an element of this graph.", node);
         return new IncidentEdgeSet<N>(this, node) {
             @Override
-            public UnmodifiableIterator<EndpointPair<N>> iterator() {
+            public Iterator<EndpointPair<N>> iterator() {
                 if (graph.isDirected()) {
                     return Iterators.unmodifiableIterator(
                             Iterators.concat(
