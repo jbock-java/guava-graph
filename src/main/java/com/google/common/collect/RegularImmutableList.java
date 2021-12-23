@@ -23,8 +23,6 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 
 /**
- * Implementation of {@link ImmutableList} backed by a simple array.
- *
  * @author Kevin Bourrillion
  */
 @GwtCompatible(serializable = true, emulated = true)

@@ -64,8 +64,6 @@ public final class Lists {
     /**
      * Creates a <i>mutable</i>, empty {@code ArrayList} instance (for Java 6 and earlier).
      *
-     * <p><b>Note:</b> if mutability is not required, use {@link ImmutableList#of()} instead.
-     *
      * <p><b>Note for Java 7 and later:</b> this method is now unnecessary and should be treated as
      * deprecated. Instead, use the {@code ArrayList} {@linkplain ArrayList#ArrayList() constructor}
      * directly, taking advantage of the new <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
@@ -77,12 +75,6 @@ public final class Lists {
 
     /**
      * Creates a <i>mutable</i> {@code ArrayList} instance containing the given elements.
-     *
-     * <p><b>Note:</b> essentially the only reason to use this method is when you will need to add or
-     * remove elements later. Otherwise, for non-null elements use {@link ImmutableList#of()} (for
-     * varargs) or {@link ImmutableList#copyOf(Object[])} (for an array) instead. If any elements
-     * might be null, or you need support for {@link List#set(int, Object)}, use {@link
-     * Arrays#asList}.
      *
      * <p>Note that even when you do need the ability to add or remove, this method provides only a
      * tiny bit of syntactic sugar for {@code newArrayList(}{@link Arrays#asList asList}{@code
@@ -103,9 +95,6 @@ public final class Lists {
     /**
      * Creates a <i>mutable</i> {@code ArrayList} instance containing the given elements; a very thin
      * shortcut for creating an empty list and then calling {@link Iterators#addAll}.
-     *
-     * <p><b>Note:</b> if mutability is not required and the elements are non-null, use {@link
-     * ImmutableList#copyOf(Iterator)} instead.
      */
     @GwtCompatible(serializable = true)
     public static <E> ArrayList<E> newArrayList(

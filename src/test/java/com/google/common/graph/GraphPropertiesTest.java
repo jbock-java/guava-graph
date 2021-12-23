@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.List;
+
 import static com.google.common.graph.Graphs.hasCycle;
 import static com.google.common.truth.Truth.assertThat;
 
@@ -29,11 +31,11 @@ import static com.google.common.truth.Truth.assertThat;
 // TODO(user): Consider moving this to GraphsTest.
 @RunWith(JUnit4.class)
 public class GraphPropertiesTest {
-    ImmutableList<MutableGraph<Integer>> graphsToTest;
+    List<MutableGraph<Integer>> graphsToTest;
     Graph<Integer> directedGraph;
     Graph<Integer> undirectedGraph;
 
-    ImmutableList<MutableNetwork<Integer, String>> networksToTest;
+    List<MutableNetwork<Integer, String>> networksToTest;
     Network<Integer, String> directedNetwork;
     Network<Integer, String> undirectedNetwork;
 
@@ -43,7 +45,7 @@ public class GraphPropertiesTest {
                 GraphBuilder.directed().allowsSelfLoops(true).build();
         MutableGraph<Integer> mutableUndirectedGraph =
                 GraphBuilder.undirected().allowsSelfLoops(true).build();
-        graphsToTest = ImmutableList.of(mutableDirectedGraph, mutableUndirectedGraph);
+        graphsToTest = List.of(mutableDirectedGraph, mutableUndirectedGraph);
         directedGraph = mutableDirectedGraph;
         undirectedGraph = mutableUndirectedGraph;
 
@@ -51,7 +53,7 @@ public class GraphPropertiesTest {
                 NetworkBuilder.directed().allowsParallelEdges(true).allowsSelfLoops(true).build();
         MutableNetwork<Integer, String> mutableUndirectedNetwork =
                 NetworkBuilder.undirected().allowsParallelEdges(true).allowsSelfLoops(true).build();
-        networksToTest = ImmutableList.of(mutableDirectedNetwork, mutableUndirectedNetwork);
+        networksToTest = List.of(mutableDirectedNetwork, mutableUndirectedNetwork);
         directedNetwork = mutableDirectedNetwork;
         undirectedNetwork = mutableUndirectedNetwork;
     }

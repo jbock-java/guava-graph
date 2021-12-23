@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -84,8 +85,8 @@ public final class EndpointPairTest {
 
     @Test
     public void testAdjacentNode_nodeNotIncident() {
-        ImmutableList<MutableNetwork<Integer, String>> testNetworks =
-                ImmutableList.of(
+        List<MutableNetwork<Integer, String>> testNetworks =
+                List.of(
                         NetworkBuilder.directed().<Integer, String>build(),
                         NetworkBuilder.undirected().<Integer, String>build());
         for (MutableNetwork<Integer, String> network : testNetworks) {

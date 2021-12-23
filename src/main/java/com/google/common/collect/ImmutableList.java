@@ -16,16 +16,9 @@
 
 package com.google.common.collect;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkElementIndex;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkPositionIndexes;
-import static com.google.common.collect.ObjectArrays.checkElementsNotNull;
-import static com.google.common.collect.RegularImmutableList.EMPTY;
-import static java.util.Objects.requireNonNull;
-
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.VisibleForTesting;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,6 +29,13 @@ import java.util.RandomAccess;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+
+import static com.google.common.base.Preconditions.checkElementIndex;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkPositionIndexes;
+import static com.google.common.collect.ObjectArrays.checkElementsNotNull;
+import static com.google.common.collect.RegularImmutableList.EMPTY;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A {@link List} whose contents will never change, with many other important properties detailed at
@@ -74,236 +74,6 @@ public abstract class ImmutableList<E> extends ImmutableCollection<E>
      */
     public static <E> ImmutableList<E> of(E element) {
         return new SingletonImmutableList<E>(element);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if any element is null
-     */
-    public static <E> ImmutableList<E> of(E e1, E e2) {
-        return construct(e1, e2);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if any element is null
-     */
-    public static <E> ImmutableList<E> of(E e1, E e2, E e3) {
-        return construct(e1, e2, e3);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if any element is null
-     */
-    public static <E> ImmutableList<E> of(E e1, E e2, E e3, E e4) {
-        return construct(e1, e2, e3, e4);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if any element is null
-     */
-    public static <E> ImmutableList<E> of(E e1, E e2, E e3, E e4, E e5) {
-        return construct(e1, e2, e3, e4, e5);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if any element is null
-     */
-    public static <E> ImmutableList<E> of(E e1, E e2, E e3, E e4, E e5, E e6) {
-        return construct(e1, e2, e3, e4, e5, e6);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if any element is null
-     */
-    public static <E> ImmutableList<E> of(E e1, E e2, E e3, E e4, E e5, E e6, E e7) {
-        return construct(e1, e2, e3, e4, e5, e6, e7);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if any element is null
-     */
-    public static <E> ImmutableList<E> of(E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8) {
-        return construct(e1, e2, e3, e4, e5, e6, e7, e8);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if any element is null
-     */
-    public static <E> ImmutableList<E> of(E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9) {
-        return construct(e1, e2, e3, e4, e5, e6, e7, e8, e9);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if any element is null
-     */
-    public static <E> ImmutableList<E> of(
-            E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9, E e10) {
-        return construct(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if any element is null
-     */
-    public static <E> ImmutableList<E> of(
-            E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9, E e10, E e11) {
-        return construct(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11);
-    }
-
-    // These go up to eleven. After that, you just get the varargs form, and
-    // whatever warnings might come along with it. :(
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * <p>The array {@code others} must not be longer than {@code Integer.MAX_VALUE - 12}.
-     *
-     * @throws NullPointerException if any element is null
-     * @since 3.0 (source-compatible since 2.0)
-     */
-    @SafeVarargs // For Eclipse. For internal javac we have disabled this pointless type of warning.
-    public static <E> ImmutableList<E> of(
-            E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9, E e10, E e11, E e12, E... others) {
-        checkArgument(
-                others.length <= Integer.MAX_VALUE - 12, "the total number of elements must fit in an int");
-        Object[] array = new Object[12 + others.length];
-        array[0] = e1;
-        array[1] = e2;
-        array[2] = e3;
-        array[3] = e4;
-        array[4] = e5;
-        array[5] = e6;
-        array[6] = e7;
-        array[7] = e8;
-        array[8] = e9;
-        array[9] = e10;
-        array[10] = e11;
-        array[11] = e12;
-        System.arraycopy(others, 0, array, 12, others.length);
-        return construct(array);
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order. If {@code elements} is a
-     * {@link Collection}, this method behaves exactly as {@link #copyOf(Collection)}; otherwise, it
-     * behaves exactly as {@code copyOf(elements.iterator()}.
-     *
-     * @throws NullPointerException if {@code elements} contains a null element
-     */
-    public static <E> ImmutableList<E> copyOf(Iterable<? extends E> elements) {
-        checkNotNull(elements); // TODO(kevinb): is this here only for GWT?
-        return (elements instanceof Collection)
-                ? copyOf((Collection<? extends E>) elements)
-                : copyOf(elements.iterator());
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * <p>Despite the method name, this method attempts to avoid actually copying the data when it is
-     * safe to do so. The exact circumstances under which a copy will or will not be performed are
-     * undocumented and subject to change.
-     *
-     * <p>Note that if {@code list} is a {@code List<String>}, then {@code ImmutableList.copyOf(list)}
-     * returns an {@code ImmutableList<String>} containing each of the strings in {@code list}, while
-     * ImmutableList.of(list)} returns an {@code ImmutableList<List<String>>} containing one element
-     * (the given list itself).
-     *
-     * <p>This method is safe to use even when {@code elements} is a synchronized or concurrent
-     * collection that is currently being modified by another thread.
-     *
-     * @throws NullPointerException if {@code elements} contains a null element
-     */
-    public static <E> ImmutableList<E> copyOf(Collection<? extends E> elements) {
-        if (elements instanceof ImmutableCollection) {
-            @SuppressWarnings("unchecked") // all supported methods are covariant
-            ImmutableList<E> list = ((ImmutableCollection<E>) elements).asList();
-            return list.isPartialView() ? ImmutableList.<E>asImmutableList(list.toArray()) : list;
-        }
-        return construct(elements.toArray());
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if {@code elements} contains a null element
-     */
-    public static <E> ImmutableList<E> copyOf(Iterator<? extends E> elements) {
-        // We special-case for 0 or 1 elements, but going further is madness.
-        if (!elements.hasNext()) {
-            return of();
-        }
-        E first = elements.next();
-        if (!elements.hasNext()) {
-            return of(first);
-        } else {
-            return new ImmutableList.Builder<E>().add(first).addAll(elements).build();
-        }
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in order.
-     *
-     * @throws NullPointerException if {@code elements} contains a null element
-     * @since 3.0
-     */
-    public static <E> ImmutableList<E> copyOf(E[] elements) {
-        switch (elements.length) {
-            case 0:
-                return of();
-            case 1:
-                return of(elements[0]);
-            default:
-                return construct(elements.clone());
-        }
-    }
-
-    /**
-     * Returns an immutable list containing the given elements, in sorted order relative to the
-     * specified comparator. The sorting algorithm used is stable, so elements that compare as equal
-     * will stay in the order in which they appear in the input.
-     *
-     * <p>If your data has no duplicates, or you wish to deduplicate elements, use {@code
-     * ImmutableSortedSet.copyOf(comparator, elements)}; if you want a {@code List} you can use its
-     * {@code asList()} view.
-     *
-     * <p><b>Java 8 users:</b> If you want to convert a {@link java.util.stream.Stream} to a sorted
-     * {@code ImmutableList}, use {@code stream.sorted(comparator).collect(toImmutableList())}.
-     *
-     * @throws NullPointerException if any element in the input is null
-     * @since 21.0
-     */
-    public static <E> ImmutableList<E> sortedCopyOf(
-            Comparator<? super E> comparator, Iterable<? extends E> elements) {
-        checkNotNull(comparator);
-        @SuppressWarnings("unchecked") // all supported methods are covariant
-        E[] array = (E[]) Iterables.toArray(elements);
-        checkElementsNotNull(array);
-        Arrays.sort(array, comparator);
-        return asImmutableList(array);
-    }
-
-    /** Views the array as an immutable list. Checks for nulls; does not copy. */
-    private static <E> ImmutableList<E> construct(Object... elements) {
-        return asImmutableList(checkElementsNotNull(elements));
     }
 
     /**
@@ -663,10 +433,6 @@ public abstract class ImmutableList<E> extends ImmutableCollection<E>
      * }</pre>
      *
      * <p>Elements appear in the resulting list in the same order they were added to the builder.
-     *
-     * <p>Builder instances can be reused; it is safe to call {@link #build} multiple times to build
-     * multiple lists in series. Each new list contains all the elements of the ones created before
-     * it.
      *
      * @since 2.0
      */

@@ -62,15 +62,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>These are classes instead of interfaces to prevent external subtyping, but should be thought
  * of as interfaces in every important sense.
  *
- * <p>For field types and method return types, you should generally use the immutable type (such as
- * {@link ImmutableList}) instead of the general collection interface type (such as {@link List}).
- * This communicates to your callers all of the semantic guarantees listed above, which is almost
- * always very useful information.
- *
- * <p>On the other hand, a <i>parameter</i> type of {@link ImmutableList} is generally a nuisance to
- * callers. Instead, accept {@link Iterable} and have your method or constructor body pass it to the
- * appropriate {@code copyOf} method itself.
- *
  * <p>Expressing the immutability guarantee directly in the type that user code references is a
  * powerful advantage. Although Java offers certain immutable collection factory methods, such as
  * {@link Collections#singleton(Object)} and <a
@@ -110,11 +101,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *       unnecessary; for example, {@code copyOf(copyOf(anArrayList))} should copy the data only
  *       once. This reduces the expense of habitually making defensive copies at API boundaries.
  *       However, the precise conditions for skipping the copy operation are undefined.
- *   <li><b>Warning:</b> a view collection such as {@code ImmutableMap#keySet} or {@link
- *       ImmutableList#subList} may retain a reference to the entire data set, preventing it from
- *       being garbage collected. If some of the data is no longer reachable through other means,
- *       this constitutes a memory leak. Pass the view collection to the appropriate {@code copyOf}
- *       method to obtain a correctly-sized copy.
  *   <li>The performance of using the associated {@code Builder} class can be assumed to be no
  *       worse, and possibly better, than creating a mutable collection and copying it.
  *   <li>Implementations generally do not cache hash codes. If your element or key type has a slow

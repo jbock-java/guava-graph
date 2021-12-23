@@ -18,7 +18,6 @@
 package com.google.common.graph;
 
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multiset;
 import org.junit.Test;
@@ -29,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -1251,7 +1251,7 @@ public class TraverserTest {
     }
 
     private static void assertEqualCharNodes(Iterable<Character> result, String expectedCharacters) {
-        assertThat(ImmutableList.copyOf(result))
+        assertThat(StreamSupport.stream(result.spliterator(), false).collect(Collectors.toList()))
                 .containsExactlyElementsIn(charactersOf(expectedCharacters))
                 .inOrder();
     }

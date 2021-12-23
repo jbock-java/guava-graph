@@ -22,9 +22,6 @@ import com.google.common.annotations.GwtIncompatible;
 import java.util.function.Consumer;
 
 /**
- * An {@link ImmutableAsList} implementation specialized for when the delegate collection is already
- * backed by an {@code ImmutableList} or array.
- *
  * @author Louis Wasserman
  */
 @GwtCompatible(emulated = true)
