@@ -18,8 +18,10 @@ package com.google.common.graph;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
@@ -74,16 +76,16 @@ public final class ImmutableValueGraph<N, V> extends StandardValueGraph<N, V> {
         return new ImmutableGraph<>(this); // safe because the view is effectively immutable
     }
 
-    private static <N, V> ImmutableMap<N, GraphConnections<N, V>> getNodeConnections(
+    private static <N, V> Map<N, GraphConnections<N, V>> getNodeConnections(
             ValueGraph<N, V> graph) {
         // ImmutableMap.Builder maintains the order of the elements as inserted, so the map will have
         // whatever ordering the graph's nodes do, so ImmutableSortedMap is unnecessary even if the
         // input nodes are sorted.
-        ImmutableMap.Builder<N, GraphConnections<N, V>> nodeConnections = ImmutableMap.builder();
+        Map<N, GraphConnections<N, V>> nodeConnections = new LinkedHashMap<>();
         for (N node : graph.nodes()) {
             nodeConnections.put(node, connectionsOf(graph, node));
         }
-        return nodeConnections.build();
+        return nodeConnections;
     }
 
     private static <N, V> GraphConnections<N, V> connectionsOf(ValueGraph<N, V> graph, N node) {

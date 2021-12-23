@@ -18,7 +18,6 @@ package com.google.common.graph;
 
 import com.google.common.base.Function;
 import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.UnmodifiableIterator;
 

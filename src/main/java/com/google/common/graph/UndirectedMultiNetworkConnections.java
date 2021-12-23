@@ -24,6 +24,7 @@ import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,7 +52,7 @@ final class UndirectedMultiNetworkConnections<N, E>
     }
 
     static <N, E> UndirectedMultiNetworkConnections<N, E> ofImmutable(Map<E, N> incidentEdges) {
-        return new UndirectedMultiNetworkConnections<>(ImmutableMap.copyOf(incidentEdges));
+        return new UndirectedMultiNetworkConnections<>(Collections.unmodifiableMap(new LinkedHashMap<>(incidentEdges)));
     }
 
     private transient Reference<Multiset<N>> adjacentNodesReference;

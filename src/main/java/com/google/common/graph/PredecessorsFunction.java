@@ -57,7 +57,7 @@ import com.google.common.annotations.Beta;
  * transformation:
  *
  * <pre>{@code
- * someGraphAlgorithm(startNode, node -> ImmutableList.of(node.mother(), node.father()));
+ * someGraphAlgorithm(startNode, node -> List.of(node.mother(), node.father()));
  * }</pre>
  *
  * <p>Graph algorithms that need additional capabilities (accessing both predecessors and

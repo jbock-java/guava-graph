@@ -809,18 +809,6 @@ public final class Maps {
         V2 transformEntry(K key, V1 value);
     }
 
-    /** Views a function as an entry transformer that ignores the entry key. */
-    static <K, V1, V2>
-    EntryTransformer<K, V1, V2> asEntryTransformer(final Function<? super V1, V2> function) {
-        checkNotNull(function);
-        return new EntryTransformer<K, V1, V2>() {
-            @Override
-            public V2 transformEntry(K key, V1 value) {
-                return function.apply(value);
-            }
-        };
-    }
-
     /** Returns a view of an entry transformed by the specified transformer. */
     static <V2, K, V1>
     Entry<K, V2> transformEntry(
@@ -2401,15 +2389,5 @@ public final class Maps {
         public String toString() {
             return standardToString();
         }
-    }
-
-    /** Returns a map from the ith element of list to i. */
-    static <E> ImmutableMap<E, Integer> indexMap(Collection<E> list) {
-        ImmutableMap.Builder<E, Integer> builder = new ImmutableMap.Builder<>(list.size());
-        int i = 0;
-        for (E e : list) {
-            builder.put(e, i++);
-        }
-        return builder.build();
     }
 }

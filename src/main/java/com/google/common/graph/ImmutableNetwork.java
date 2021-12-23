@@ -18,9 +18,9 @@ package com.google.common.graph;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -77,22 +77,22 @@ public final class ImmutableNetwork<N, E> extends StandardNetwork<N, E> {
         // ImmutableMap.Builder maintains the order of the elements as inserted, so the map will have
         // whatever ordering the network's nodes do, so ImmutableSortedMap is unnecessary even if the
         // input nodes are sorted.
-        ImmutableMap.Builder<N, NetworkConnections<N, E>> nodeConnections = ImmutableMap.builder();
+        Map<N, NetworkConnections<N, E>> nodeConnections = new LinkedHashMap<>();
         for (N node : network.nodes()) {
             nodeConnections.put(node, connectionsOf(network, node));
         }
-        return nodeConnections.build();
+        return nodeConnections;
     }
 
     private static <N, E> Map<E, N> getEdgeToReferenceNode(Network<N, E> network) {
         // ImmutableMap.Builder maintains the order of the elements as inserted, so the map will have
         // whatever ordering the network's edges do, so ImmutableSortedMap is unnecessary even if the
         // input edges are sorted.
-        ImmutableMap.Builder<E, N> edgeToReferenceNode = ImmutableMap.builder();
+        Map<E, N> edgeToReferenceNode = new LinkedHashMap<>();
         for (E edge : network.edges()) {
             edgeToReferenceNode.put(edge, network.incidentNodes(edge).nodeU());
         }
-        return edgeToReferenceNode.build();
+        return edgeToReferenceNode;
     }
 
     private static <N, E> NetworkConnections<N, E> connectionsOf(Network<N, E> network, N node) {

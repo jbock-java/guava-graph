@@ -16,7 +16,7 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableList;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -130,7 +130,7 @@ final class StandardMutableNetwork<N, E> extends StandardNetwork<N, E>
 
         // Since views are returned, we need to copy the edges that will be removed.
         // Thus we avoid modifying the underlying view while iterating over it.
-        for (E edge : ImmutableList.copyOf(connections.incidentEdges())) {
+        for (E edge : List.copyOf(connections.incidentEdges())) {
             removeEdge(edge);
         }
         nodeConnections.remove(node);

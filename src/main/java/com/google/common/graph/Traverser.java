@@ -166,7 +166,7 @@ public abstract class Traverser<N> {
      * leftChild(node)} and {@code rightChild(node)}, this method can be called as
      *
      * <pre>{@code
-     * Traverser.forTree(node -> ImmutableList.of(leftChild(node), rightChild(node)));
+     * Traverser.forTree(node -> List.of(leftChild(node), rightChild(node)));
      * }</pre>
      *
      * @param tree {@link SuccessorsFunction} representing a directed acyclic graph that has at most

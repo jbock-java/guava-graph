@@ -16,15 +16,12 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.UnmodifiableIterator;
 
 import java.util.AbstractSet;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

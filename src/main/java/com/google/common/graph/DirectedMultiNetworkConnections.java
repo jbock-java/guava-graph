@@ -24,6 +24,7 @@ import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,7 +56,8 @@ final class DirectedMultiNetworkConnections<N, E> extends AbstractDirectedNetwor
     static <N, E> DirectedMultiNetworkConnections<N, E> ofImmutable(
             Map<E, N> inEdges, Map<E, N> outEdges, int selfLoopCount) {
         return new DirectedMultiNetworkConnections<>(
-                ImmutableMap.copyOf(inEdges), ImmutableMap.copyOf(outEdges), selfLoopCount);
+                Collections.unmodifiableMap(new LinkedHashMap<>(inEdges)),
+                Collections.unmodifiableMap(new LinkedHashMap<>(outEdges)), selfLoopCount);
     }
 
     private transient Reference<Multiset<N>> predecessorsReference;
