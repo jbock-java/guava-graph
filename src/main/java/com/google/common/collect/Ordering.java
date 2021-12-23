@@ -57,7 +57,6 @@ import static com.google.common.collect.CollectPreconditions.checkNonnegative;
  *   <li>Subclass it and implement {@link #compare} instead of implementing {@link Comparator}
  *       directly
  *   <li>Pass a <i>pre-existing</i> {@link Comparator} instance to {@link #from(Comparator)}
- *   <li>Use the natural ordering, {@link Ordering#natural}
  * </ul>
  *
  * <p><b>Chaining</b>
@@ -66,7 +65,6 @@ import static com.google.common.collect.CollectPreconditions.checkNonnegative;
  * Ordering}, including:
  *
  * <ul>
- *   <li>{@link #reverse}
  *   <li>{@link #onResultOf(Function)}
  * </ul>
  *
@@ -104,10 +102,6 @@ import static com.google.common.collect.CollectPreconditions.checkNonnegative;
  *   <li>Finally, natural ordering is used (i.e. the result of {@code Bar.compareTo(Bar)} is
  *       returned)
  * </ol>
- *
- * <p>Alas, {@link #reverse} is a little different. As you read backwards through a chain and
- * encounter a call to {@code reverse}, continue working backwards until a result is determined, and
- * then reverse that result.
  *
  * <p><b>Additional notes</b>
  *
@@ -267,7 +261,7 @@ public abstract class Ordering<T> implements Comparator<T> {
      * other {@code min} overloads, so overriding it will affect their behavior.
      *
      * <p><b>Note:</b> Consider using {@code Comparators.min(a, b, thisComparator)} instead. If {@code
-     * thisComparator} is {@link Ordering#natural}, then use {@code Comparators.min(a, b)}.
+     * thisComparator} is {@link Comparator#naturalOrder()}, then use {@code Comparators.min(a, b)}.
      *
      * @param a value to compare, returned if less than or equal to b.
      * @param b value to compare.
@@ -354,7 +348,7 @@ public abstract class Ordering<T> implements Comparator<T> {
      * other {@code max} overloads, so overriding it will affect their behavior.
      *
      * <p><b>Note:</b> Consider using {@code Comparators.max(a, b, thisComparator)} instead. If {@code
-     * thisComparator} is {@link Ordering#natural}, then use {@code Comparators.max(a, b)}.
+     * thisComparator} is {@link Comparator#naturalOrder()}, then use {@code Comparators.max(a, b)}.
      *
      * @param a value to compare, returned if greater than or equal to b.
      * @param b value to compare.

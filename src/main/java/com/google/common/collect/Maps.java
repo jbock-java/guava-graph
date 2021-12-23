@@ -16,10 +16,6 @@
 
 package com.google.common.collect;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.CollectPreconditions.checkNonnegative;
-
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.Function;
@@ -27,6 +23,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.primitives.Ints;
+
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
 import java.util.Collection;
@@ -47,8 +44,11 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.CollectPreconditions.checkNonnegative;
 
 /**
  * Static utility methods pertaining to {@link Map} instances (including instances of {@link
@@ -2233,16 +2233,11 @@ public final class Maps {
             if (result == null) {
                 Comparator<? super K> forwardCmp = forward().comparator();
                 if (forwardCmp == null) {
-                    forwardCmp = (Comparator) Ordering.natural();
+                    forwardCmp = (Comparator) Comparator.naturalOrder();
                 }
-                result = comparator = reverse(forwardCmp);
+                result = comparator = forwardCmp.reversed();
             }
             return result;
-        }
-
-        // If we inline this, we get a javac error.
-        private static <T> Ordering<T> reverse(Comparator<T> forward) {
-            return Ordering.from(forward).reverse();
         }
 
         @Override

@@ -19,7 +19,6 @@ package com.google.common.graph;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -128,7 +127,7 @@ public final class ElementOrder<T> {
      * Returns an instance which specifies that the natural ordering of the elements is guaranteed.
      */
     public static <S extends Comparable<? super S>> ElementOrder<S> natural() {
-        return new ElementOrder<>(Type.SORTED, Ordering.<S>natural());
+        return sorted(Comparator.<S>naturalOrder());
     }
 
     /**

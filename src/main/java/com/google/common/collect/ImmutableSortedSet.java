@@ -16,17 +16,18 @@
 
 package com.google.common.collect;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
+
 import java.util.Comparator;
 import java.util.NavigableSet;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A {@link NavigableSet} whose contents will never change, with many other important properties
@@ -54,7 +55,7 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
             ImmutableSet.SPLITERATOR_CHARACTERISTICS | Spliterator.SORTED;
 
     static <E> RegularImmutableSortedSet<E> emptySet(Comparator<? super E> comparator) {
-        if (Ordering.natural().equals(comparator)) {
+        if (Comparator.naturalOrder().equals(comparator)) {
             return (RegularImmutableSortedSet<E>) RegularImmutableSortedSet.NATURAL_EMPTY_SET;
         } else {
             return new RegularImmutableSortedSet<E>(ImmutableList.<E>of(), comparator);
@@ -63,7 +64,7 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
 
     /** Returns an immutable sorted set containing a single element. */
     public static <E extends Comparable<? super E>> ImmutableSortedSet<E> of(E element) {
-        return new RegularImmutableSortedSet<E>(ImmutableList.of(element), Ordering.natural());
+        return new RegularImmutableSortedSet<E>(ImmutableList.of(element), Comparator.naturalOrder());
     }
 
     int unsafeCompare(Object a, Object b) {
@@ -86,7 +87,7 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
     }
 
     /**
-     * Returns the comparator that orders the elements, which is {@link Ordering#natural()} when the
+     * Returns the comparator that orders the elements, which is {@link Comparator#naturalOrder()} ()} when the
      * natural ordering of the elements is used. Note that its behavior is not consistent with {@link
      * SortedSet#comparator()}, which returns {@code null} to indicate natural ordering.
      */
