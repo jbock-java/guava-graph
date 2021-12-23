@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.Spliterator;
 import java.util.function.BiFunction;
@@ -274,15 +275,15 @@ public abstract class ImmutableMap<K, V> implements Map<K, V> {
 
     abstract ImmutableSet<Entry<K, V>> createEntrySet();
 
-    private transient ImmutableSet<K> keySet;
+    private transient Set<K> keySet;
 
     /**
      * Returns an immutable set of the keys in this map, in the same order that they appear in {@link
      * #entrySet}.
      */
     @Override
-    public ImmutableSet<K> keySet() {
-        ImmutableSet<K> result = keySet;
+    public Set<K> keySet() {
+        Set<K> result = keySet;
         return (result == null) ? keySet = createKeySet() : result;
     }
 
@@ -291,7 +292,7 @@ public abstract class ImmutableMap<K, V> implements Map<K, V> {
      * but ProGuard can't figure out how to eliminate that default when RegularImmutableMap
      * overrides it.
      */
-    abstract ImmutableSet<K> createKeySet();
+    abstract Set<K> createKeySet();
 
     UnmodifiableIterator<K> keyIterator() {
         final UnmodifiableIterator<Entry<K, V>> entryIterator = entrySet().iterator();

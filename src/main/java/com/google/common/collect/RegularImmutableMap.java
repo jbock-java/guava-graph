@@ -21,6 +21,7 @@ import com.google.common.annotations.GwtIncompatible;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMapEntry.NonTerminalImmutableMapEntry;
 
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -204,7 +205,7 @@ final class RegularImmutableMap<K, V> extends ImmutableMap<K, V> {
     }
 
     @Override
-    ImmutableSet<K> createKeySet() {
+    Set<K> createKeySet() {
         return new KeySet<>(this);
     }
 

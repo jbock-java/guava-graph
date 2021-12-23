@@ -200,38 +200,6 @@ public final class Iterables {
         return Iterators.removeIf(removeFrom.iterator(), predicate);
     }
 
-    /** Removes and returns the first matching element, or returns {@code null} if there is none. */
-    static <T> T removeFirstMatching(
-            Iterable<T> removeFrom, Predicate<? super T> predicate) {
-        checkNotNull(predicate);
-        Iterator<T> iterator = removeFrom.iterator();
-        while (iterator.hasNext()) {
-            T next = iterator.next();
-            if (predicate.apply(next)) {
-                iterator.remove();
-                return next;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Determines whether two iterables contain equal elements in the same order. More specifically,
-     * this method returns {@code true} if {@code iterable1} and {@code iterable2} contain the same
-     * number of elements and every element of {@code iterable1} is equal to the corresponding element
-     * of {@code iterable2}.
-     */
-    public static boolean elementsEqual(Iterable<?> iterable1, Iterable<?> iterable2) {
-        if (iterable1 instanceof Collection && iterable2 instanceof Collection) {
-            Collection<?> collection1 = (Collection<?>) iterable1;
-            Collection<?> collection2 = (Collection<?>) iterable2;
-            if (collection1.size() != collection2.size()) {
-                return false;
-            }
-        }
-        return Iterators.elementsEqual(iterable1.iterator(), iterable2.iterator());
-    }
-
     /**
      * Returns a string representation of {@code iterable}, with the format {@code [e1, e2, ..., en]}
      * (that is, identical to {@link java.util.Arrays Arrays}{@code
@@ -241,77 +209,6 @@ public final class Iterables {
      */
     public static String toString(Iterable<?> iterable) {
         return Iterators.toString(iterable.iterator());
-    }
-
-    /**
-     * Returns the single element contained in {@code iterable}.
-     *
-     * <p><b>Java 8 users:</b> the {@code Stream} equivalent to this method is {@code
-     * stream.collect(MoreCollectors.onlyElement())}.
-     *
-     * @throws NoSuchElementException if the iterable is empty
-     * @throws IllegalArgumentException if the iterable contains multiple elements
-     */
-    public static <T> T getOnlyElement(Iterable<T> iterable) {
-        return Iterators.getOnlyElement(iterable.iterator());
-    }
-
-    /**
-     * Returns the single element contained in {@code iterable}, or {@code defaultValue} if the
-     * iterable is empty.
-     *
-     * <p><b>Java 8 users:</b> the {@code Stream} equivalent to this method is {@code
-     * stream.collect(MoreCollectors.toOptional()).orElse(defaultValue)}.
-     *
-     * @throws IllegalArgumentException if the iterator contains multiple elements
-     */
-    public static <T> T getOnlyElement(
-            Iterable<? extends T> iterable, T defaultValue) {
-        return Iterators.getOnlyElement(iterable.iterator(), defaultValue);
-    }
-
-    /**
-     * Copies an iterable's elements into an array.
-     *
-     * @param iterable the iterable to copy
-     * @param type the type of the elements
-     * @return a newly-allocated array into which all the elements of the iterable have been copied
-     */
-    @GwtIncompatible // Array.newInstance(Class, int)
-    /*
-     * If we could express Class<@Nonnull T>, we could generalize the type parameter to <T extends
-     * Object>, and then we could accept an Iterable<? extends T> and return a plain T[]
-     * instead of a T[].
-     */
-    public static <T> T[] toArray(Iterable<? extends T> iterable, Class<T> type) {
-        return toArray(iterable, ObjectArrays.newArray(type, 0));
-    }
-
-    static <T> T[] toArray(Iterable<? extends T> iterable, T[] array) {
-        Collection<? extends T> collection = castOrCopyToCollection(iterable);
-        return collection.toArray(array);
-    }
-
-    /**
-     * Copies an iterable's elements into an array.
-     *
-     * @param iterable the iterable to copy
-     * @return a newly-allocated array into which all the elements of the iterable have been copied
-     */
-    static Object[] toArray(Iterable<?> iterable) {
-        return castOrCopyToCollection(iterable).toArray();
-    }
-
-    /**
-     * Converts an iterable into a collection. If the iterable is already a collection, it is
-     * returned. Otherwise, an {@link java.util.ArrayList} is created with the contents of the
-     * iterable in the same iteration order.
-     */
-    private static <E> Collection<E> castOrCopyToCollection(
-            Iterable<E> iterable) {
-        return (iterable instanceof Collection)
-                ? (Collection<E>) iterable
-                : Lists.newArrayList(iterable.iterator());
     }
 
     /**
@@ -441,44 +338,6 @@ public final class Iterables {
     public static <T> Iterable<T> concat(
             Iterable<? extends T> a, Iterable<? extends T> b, Iterable<? extends T> c) {
         return FluentIterable.concat(a, b, c);
-    }
-
-    /**
-     * Combines four iterables into a single iterable. The returned iterable has an iterator that
-     * traverses the elements in {@code a}, followed by the elements in {@code b}, followed by the
-     * elements in {@code c}, followed by the elements in {@code d}. The source iterators are not
-     * polled until necessary.
-     *
-     * <p>The returned iterable's iterator supports {@code remove()} when the corresponding input
-     * iterator supports it.
-     *
-     * <p><b>Java 8 users:</b> The {@code Stream} equivalent of this method is {@code
-     * Streams.concat(a, b, c, d)}.
-     */
-    public static <T> Iterable<T> concat(
-            Iterable<? extends T> a,
-            Iterable<? extends T> b,
-            Iterable<? extends T> c,
-            Iterable<? extends T> d) {
-        return FluentIterable.concat(a, b, c, d);
-    }
-
-    /**
-     * Combines multiple iterables into a single iterable. The returned iterable has an iterator that
-     * traverses the elements of each iterable in {@code inputs}. The input iterators are not polled
-     * until necessary.
-     *
-     * <p>The returned iterable's iterator supports {@code remove()} when the corresponding input
-     * iterator supports it.
-     *
-     * <p><b>Java 8 users:</b> The {@code Stream} equivalent of this method is {@code
-     * Streams.concat(...)}.
-     *
-     * @throws NullPointerException if any of the provided iterables is null
-     */
-    @SafeVarargs
-    public static <T> Iterable<T> concat(Iterable<? extends T>... inputs) {
-        return FluentIterable.concat(inputs);
     }
 
     /**

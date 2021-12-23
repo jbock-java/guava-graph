@@ -316,22 +316,6 @@ public final class Iterators {
             Iterator<? extends T> iterator, T defaultValue) {
         return iterator.hasNext() ? getOnlyElement(iterator) : defaultValue;
     }
-
-    /**
-     * Copies an iterator's elements into an array. The iterator will be left exhausted: its {@code
-     * hasNext()} method will return {@code false}.
-     *
-     * @param iterator the iterator to copy
-     * @param type the type of the elements
-     * @return a newly-allocated array into which all the elements of the iterator have been copied
-     */
-    @GwtIncompatible // Array.newInstance(Class, int)
-    // For discussion of this signature, see the corresponding overload of *Iterables*.toArray.
-    public static <T> T[] toArray(Iterator<? extends T> iterator, Class<T> type) {
-        List<T> list = Lists.newArrayList(iterator);
-        return Iterables.toArray(list, type);
-    }
-
     /**
      * Adds all elements in {@code iterator} to {@code collection}. The iterator will be left
      * exhausted: its {@code hasNext()} method will return {@code false}.
