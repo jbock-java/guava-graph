@@ -25,7 +25,7 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 /**
- * {@code entrySet()} implementation for {@link ImmutableMap}.
+ * {@code entrySet()} implementation for {@code ImmutableMap}.
  *
  * @author Jesse Wilson
  * @author Kevin Bourrillion

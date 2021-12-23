@@ -48,11 +48,11 @@ final class SortedIterables {
 
     @SuppressWarnings("unchecked")
     // if sortedSet.comparator() is null, the set must be naturally ordered
-    public static <E> Comparator<? super E> comparator(
+    private static <E> Comparator<? super E> comparator(
             SortedSet<E> sortedSet) {
         Comparator<? super E> result = sortedSet.comparator();
         if (result == null) {
-            result = (Comparator<? super E>) Ordering.natural();
+            result = (Comparator<? super E>) Comparator.naturalOrder();
         }
         return result;
     }

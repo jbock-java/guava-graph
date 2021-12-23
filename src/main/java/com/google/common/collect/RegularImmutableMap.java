@@ -30,7 +30,7 @@ import static com.google.common.collect.ImmutableMapEntry.createEntryArray;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Implementation of {@link ImmutableMap} with two or more entries.
+ * Implementation of {@code ImmutableMap} with two or more entries.
  *
  * @author Jesse Wilson
  * @author Kevin Bourrillion

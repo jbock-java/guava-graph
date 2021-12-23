@@ -16,7 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Ordering;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;

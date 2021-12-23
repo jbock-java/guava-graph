@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * {@code keySet()} implementation for {@link ImmutableMap}.
+ * {@code keySet()} implementation for {@code ImmutableMap}.
  *
  * @author Jesse Wilson
  * @author Kevin Bourrillion

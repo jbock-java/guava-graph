@@ -16,23 +16,22 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Ordering;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 
 /** Tests for an undirected {@link StandardMutableNetwork}. */
-@AndroidIncompatible
 @RunWith(Parameterized.class)
 public final class StandardMutableUndirectedNetworkTest
         extends AbstractStandardUndirectedNetworkTest {
 
     @Parameters(name = "allowsSelfLoops={0}, allowsParallelEdges={1}, nodeOrder={2}, edgeOrder={3}")
     public static Collection<Object[]> parameters() {
-        ElementOrder<?> naturalElementOrder = ElementOrder.sorted(Ordering.natural());
+        ElementOrder<?> naturalElementOrder = ElementOrder.sorted((Comparator) Comparator.naturalOrder());
 
         return Arrays.asList(
                 new Object[][]{

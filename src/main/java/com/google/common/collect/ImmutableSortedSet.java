@@ -87,7 +87,7 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
     }
 
     /**
-     * Returns the comparator that orders the elements, which is {@link Comparator#naturalOrder()} ()} when the
+     * Returns the comparator that orders the elements, which is {@code Comparator#naturalOrder()} ()} when the
      * natural ordering of the elements is used. Note that its behavior is not consistent with {@link
      * SortedSet#comparator()}, which returns {@code null} to indicate natural ordering.
      */

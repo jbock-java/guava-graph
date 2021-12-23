@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /** Tests for a directed {@link StandardMutableGraph}. */
-@AndroidIncompatible
 @RunWith(Parameterized.class)
 public final class StandardImmutableDirectedGraphTest extends AbstractStandardDirectedGraphTest {
 

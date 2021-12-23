@@ -19,9 +19,11 @@ package com.google.common.graph;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.graph.GraphConstants.Presence;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -74,16 +76,16 @@ public class ImmutableGraph<N> extends ForwardingGraph<N> {
         return ElementOrder.stable();
     }
 
-    private static <N> ImmutableMap<N, GraphConnections<N, Presence>> getNodeConnections(
+    private static <N> Map<N, GraphConnections<N, Presence>> getNodeConnections(
             Graph<N> graph) {
         // ImmutableMap.Builder maintains the order of the elements as inserted, so the map will have
         // whatever ordering the graph's nodes do, so ImmutableSortedMap is unnecessary even if the
         // input nodes are sorted.
-        ImmutableMap.Builder<N, GraphConnections<N, Presence>> nodeConnections = ImmutableMap.builder();
+        Map<N, GraphConnections<N, Presence>> nodeConnections = new LinkedHashMap<>();
         for (N node : graph.nodes()) {
             nodeConnections.put(node, connectionsOf(graph, node));
         }
-        return nodeConnections.build();
+        return nodeConnections;
     }
 
     @SuppressWarnings("unchecked")

@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /** Tests for an undirected {@link StandardMutableGraph}. */
-@AndroidIncompatible
 @RunWith(Parameterized.class)
 public final class StandardImmutableUndirectedGraphTest
         extends AbstractStandardUndirectedGraphTest {
