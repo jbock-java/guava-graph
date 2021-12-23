@@ -196,14 +196,18 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
     /** @since 12.0 */
     @Override
     public E ceiling(E e) {
-        return Iterables.getFirst(tailSet(e, true), null);
+        ImmutableSortedSet<E> es = tailSet(e, true);
+        UnmodifiableIterator<E> it = es.iterator();
+        return it.hasNext() ? it.next() : null;
     }
 
     /** @since 12.0 */
     @GwtIncompatible // NavigableSet
     @Override
     public E higher(E e) {
-        return Iterables.getFirst(tailSet(e, false), null);
+        ImmutableSortedSet<E> es = tailSet(e, false);
+        UnmodifiableIterator<E> it = es.iterator();
+        return it.hasNext() ? it.next() : null;
     }
 
     @Override

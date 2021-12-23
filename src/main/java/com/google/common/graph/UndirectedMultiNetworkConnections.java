@@ -17,7 +17,6 @@
 package com.google.common.graph;
 
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multiset;
 
 import java.lang.ref.Reference;

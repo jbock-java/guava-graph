@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 
-import static com.google.common.collect.ForwardingSortedMap.unsafeCompare;
-
 /**
  * A sorted set which forwards all its method calls to another sorted set. Subclasses should
  * override one or more methods to modify the behavior of the backing sorted set as desired per the
@@ -139,5 +137,14 @@ public abstract class ForwardingSortedSet<E> extends ForwardingSet<E>
             return false;
         }
         return false;
+    }
+
+    private static int unsafeCompare(
+            Comparator<?> comparator, Object o1, Object o2) {
+        if (comparator == null) {
+            return ((Comparable<Object>) o1).compareTo(o2);
+        } else {
+            return ((Comparator<Object>) comparator).compare(o1, o2);
+        }
     }
 }

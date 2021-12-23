@@ -52,7 +52,7 @@ import static com.google.common.collect.CollectPreconditions.checkNonnegative;
 
 /**
  * Static utility methods pertaining to {@link Map} instances (including instances of {@link
- * SortedMap}, {@link BiMap}, etc.). Also see this class's counterparts {@link Lists} and {@link Sets}.
+ * SortedMap}). Also see this class's counterparts {@link Lists} and {@link Sets}.
  *
  * <p>See the Guava User Guide article on <a href=
  * "https://github.com/google/guava/wiki/CollectionUtilitiesExplained#maps"> {@code Maps}</a>.
@@ -185,7 +185,7 @@ public final class Maps {
 
         @Override
         public Set<K> createKeySet() {
-            return removeOnlySet(backingSet());
+            return Set.copyOf(backingSet());
         }
 
         @Override
@@ -265,25 +265,6 @@ public final class Maps {
             @Override
             Entry<K, V> transform(final K key) {
                 return immutableEntry(key, function.apply(key));
-            }
-        };
-    }
-
-    private static <E> Set<E> removeOnlySet(final Set<E> set) {
-        return new ForwardingSet<E>() {
-            @Override
-            protected Set<E> delegate() {
-                return set;
-            }
-
-            @Override
-            public boolean add(E element) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public boolean addAll(Collection<? extends E> es) {
-                throw new UnsupportedOperationException();
             }
         };
     }

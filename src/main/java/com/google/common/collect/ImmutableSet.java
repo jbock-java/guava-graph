@@ -29,6 +29,7 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
@@ -424,16 +425,16 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
         }
 
         @Override
-        ImmutableSet<E> build() {
+        Set<E> build() {
             switch (distinct) {
                 case 0:
-                    return of();
+                    return Set.of();
                 case 1:
                     /*
                      * requireNonNull is safe because we ensure that the first `distinct` elements have been
                      * populated.
                      */
-                    return of(requireNonNull(dedupedElements[0]));
+                    return Set.of(requireNonNull(dedupedElements[0]));
                 default:
                     /*
                      * The suppression is safe because we ensure that the first `distinct` elements have been
@@ -444,8 +445,13 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
                             (distinct == dedupedElements.length)
                                     ? dedupedElements
                                     : Arrays.copyOf(dedupedElements, distinct);
-                    return new RegularImmutableSet<E>(
-                            elements, hashCode, requireNonNull(hashTable), hashTable.length - 1);
+                    HashSet<E> result = new HashSet<>();
+                    for (Object element : elements) {
+                        result.add((E) element);
+                    }
+                    return result;
+//                return new RegularImmutableSet<E>(
+//                            elements, hashCode, requireNonNull(hashTable), hashTable.length - 1);
             }
         }
 

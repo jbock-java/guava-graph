@@ -16,7 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 
 import java.util.Collections;

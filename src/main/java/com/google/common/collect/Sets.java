@@ -17,14 +17,10 @@
 package com.google.common.collect;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Collections2.FilteredCollection;
 
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NavigableSet;
@@ -192,7 +188,7 @@ public final class Sets {
         @Override
         public abstract UnmodifiableIterator<E> iterator();
     }
-    
+
     /** An implementation for {@link Set#hashCode()}. */
     static int hashCodeImpl(Set<?> s) {
         int hashCode = 0;

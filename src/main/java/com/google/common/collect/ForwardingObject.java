@@ -29,9 +29,7 @@ package com.google.common.collect;
  * such custom interfaces directly; they are implemented only in subclasses. Therefore, forwarding
  * {@code equals} would break symmetry, as the forwarding object might consider itself equal to the
  * object being tested, but the reverse could not be true. This behavior is consistent with the
- * JDK's collection wrappers, such as {@link java.util.Collections#unmodifiableCollection}. Use an
- * interface-specific subclass of {@code ForwardingObject}, such as {@link ForwardingList}, to
- * preserve equality behavior, or override {@code equals} directly.
+ * JDK's collection wrappers, such as {@link java.util.Collections#unmodifiableCollection}.
  *
  * @author Mike Bostock
  * @since 2.0

@@ -240,29 +240,6 @@ public abstract class FluentIterable<E> implements Iterable<E> {
         return concatNoDefensiveCopy(Arrays.copyOf(inputs, inputs.length));
     }
 
-    /**
-     * Returns a fluent iterable that combines several iterables. The returned iterable has an
-     * iterator that traverses the elements of each iterable in {@code inputs}. The input iterators
-     * are not polled until necessary.
-     *
-     * <p>The returned iterable's iterator supports {@code remove()} when the corresponding input
-     * iterator supports it. The methods of the returned iterable may throw {@code
-     * NullPointerException} if any of the input iterators is {@code null}.
-     *
-     * @since 20.0
-     */
-    @Beta
-    public static <T> FluentIterable<T> concat(
-            final Iterable<? extends Iterable<? extends T>> inputs) {
-        checkNotNull(inputs);
-        return new FluentIterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return Iterators.concat(Iterators.transform(inputs.iterator(), Iterables.<T>toIterator()));
-            }
-        };
-    }
-
     /** Concatenates a varargs array of iterables without making a defensive copy of the array. */
     private static <T> FluentIterable<T> concatNoDefensiveCopy(
             final Iterable<? extends T>... inputs) {
@@ -294,24 +271,5 @@ public abstract class FluentIterable<E> implements Iterable<E> {
     @Override
     public String toString() {
         return Iterables.toString(getDelegate());
-    }
-
-    /**
-     * Returns the number of elements in this fluent iterable.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@link Stream#count}.
-     */
-    public final int size() {
-        return Iterables.size(getDelegate());
-    }
-
-    /**
-     * Returns {@code true} if this fluent iterable contains any object for which {@code
-     * equals(target)} is true.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@code stream.anyMatch(Predicate.isEqual(target))}.
-     */
-    public final boolean contains(Object target) {
-        return Iterables.contains(getDelegate(), target);
     }
 }
