@@ -452,6 +452,6 @@ public abstract class ImmutableCollection<E> extends AbstractCollection<E> {
          * <p>Note that each builder class covariantly returns the appropriate type of {@code
          * ImmutableCollection} from this method.
          */
-        public abstract ImmutableCollection<E> build();
+        public abstract Collection<E> build();
     }
 }

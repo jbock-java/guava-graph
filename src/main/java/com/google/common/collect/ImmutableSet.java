@@ -207,7 +207,7 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
         }
 
         @Override
-        public ImmutableSet<E> build() {
+        public Set<E> build() {
             requireNonNull(impl); // see the comment on the field
             forceCopy = true;
             impl = impl.review();
@@ -272,7 +272,7 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
             return this;
         }
 
-        abstract ImmutableSet<E> build();
+        abstract Set<E> build();
     }
 
     private static final class EmptySetBuilderImpl<E> extends SetBuilderImpl<E> {
@@ -592,7 +592,7 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
         }
 
         @Override
-        ImmutableSet<E> build() {
+        Set<E> build() {
             switch (distinct) {
                 case 0:
                     return of();
@@ -603,8 +603,7 @@ public abstract class ImmutableSet<E> extends ImmutableCollection<E> implements 
                      */
                     return of(requireNonNull(dedupedElements[0]));
                 default:
-                    return new JdkBackedImmutableSet<E>(
-                            delegate, ImmutableList.asImmutableList(dedupedElements, distinct));
+                    return (Set<E>) delegate;
             }
         }
     }
