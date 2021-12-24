@@ -16,9 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.Collections;
@@ -27,9 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.graph.GraphConstants.INNER_CAPACITY;
 import static com.google.common.graph.GraphConstants.INNER_LOAD_FACTOR;
+import static java.util.Objects.requireNonNull;
 
 /**
  * An implementation of {@link NetworkConnections} for undirected networks with parallel edges.
@@ -54,17 +51,21 @@ final class UndirectedMultiNetworkConnections<N, E>
         return new UndirectedMultiNetworkConnections<>(Collections.unmodifiableMap(new LinkedHashMap<>(incidentEdges)));
     }
 
-    private transient Reference<Multiset<N>> adjacentNodesReference;
+    private transient Reference<Map<N, Integer>> adjacentNodesReference;
 
     @Override
     public Set<N> adjacentNodes() {
-        return Collections.unmodifiableSet(adjacentNodesMultiset().elementSet());
+        return Collections.unmodifiableSet(adjacentNodesMultiset().keySet());
     }
 
-    private Multiset<N> adjacentNodesMultiset() {
-        Multiset<N> adjacentNodes = getReference(adjacentNodesReference);
+    private Map<N, Integer> adjacentNodesMultiset() {
+        Map<N, Integer> adjacentNodes = getReference(adjacentNodesReference);
         if (adjacentNodes == null) {
-            adjacentNodes = HashMultiset.create(incidentEdgeMap.values());
+            adjacentNodes = new HashMap<>();
+            for (N node : incidentEdgeMap.values()) {
+                Integer count = adjacentNodes.getOrDefault(node, 0);
+                adjacentNodes.put(node, count + 1);
+            }
             adjacentNodesReference = new SoftReference<>(adjacentNodes);
         }
         return adjacentNodes;
@@ -75,7 +76,7 @@ final class UndirectedMultiNetworkConnections<N, E>
         return new MultiEdgesConnecting<E>(incidentEdgeMap, node) {
             @Override
             public int size() {
-                return adjacentNodesMultiset().count(node);
+                return adjacentNodesMultiset().getOrDefault(node, 0);
             }
         };
     }
@@ -91,9 +92,9 @@ final class UndirectedMultiNetworkConnections<N, E>
     @Override
     public N removeOutEdge(E edge) {
         N node = super.removeOutEdge(edge);
-        Multiset<N> adjacentNodes = getReference(adjacentNodesReference);
+        Map<N, Integer> adjacentNodes = getReference(adjacentNodesReference);
         if (adjacentNodes != null) {
-            checkState(adjacentNodes.remove(node));
+            adjacentNodes.compute(node, (n, count) -> requireNonNull(count) == 1 ? null : count - 1);
         }
         return node;
     }
@@ -108,9 +109,9 @@ final class UndirectedMultiNetworkConnections<N, E>
     @Override
     public void addOutEdge(E edge, N node) {
         super.addOutEdge(edge, node);
-        Multiset<N> adjacentNodes = getReference(adjacentNodesReference);
+        Map<N, Integer> adjacentNodes = getReference(adjacentNodesReference);
         if (adjacentNodes != null) {
-            checkState(adjacentNodes.add(node));
+            adjacentNodes.compute(node, (n, count) -> count == null ? 1 : count + 1);
         }
     }
 

@@ -16,21 +16,16 @@
 
 package com.google.common.collect;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.CollectPreconditions.checkNonnegative;
-import static com.google.common.collect.CollectPreconditions.checkRemove;
-import static java.util.Objects.requireNonNull;
-
 import com.google.common.base.Objects;
 import com.google.common.collect.Multiset.Entry;
-import com.google.common.primitives.Ints;
-import java.io.Serializable;
+
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Spliterator;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.CollectPreconditions.checkNonnegative;
 
 /**
  * Provides static utility methods for creating and working with {@link Multiset} instances.
@@ -46,18 +41,6 @@ import java.util.Spliterator;
  */
 public final class Multisets {
     private Multisets() {
-    }
-
-    /**
-     * Returns the expected number of distinct elements given the specified elements. The number of
-     * distinct elements is only computed if {@code elements} is an instance of {@code Multiset};
-     * otherwise the default value of 11 is returned.
-     */
-    static int inferDistinctElements(Iterable<?> elements) {
-        if (elements instanceof Multiset) {
-            return ((Multiset<?>) elements).elementSet().size();
-        }
-        return 11; // initial capacity will be rounded up to 16
     }
 
     /**
@@ -285,69 +268,6 @@ public final class Multisets {
         @Override
         public void clear() {
             multiset().clear();
-        }
-    }
-
-    /** An implementation of {@link Multiset#iterator}. */
-    static <E> Iterator<E> iteratorImpl(Multiset<E> multiset) {
-        return new MultisetIteratorImpl<E>(multiset, multiset.entrySet().iterator());
-    }
-
-    static final class MultisetIteratorImpl<E> implements Iterator<E> {
-        private final Multiset<E> multiset;
-        private final Iterator<Entry<E>> entryIterator;
-        private Entry<E> currentEntry;
-
-        /** Count of subsequent elements equal to current element */
-        private int laterCount;
-
-        /** Count of all elements equal to current element */
-        private int totalCount;
-
-        private boolean canRemove;
-
-        MultisetIteratorImpl(Multiset<E> multiset, Iterator<Entry<E>> entryIterator) {
-            this.multiset = multiset;
-            this.entryIterator = entryIterator;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return laterCount > 0 || entryIterator.hasNext();
-        }
-
-        @Override
-        public E next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            if (laterCount == 0) {
-                currentEntry = entryIterator.next();
-                totalCount = laterCount = currentEntry.getCount();
-            }
-            laterCount--;
-            canRemove = true;
-            /*
-             * requireNonNull is safe because laterCount starts at 0, forcing us to initialize
-             * currentEntry above. After that, we never clear it.
-             */
-            return requireNonNull(currentEntry).getElement();
-        }
-
-        @Override
-        public void remove() {
-            checkRemove(canRemove);
-            if (totalCount == 1) {
-                entryIterator.remove();
-            } else {
-                /*
-                 * requireNonNull is safe because canRemove is set to true only after we initialize
-                 * currentEntry (which we never subsequently clear).
-                 */
-                multiset.remove(requireNonNull(currentEntry).getElement());
-            }
-            totalCount--;
-            canRemove = false;
         }
     }
 

@@ -17,15 +17,15 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Multiset;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -344,11 +344,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).breadthFirst('a');
 
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'b');
+        assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 1);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'a', 'b', 'b');
+        assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 2);
     }
 
     @Test
@@ -357,11 +357,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).breadthFirst(charactersOf("ab"));
 
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'b', 'b');
+        assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 2);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'a', 'b', 'b', 'b');
+        assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 3);
     }
 
     @Test
@@ -534,11 +534,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPreOrder('a');
 
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'b');
+        assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 1);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'a', 'b', 'b');
+        assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 2);
     }
 
     @Test
@@ -547,11 +547,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPreOrder(charactersOf("ac"));
 
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'b', 'c');
+        assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 1, 'c', 1);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'a', 'b', 'b', 'c');
+        assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 2, 'c', 1);
     }
 
     @Test
@@ -716,11 +716,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPostOrder('a');
 
         assertEqualCharNodes(Iterables.limit(result, 2), "db");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'b', 'd');
+        assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 1, 'd', 1);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "db");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'a', 'b', 'b', 'd', 'd');
+        assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 2, 'd', 2);
     }
 
     @Test
@@ -729,11 +729,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPostOrder(charactersOf("ac"));
 
         assertEqualCharNodes(Iterables.limit(result, 2), "db");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'b', 'c', 'd');
+        assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 1, 'c', 1, 'd', 1);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "db");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'a', 'b', 'b', 'c', 'd', 'd');
+        assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 2, 'c', 1, 'd', 2);
     }
 
     @Test
@@ -914,11 +914,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).breadthFirst('h');
 
         assertEqualCharNodes(Iterables.limit(result, 2), "hd");
-        assertThat(graph.requestedNodes).containsExactly('h', 'h', 'd');
+        assertThat(graph.requestedNodes).containsExactly('h', 2, 'd', 1);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "hd");
-        assertThat(graph.requestedNodes).containsExactly('h', 'h', 'h', 'd', 'd');
+        assertThat(graph.requestedNodes).containsExactly('h', 3, 'd', 2);
     }
 
     @Test
@@ -927,11 +927,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).breadthFirst(charactersOf("dg"));
 
         assertEqualCharNodes(Iterables.limit(result, 3), "dga");
-        assertThat(graph.requestedNodes).containsExactly('a', 'd', 'd', 'g', 'g');
+        assertThat(graph.requestedNodes).containsExactly('a', 1, 'd', 2, 'g', 2);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 3), "dga");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'd', 'd', 'd', 'g', 'g', 'g');
+        assertThat(graph.requestedNodes).containsExactly('a', 2, 'd', 3, 'g', 3);
     }
 
     @Test
@@ -1051,11 +1051,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPreOrder('h');
 
         assertEqualCharNodes(Iterables.limit(result, 2), "hd");
-        assertThat(graph.requestedNodes).containsExactly('h', 'h', 'd');
+        assertThat(graph.requestedNodes).containsExactly('h', 2, 'd', 1);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "hd");
-        assertThat(graph.requestedNodes).containsExactly('h', 'h', 'h', 'd', 'd');
+        assertThat(graph.requestedNodes).containsExactly('h', 3, 'd', 2);
     }
 
     @Test
@@ -1064,11 +1064,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPreOrder(charactersOf("dg"));
 
         assertEqualCharNodes(Iterables.limit(result, 2), "da");
-        assertThat(graph.requestedNodes).containsExactly('a', 'd', 'd', 'g');
+        assertThat(graph.requestedNodes).containsExactly('a', 1, 'd', 2, 'g', 1);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "da");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'd', 'd', 'd', 'g');
+        assertThat(graph.requestedNodes).containsExactly('a', 2, 'd', 3, 'g', 1);
     }
 
     @Test
@@ -1181,11 +1181,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPostOrder('h');
 
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('h', 'h', 'd', 'a', 'b');
+        assertThat(graph.requestedNodes).containsExactly('h', 2, 'd', 1, 'a', 1, 'b', 1);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('h', 'h', 'h', 'd', 'd', 'a', 'a', 'b', 'b');
+        assertThat(graph.requestedNodes).containsExactly('h', 3, 'd', 2, 'a', 2, 'b', 2);
     }
 
     @Test
@@ -1194,11 +1194,11 @@ public class TraverserTest {
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPostOrder(charactersOf("dg"));
 
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('a', 'b', 'd', 'd', 'g');
+        assertThat(graph.requestedNodes).containsExactly('a', 1, 'b', 1, 'd', 2, 'g', 1);
 
         // Iterate again to see if calculation is done again
         assertEqualCharNodes(Iterables.limit(result, 2), "ab");
-        assertThat(graph.requestedNodes).containsExactly('a', 'a', 'b', 'b', 'd', 'd', 'd', 'g');
+        assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 2, 'd', 3, 'g', 1);
     }
 
     private static SuccessorsFunction<Character> createDirectedGraph(String... edges) {
@@ -1267,7 +1267,7 @@ public class TraverserTest {
 
     private static class RequestSavingGraph implements SuccessorsFunction<Character> {
         private final SuccessorsFunction<Character> delegate;
-        final Multiset<Character> requestedNodes = HashMultiset.create();
+        final Map<Character, Integer> requestedNodes = new HashMap<>();
 
         RequestSavingGraph(SuccessorsFunction<Character> delegate) {
             this.delegate = checkNotNull(delegate);
@@ -1275,7 +1275,7 @@ public class TraverserTest {
 
         @Override
         public Iterable<? extends Character> successors(Character node) {
-            requestedNodes.add(node);
+            requestedNodes.compute(node, (n, count) -> count == null ? 1 : count + 1);
             return delegate.successors(node);
         }
     }
