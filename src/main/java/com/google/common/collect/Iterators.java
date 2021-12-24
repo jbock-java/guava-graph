@@ -24,7 +24,6 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -40,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 /**
  * This class contains static utility methods that operate on or return objects of type {@link

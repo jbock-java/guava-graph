@@ -16,12 +16,10 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Objects;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.UnmodifiableIterator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.GraphConstants.NOT_AVAILABLE_ON_UNDIRECTED;
 
 /**
@@ -35,14 +33,13 @@ import static com.google.common.graph.GraphConstants.NOT_AVAILABLE_ON_UNDIRECTED
  * @author James Sexton
  * @since 20.0
  */
-@Beta
 public abstract class EndpointPair<N> implements Iterable<N> {
     private final N nodeU;
     private final N nodeV;
 
     private EndpointPair(N nodeU, N nodeV) {
-        this.nodeU = checkNotNull(nodeU);
-        this.nodeV = checkNotNull(nodeV);
+        this.nodeU = Preconditions.checkNotNull(nodeU);
+        this.nodeV = Preconditions.checkNotNull(nodeV);
     }
 
     /** Returns an {@link EndpointPair} representing the endpoints of a directed edge. */
@@ -120,8 +117,8 @@ public abstract class EndpointPair<N> implements Iterable<N> {
 
     /** Iterates in the order {@link #nodeU()}, {@link #nodeV()}. */
     @Override
-    public final UnmodifiableIterator<N> iterator() {
-        return Iterators.forArray(nodeU, nodeV);
+    public final Iterator<N> iterator() {
+        return List.of(nodeU, nodeV).iterator();
     }
 
     /**
@@ -179,7 +176,7 @@ public abstract class EndpointPair<N> implements Iterable<N> {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(source(), target());
+            return Objects.hash(source(), target());
         }
 
         @Override

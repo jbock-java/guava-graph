@@ -18,8 +18,6 @@ package com.google.common.graph;
 
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * A {@link MapIteratorCache} that adds additional caching. In addition to the caching provided by
  * {@link MapIteratorCache}, this structure caches values for the two most recently retrieved keys.
@@ -38,7 +36,7 @@ final class MapRetrievalCache<K, V> extends MapIteratorCache<K, V> {
     @SuppressWarnings("unchecked") // Safe because we only cast if key is found in map.
     @Override
     V get(Object key) {
-        checkNotNull(key);
+        Preconditions.checkNotNull(key);
         V value = getIfCached(key);
         if (value != null) {
             return value;

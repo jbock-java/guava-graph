@@ -22,7 +22,6 @@ import com.google.common.collect.Sets;
 import java.util.Iterator;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -52,7 +51,7 @@ abstract class EndpointPairIterator<N> extends AbstractIterator<EndpointPair<N>>
      * and updates {@link #successorIterator} to iterate through the successors of {@link #node}.
      */
     final boolean advance() {
-        checkState(!successorIterator.hasNext());
+        Preconditions.checkState(!successorIterator.hasNext());
         if (!nodeIterator.hasNext()) {
             return false;
         }

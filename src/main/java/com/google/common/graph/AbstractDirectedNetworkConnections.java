@@ -16,12 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Iterators;
-import com.google.common.collect.UnmodifiableIterator;
-import com.google.common.math.IntMath;
-
-import java.util.AbstractSet;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -62,33 +56,9 @@ abstract class AbstractDirectedNetworkConnections<N, E> implements NetworkConnec
 
     @Override
     public Set<E> incidentEdges() {
-        return new AbstractSet<E>() {
-            @Override
-            public UnmodifiableIterator<E> iterator() {
-                Iterable<E> incidentEdges;
-                Set<E> inEdges = inEdgeMap.keySet();
-                Set<E> outEdges = outEdgeMap.keySet();
-                if (selfLoopCount == 0) {
-                    ArrayList<E> concat = new ArrayList<>((int) (1.5 * (inEdges.size() + outEdges.size())));
-                    concat.addAll(inEdges);
-                    concat.addAll(outEdges);
-                    incidentEdges = concat;
-                } else {
-                    incidentEdges = Util.union(inEdges, outEdges);
-                }
-                return Iterators.unmodifiableIterator(incidentEdges.iterator());
-            }
-
-            @Override
-            public int size() {
-                return IntMath.saturatedAdd(inEdgeMap.size(), outEdgeMap.size() - selfLoopCount);
-            }
-
-            @Override
-            public boolean contains(Object obj) {
-                return inEdgeMap.containsKey(obj) || outEdgeMap.containsKey(obj);
-            }
-        };
+        Set<E> inEdges = inEdgeMap.keySet();
+        Set<E> outEdges = outEdgeMap.keySet();
+        return Util.union(inEdges, outEdges);
     }
 
     @Override

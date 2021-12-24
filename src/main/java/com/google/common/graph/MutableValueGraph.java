@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-
 /**
  * A subinterface of {@link ValueGraph} which adds mutation methods. When mutation is not required,
  * users should prefer the {@link ValueGraph} interface.
@@ -27,7 +25,6 @@ import com.google.common.annotations.Beta;
  * @param <V> Value parameter type
  * @since 20.0
  */
-@Beta
 public interface MutableValueGraph<N, V> extends ValueGraph<N, V> {
 
     /**

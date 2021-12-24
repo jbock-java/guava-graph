@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-
 import java.util.Collection;
 import java.util.Set;
 
@@ -100,7 +98,6 @@ import java.util.Set;
  * @param <N> Node parameter type
  * @since 20.0
  */
-@Beta
 public interface Graph<N> extends BaseGraph<N> {
     //
     // Graph-level accessors

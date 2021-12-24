@@ -16,14 +16,12 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -41,7 +39,6 @@ import static java.util.Objects.requireNonNull;
  * @param <V> Value parameter type
  * @since 20.0
  */
-@Beta
 @SuppressWarnings("Immutable") // Extends StandardValueGraph but uses ImmutableMaps.
 public final class ImmutableValueGraph<N, V> extends StandardValueGraph<N, V> {
 
@@ -53,7 +50,7 @@ public final class ImmutableValueGraph<N, V> extends StandardValueGraph<N, V> {
     public static <N, V> ImmutableValueGraph<N, V> copyOf(ValueGraph<N, V> graph) {
         return (graph instanceof ImmutableValueGraph)
                 ? (ImmutableValueGraph<N, V>) graph
-                : new ImmutableValueGraph<N, V>(graph);
+                : new ImmutableValueGraph<>(graph);
     }
 
     /**
@@ -63,7 +60,7 @@ public final class ImmutableValueGraph<N, V> extends StandardValueGraph<N, V> {
      */
     @Deprecated
     public static <N, V> ImmutableValueGraph<N, V> copyOf(ImmutableValueGraph<N, V> graph) {
-        return checkNotNull(graph);
+        return Preconditions.checkNotNull(graph);
     }
 
     @Override

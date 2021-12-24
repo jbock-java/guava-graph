@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-
 /**
  * A functional interface for <a
  * href="https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)">graph</a>-structured data.
@@ -77,7 +75,6 @@ import com.google.common.annotations.Beta;
  * @param <N> Node parameter type
  * @since 23.0
  */
-@Beta
 public interface SuccessorsFunction<N> {
 
     /**

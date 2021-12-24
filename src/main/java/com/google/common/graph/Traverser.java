@@ -16,7 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
 import com.google.common.collect.AbstractIterator;
 
 import java.util.ArrayDeque;
@@ -58,7 +57,6 @@ import static java.util.Objects.requireNonNull;
  * @param <N> Node parameter type
  * @since 23.1
  */
-@Beta
 public abstract class Traverser<N> {
     private final SuccessorsFunction<N> successorFunction;
 

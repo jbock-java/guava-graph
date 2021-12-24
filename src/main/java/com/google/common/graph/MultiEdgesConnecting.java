@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * A class to represent the set of edges connecting an (implicit) origin node to a target node.
  *
@@ -40,8 +38,8 @@ abstract class MultiEdgesConnecting<E> extends AbstractSet<E> {
     private final Object targetNode;
 
     MultiEdgesConnecting(Map<E, ?> outEdgeToNode, Object targetNode) {
-        this.outEdgeToNode = checkNotNull(outEdgeToNode);
-        this.targetNode = checkNotNull(targetNode);
+        this.outEdgeToNode = Preconditions.checkNotNull(outEdgeToNode);
+        this.targetNode = Preconditions.checkNotNull(targetNode);
     }
 
     @Override

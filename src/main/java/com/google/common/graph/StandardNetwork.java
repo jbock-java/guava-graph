@@ -64,9 +64,9 @@ class StandardNetwork<N, E> extends AbstractNetwork<N, E> {
     StandardNetwork(NetworkBuilder<? super N, ? super E> builder) {
         this(
                 builder,
-                builder.nodeOrder.<N, NetworkConnections<N, E>>createMap(
-                        builder.expectedNodeCount.or(DEFAULT_NODE_COUNT)),
-                builder.edgeOrder.<E, N>createMap(builder.expectedEdgeCount.or(DEFAULT_EDGE_COUNT)));
+                builder.nodeOrder.createMap(
+                        builder.expectedNodeCount.orElse(DEFAULT_NODE_COUNT)),
+                builder.edgeOrder.createMap(builder.expectedEdgeCount.orElse(DEFAULT_EDGE_COUNT)));
     }
 
     /**
@@ -86,8 +86,8 @@ class StandardNetwork<N, E> extends AbstractNetwork<N, E> {
         // methods that access the same node(s) repeatedly, such as Graphs.removeEdgesConnecting().
         this.nodeConnections =
                 (nodeConnections instanceof TreeMap)
-                        ? new MapRetrievalCache<N, NetworkConnections<N, E>>(nodeConnections)
-                        : new MapIteratorCache<N, NetworkConnections<N, E>>(nodeConnections);
+                        ? new MapRetrievalCache<>(nodeConnections)
+                        : new MapIteratorCache<>(nodeConnections);
         this.edgeToReferenceNode = new MapIteratorCache<>(edgeToReferenceNode);
     }
 

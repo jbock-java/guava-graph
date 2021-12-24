@@ -16,11 +16,8 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Optional;
+import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.Graphs.checkNonNegative;
 
 /**
@@ -65,7 +62,6 @@ import static com.google.common.graph.Graphs.checkNonNegative;
  *     #from(ValueGraph)}.
  * @since 20.0
  */
-@Beta
 public final class ValueGraphBuilder<N, V> extends AbstractGraphBuilder<N> {
 
     /** Creates a new instance with the specified edge directionality. */
@@ -143,7 +139,7 @@ public final class ValueGraphBuilder<N, V> extends AbstractGraphBuilder<N> {
      */
     public <N1 extends N> ValueGraphBuilder<N1, V> nodeOrder(ElementOrder<N1> nodeOrder) {
         ValueGraphBuilder<N1, V> newBuilder = cast();
-        newBuilder.nodeOrder = checkNotNull(nodeOrder);
+        newBuilder.nodeOrder = Preconditions.checkNotNull(nodeOrder);
         return newBuilder;
     }
 
@@ -162,14 +158,14 @@ public final class ValueGraphBuilder<N, V> extends AbstractGraphBuilder<N> {
      */
     public <N1 extends N> ValueGraphBuilder<N1, V> incidentEdgeOrder(
             ElementOrder<N1> incidentEdgeOrder) {
-        checkArgument(
+        Preconditions.checkArgument(
                 incidentEdgeOrder.type() == ElementOrder.Type.UNORDERED
                         || incidentEdgeOrder.type() == ElementOrder.Type.STABLE,
                 "The given elementOrder (%s) is unsupported. incidentEdgeOrder() only supports"
                         + " ElementOrder.unordered() and ElementOrder.stable().",
                 incidentEdgeOrder);
         ValueGraphBuilder<N1, V> newBuilder = cast();
-        newBuilder.incidentEdgeOrder = checkNotNull(incidentEdgeOrder);
+        newBuilder.incidentEdgeOrder = Preconditions.checkNotNull(incidentEdgeOrder);
         return newBuilder;
     }
 

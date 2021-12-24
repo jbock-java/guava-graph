@@ -16,12 +16,11 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -42,7 +41,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @param <E> Edge parameter type
  * @since 20.0
  */
-@Beta
 @SuppressWarnings("Immutable") // Extends StandardNetwork but uses ImmutableMaps.
 public final class ImmutableNetwork<N, E> extends StandardNetwork<N, E> {
 

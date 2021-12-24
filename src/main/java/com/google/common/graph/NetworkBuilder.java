@@ -16,10 +16,8 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Optional;
+import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.Graphs.checkNonNegative;
 
 /**
@@ -66,11 +64,10 @@ import static com.google.common.graph.Graphs.checkNonNegative;
  *     constructed based on an existing {@code Network} using {@link #from(Network)}.
  * @since 20.0
  */
-@Beta
 public final class NetworkBuilder<N, E> extends AbstractGraphBuilder<N> {
     boolean allowsParallelEdges = false;
     ElementOrder<? super E> edgeOrder = ElementOrder.insertion();
-    Optional<Integer> expectedEdgeCount = Optional.absent();
+     Optional<Integer> expectedEdgeCount = Optional.empty();
 
     /** Creates a new instance with the specified edge directionality. */
     private NetworkBuilder(boolean directed) {
@@ -165,7 +162,7 @@ public final class NetworkBuilder<N, E> extends AbstractGraphBuilder<N> {
      */
     public <N1 extends N> NetworkBuilder<N1, E> nodeOrder(ElementOrder<N1> nodeOrder) {
         NetworkBuilder<N1, E> newBuilder = cast();
-        newBuilder.nodeOrder = checkNotNull(nodeOrder);
+        newBuilder.nodeOrder = Preconditions.checkNotNull(nodeOrder);
         return newBuilder;
     }
 
@@ -176,7 +173,7 @@ public final class NetworkBuilder<N, E> extends AbstractGraphBuilder<N> {
      */
     public <E1 extends E> NetworkBuilder<N, E1> edgeOrder(ElementOrder<E1> edgeOrder) {
         NetworkBuilder<N, E1> newBuilder = cast();
-        newBuilder.edgeOrder = checkNotNull(edgeOrder);
+        newBuilder.edgeOrder = Preconditions.checkNotNull(edgeOrder);
         return newBuilder;
     }
 

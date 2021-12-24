@@ -17,16 +17,11 @@
 package com.google.common.graph;
 
 import com.google.common.collect.Iterators;
-import com.google.common.math.IntMath;
-import com.google.common.primitives.Ints;
 
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.graph.GraphConstants.ENDPOINTS_MISMATCH;
 
 /**
@@ -51,7 +46,7 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
             degreeSum += degree(node);
         }
         // According to the degree sum formula, this is equal to twice the number of edges.
-        checkState((degreeSum & 1) == 0);
+        Preconditions.checkState((degreeSum & 1) == 0);
         return degreeSum >>> 1;
     }
 
@@ -61,7 +56,7 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
      */
     @Override
     public Set<EndpointPair<N>> edges() {
-        return new AbstractSet<EndpointPair<N>>() {
+        return new AbstractSet<>() {
             @Override
             public Iterator<EndpointPair<N>> iterator() {
                 return EndpointPairIterator.of(AbstractBaseGraph.this);
@@ -69,7 +64,7 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
 
             @Override
             public int size() {
-                return Ints.saturatedCast(edgeCount());
+                return Math.toIntExact(edgeCount());
             }
 
             @Override
@@ -101,26 +96,24 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
 
     @Override
     public Set<EndpointPair<N>> incidentEdges(N node) {
-        checkNotNull(node);
-        checkArgument(nodes().contains(node), "Node %s is not an element of this graph.", node);
+        Preconditions.checkNotNull(node);
+        Preconditions.checkArgument(nodes().contains(node), "Node %s is not an element of this graph.", node);
         return new IncidentEdgeSet<N>(this, node) {
             @Override
             public Iterator<EndpointPair<N>> iterator() {
                 if (graph.isDirected()) {
-                    return Iterators.unmodifiableIterator(
-                            Iterators.concat(
+                    return Iterators.concat(
                                     Iterators.transform(
                                             graph.predecessors(node).iterator(),
                                             (N predecessor) -> EndpointPair.ordered(predecessor, node)),
                                     Iterators.transform(
                                             // filter out 'node' from successors (already covered by predecessors, above)
                                             Util.difference(graph.successors(node), Set.of(node)).iterator(),
-                                            (N successor) -> EndpointPair.ordered(node, successor))));
+                                            (N successor) -> EndpointPair.ordered(node, successor)));
                 } else {
-                    return Iterators.unmodifiableIterator(
-                            Iterators.transform(
+                    return Iterators.transform(
                                     graph.adjacentNodes(node).iterator(),
-                                    (N adjacentNode) -> EndpointPair.unordered(node, adjacentNode)));
+                                    (N adjacentNode) -> EndpointPair.unordered(node, adjacentNode));
                 }
             }
         };
@@ -129,11 +122,11 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
     @Override
     public int degree(N node) {
         if (isDirected()) {
-            return IntMath.saturatedAdd(predecessors(node).size(), successors(node).size());
+            return Math.addExact(predecessors(node).size(), successors(node).size());
         } else {
             Set<N> neighbors = adjacentNodes(node);
             int selfLoopCount = (allowsSelfLoops() && neighbors.contains(node)) ? 1 : 0;
-            return IntMath.saturatedAdd(neighbors.size(), selfLoopCount);
+            return Math.addExact(neighbors.size(), selfLoopCount);
         }
     }
 
@@ -149,14 +142,14 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
 
     @Override
     public boolean hasEdgeConnecting(N nodeU, N nodeV) {
-        checkNotNull(nodeU);
-        checkNotNull(nodeV);
+        Preconditions.checkNotNull(nodeU);
+        Preconditions.checkNotNull(nodeV);
         return nodes().contains(nodeU) && successors(nodeU).contains(nodeV);
     }
 
     @Override
     public boolean hasEdgeConnecting(EndpointPair<N> endpoints) {
-        checkNotNull(endpoints);
+        Preconditions.checkNotNull(endpoints);
         if (!isOrderingCompatible(endpoints)) {
             return false;
         }
@@ -170,8 +163,8 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
      * with the directionality of this graph.
      */
     protected final void validateEndpoints(EndpointPair<?> endpoints) {
-        checkNotNull(endpoints);
-        checkArgument(isOrderingCompatible(endpoints), ENDPOINTS_MISMATCH);
+        Preconditions.checkNotNull(endpoints);
+        Preconditions.checkArgument(isOrderingCompatible(endpoints), ENDPOINTS_MISMATCH);
     }
 
     protected final boolean isOrderingCompatible(EndpointPair<?> endpoints) {

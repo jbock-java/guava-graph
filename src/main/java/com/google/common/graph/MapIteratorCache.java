@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * A map-like data structure that wraps a backing map and caches values while iterating through
  * {@link #unmodifiableKeySet()}. By design, the cache is cleared when this structure is mutated. If
@@ -55,18 +53,18 @@ class MapIteratorCache<K, V> {
     private transient volatile Entry<K, V> cacheEntry;
 
     MapIteratorCache(Map<K, V> backingMap) {
-        this.backingMap = checkNotNull(backingMap);
+        this.backingMap = Preconditions.checkNotNull(backingMap);
     }
 
     final V put(K key, V value) {
-        checkNotNull(key);
-        checkNotNull(value);
+        Preconditions.checkNotNull(key);
+        Preconditions.checkNotNull(value);
         clearCache();
         return backingMap.put(key, value);
     }
 
     final V remove(Object key) {
-        checkNotNull(key);
+        Preconditions.checkNotNull(key);
         clearCache();
         return backingMap.remove(key);
     }
@@ -77,7 +75,7 @@ class MapIteratorCache<K, V> {
     }
 
     V get(Object key) {
-        checkNotNull(key);
+        Preconditions.checkNotNull(key);
         V value = getIfCached(key);
         // TODO(b/192579700): Use a ternary once it no longer confuses our nullness checker.
         if (value == null) {
@@ -88,7 +86,7 @@ class MapIteratorCache<K, V> {
     }
 
     final V getWithoutCaching(Object key) {
-        checkNotNull(key);
+        Preconditions.checkNotNull(key);
         return backingMap.get(key);
     }
 

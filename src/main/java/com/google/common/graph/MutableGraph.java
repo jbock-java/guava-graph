@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-
 /**
  * A subinterface of {@link Graph} which adds mutation methods. When mutation is not required, users
  * should prefer the {@link Graph} interface.
@@ -27,7 +25,6 @@ import com.google.common.annotations.Beta;
  * @param <N> Node parameter type
  * @since 20.0
  */
-@Beta
 public interface MutableGraph<N> extends Graph<N> {
 
     /**

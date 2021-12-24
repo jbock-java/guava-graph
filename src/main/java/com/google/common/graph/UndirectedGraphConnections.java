@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Iterators;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -77,9 +75,9 @@ final class UndirectedGraphConnections<N, V> implements GraphConnections<N, V> {
 
     @Override
     public Iterator<EndpointPair<N>> incidentEdgeIterator(N thisNode) {
-        return Iterators.transform(
-                adjacentNodeValues.keySet().iterator(),
-                (N incidentNode) -> EndpointPair.unordered(thisNode, incidentNode));
+        return adjacentNodeValues.keySet().stream()
+                .map((N incidentNode) -> EndpointPair.unordered(thisNode, incidentNode))
+                .iterator();
     }
 
     @Override

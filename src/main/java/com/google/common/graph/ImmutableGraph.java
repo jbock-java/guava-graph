@@ -16,14 +16,12 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 import com.google.common.graph.GraphConstants.Presence;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -43,7 +41,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @param <N> Node parameter type
  * @since 20.0
  */
-@Beta
 public class ImmutableGraph<N> extends ForwardingGraph<N> {
     @SuppressWarnings("Immutable") // The backing graph must be immutable.
     private final BaseGraph<N> backingGraph;
@@ -56,8 +53,8 @@ public class ImmutableGraph<N> extends ForwardingGraph<N> {
     public static <N> ImmutableGraph<N> copyOf(Graph<N> graph) {
         return (graph instanceof ImmutableGraph)
                 ? (ImmutableGraph<N>) graph
-                : new ImmutableGraph<N>(
-                new StandardValueGraph<N, Presence>(
+                : new ImmutableGraph<>(
+                new StandardValueGraph<>(
                         GraphBuilder.from(graph), getNodeConnections(graph), graph.edges().size()));
     }
 
@@ -88,10 +85,8 @@ public class ImmutableGraph<N> extends ForwardingGraph<N> {
         return nodeConnections;
     }
 
-    @SuppressWarnings("unchecked")
     private static <N> GraphConnections<N, Presence> connectionsOf(Graph<N> graph, N node) {
-        Function<N, Presence> edgeValueFn =
-                (Function<N, Presence>) Functions.constant(Presence.EDGE_EXISTS);
+        Function<N, Presence> edgeValueFn = n -> Presence.EDGE_EXISTS;
         return graph.isDirected()
                 ? DirectedGraphConnections.ofImmutable(node, graph.incidentEdges(node), edgeValueFn)
                 : UndirectedGraphConnections.ofImmutable(

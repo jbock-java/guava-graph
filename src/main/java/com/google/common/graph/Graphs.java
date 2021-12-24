@@ -16,9 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
@@ -27,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,7 +39,6 @@ import static java.util.Objects.requireNonNull;
  * @author Joshua O'Madadhain
  * @since 20.0
  */
-@Beta
 public final class Graphs {
 
     private Graphs() {
@@ -130,7 +127,7 @@ public final class Graphs {
      */
     private static boolean canTraverseWithoutReusingEdge(
             Graph<?> graph, Object nextNode, Object previousNode) {
-        if (graph.isDirected() || !Objects.equal(previousNode, nextNode)) {
+        if (graph.isDirected() || !Objects.equals(previousNode, nextNode)) {
             return true;
         }
         // This falls into the undirected A->B->A case. The Graph interface does not support parallel
@@ -287,12 +284,7 @@ public final class Graphs {
                 public Iterator<EndpointPair<N>> iterator() {
                     return Iterators.transform(
                             delegate().incidentEdges(node).iterator(),
-                            new Function<EndpointPair<N>, EndpointPair<N>>() {
-                                @Override
-                                public EndpointPair<N> apply(EndpointPair<N> edge) {
-                                    return EndpointPair.of(delegate(), edge.nodeV(), edge.nodeU());
-                                }
-                            });
+                            edge -> EndpointPair.of(delegate(), edge.nodeV(), edge.nodeU()));
                 }
             };
         }

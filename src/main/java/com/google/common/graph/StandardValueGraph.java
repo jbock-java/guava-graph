@@ -55,8 +55,8 @@ class StandardValueGraph<N, V> extends AbstractValueGraph<N, V> {
     StandardValueGraph(AbstractGraphBuilder<? super N> builder) {
         this(
                 builder,
-                builder.nodeOrder.<N, GraphConnections<N, V>>createMap(
-                        builder.expectedNodeCount.or(DEFAULT_NODE_COUNT)),
+                builder.nodeOrder.createMap(
+                        builder.expectedNodeCount.orElse(DEFAULT_NODE_COUNT)),
                 0L);
     }
 

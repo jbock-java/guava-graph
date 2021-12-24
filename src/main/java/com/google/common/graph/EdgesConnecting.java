@@ -16,14 +16,11 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Iterators;
-
 import java.util.AbstractSet;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A class to represent the set of edges connecting an (implicit) origin node to a target node.
@@ -40,8 +37,8 @@ final class EdgesConnecting<E> extends AbstractSet<E> {
     private final Object targetNode;
 
     EdgesConnecting(Map<?, E> nodeToEdgeMap, Object targetNode) {
-        this.nodeToOutEdge = checkNotNull(nodeToEdgeMap);
-        this.targetNode = checkNotNull(targetNode);
+        this.nodeToOutEdge = Preconditions.checkNotNull(nodeToEdgeMap);
+        this.targetNode = Preconditions.checkNotNull(targetNode);
     }
 
     @Override
@@ -49,7 +46,7 @@ final class EdgesConnecting<E> extends AbstractSet<E> {
         E connectingEdge = getConnectingEdge();
         return (connectingEdge == null)
                 ? Collections.emptyIterator()
-                : Iterators.singletonIterator(connectingEdge);
+                : List.of(connectingEdge).iterator();
     }
 
     @Override

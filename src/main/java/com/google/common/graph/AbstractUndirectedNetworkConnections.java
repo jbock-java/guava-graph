@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -36,7 +34,7 @@ abstract class AbstractUndirectedNetworkConnections<N, E> implements NetworkConn
     final Map<E, N> incidentEdgeMap;
 
     AbstractUndirectedNetworkConnections(Map<E, N> incidentEdgeMap) {
-        this.incidentEdgeMap = checkNotNull(incidentEdgeMap);
+        this.incidentEdgeMap = Preconditions.checkNotNull(incidentEdgeMap);
     }
 
     @Override
@@ -95,6 +93,6 @@ abstract class AbstractUndirectedNetworkConnections<N, E> implements NetworkConn
     @Override
     public void addOutEdge(E edge, N node) {
         N previousNode = incidentEdgeMap.put(edge, node);
-        checkState(previousNode == null);
+        Preconditions.checkState(previousNode == null);
     }
 }

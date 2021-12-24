@@ -16,27 +16,22 @@
 
 package com.google.common.graph;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.graph.GraphConstants.ENDPOINTS_MISMATCH;
-import static com.google.common.graph.GraphConstants.MULTIPLE_EDGES_CONNECTING;
-
-import com.google.common.annotations.Beta;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.math.IntMath;
+
 import java.util.AbstractSet;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.graph.GraphConstants.ENDPOINTS_MISMATCH;
+import static com.google.common.graph.GraphConstants.MULTIPLE_EDGES_CONNECTING;
 
 /**
  * This class provides a skeletal implementation of {@link Network}. It is recommended to extend
@@ -50,7 +45,6 @@ import java.util.stream.Collectors;
  * @param <E> Edge parameter type
  * @since 20.0
  */
-@Beta
 public abstract class AbstractNetwork<N, E> implements Network<N, E> {
 
     @Override
@@ -68,17 +62,12 @@ public abstract class AbstractNetwork<N, E> implements Network<N, E> {
                 }
 
                 // Optimized implementation assumes no parallel edges (1:1 edge to EndpointPair mapping).
-                return new AbstractSet<EndpointPair<N>>() {
+                return new AbstractSet<>() {
                     @Override
                     public Iterator<EndpointPair<N>> iterator() {
-                        return Iterators.transform(
-                                AbstractNetwork.this.edges().iterator(),
-                                new Function<E, EndpointPair<N>>() {
-                                    @Override
-                                    public EndpointPair<N> apply(E edge) {
-                                        return incidentNodes(edge);
-                                    }
-                                });
+                        return AbstractNetwork.this.edges().stream()
+                                .map(AbstractNetwork.this::incidentNodes)
+                                .iterator();
                     }
 
                     @Override
@@ -147,9 +136,9 @@ public abstract class AbstractNetwork<N, E> implements Network<N, E> {
     @Override
     public int degree(N node) {
         if (isDirected()) {
-            return IntMath.saturatedAdd(inEdges(node).size(), outEdges(node).size());
+            return Math.addExact(inEdges(node).size(), outEdges(node).size());
         } else {
-            return IntMath.saturatedAdd(incidentEdges(node).size(), edgesConnecting(node, node).size());
+            return Math.addExact(incidentEdges(node).size(), edgesConnecting(node, node).size());
         }
     }
 
@@ -187,12 +176,7 @@ public abstract class AbstractNetwork<N, E> implements Network<N, E> {
     }
 
     private Predicate<E> connectedPredicate(final N nodePresent, final N nodeToCheck) {
-        return new Predicate<E>() {
-            @Override
-            public boolean apply(E edge) {
-                return incidentNodes(edge).adjacentNode(nodePresent).equals(nodeToCheck);
-            }
-        };
+        return edge -> incidentNodes(edge).adjacentNode(nodePresent).equals(nodeToCheck);
     }
 
     @Override
@@ -290,13 +274,7 @@ public abstract class AbstractNetwork<N, E> implements Network<N, E> {
     }
 
     private static <N, E> Map<E, EndpointPair<N>> edgeIncidentNodesMap(final Network<N, E> network) {
-        Function<E, EndpointPair<N>> edgeToIncidentNodesFn =
-                new Function<E, EndpointPair<N>>() {
-                    @Override
-                    public EndpointPair<N> apply(E edge) {
-                        return network.incidentNodes(edge);
-                    }
-                };
+        Function<E, EndpointPair<N>> edgeToIncidentNodesFn = network::incidentNodes;
         return Maps.asMap(network.edges(), edgeToIncidentNodesFn);
     }
 }

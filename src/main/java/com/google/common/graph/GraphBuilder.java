@@ -16,8 +16,7 @@
 
 package com.google.common.graph;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -61,7 +60,6 @@ import static com.google.common.graph.Graphs.checkNonNegative;
  *     constructed based on an existing {@code Graph} using {@link #from(Graph)}.
  * @since 20.0
  */
-@Beta
 public final class GraphBuilder<N> extends AbstractGraphBuilder<N> {
 
     /** Creates a new instance with the specified edge directionality. */
