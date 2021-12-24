@@ -16,11 +16,11 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Iterators;
-
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static com.google.common.graph.GraphConstants.ENDPOINTS_MISMATCH;
 
@@ -102,18 +102,15 @@ abstract class AbstractBaseGraph<N> implements BaseGraph<N> {
             @Override
             public Iterator<EndpointPair<N>> iterator() {
                 if (graph.isDirected()) {
-                    return Iterators.concat(
-                                    Iterators.transform(
-                                            graph.predecessors(node).iterator(),
-                                            (N predecessor) -> EndpointPair.ordered(predecessor, node)),
-                                    Iterators.transform(
-                                            // filter out 'node' from successors (already covered by predecessors, above)
-                                            Util.difference(graph.successors(node), Set.of(node)).iterator(),
-                                            (N successor) -> EndpointPair.ordered(node, successor)));
+                    return Stream.of(graph.predecessors(node).stream()
+                                            .map((N predecessor) -> EndpointPair.ordered(predecessor, node)),
+                                    Util.difference(graph.successors(node), Set.of(node)).stream()
+                                            .map((N successor) -> EndpointPair.ordered(node, successor)))
+                            .flatMap(Function.identity()).iterator();
                 } else {
-                    return Iterators.transform(
-                                    graph.adjacentNodes(node).iterator(),
-                                    (N adjacentNode) -> EndpointPair.unordered(node, adjacentNode));
+                    return graph.adjacentNodes(node).stream()
+                            .map((N adjacentNode) -> EndpointPair.unordered(node, adjacentNode))
+                            .iterator();
                 }
             }
         };

@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Maps;
-
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -275,6 +273,6 @@ public abstract class AbstractNetwork<N, E> implements Network<N, E> {
 
     private static <N, E> Map<E, EndpointPair<N>> edgeIncidentNodesMap(final Network<N, E> network) {
         Function<E, EndpointPair<N>> edgeToIncidentNodesFn = network::incidentNodes;
-        return Maps.asMap(network.edges(), edgeToIncidentNodesFn);
+        return Util.asMap(network.edges(), edgeToIncidentNodesFn);
     }
 }

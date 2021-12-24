@@ -17,7 +17,6 @@
 package com.google.common.graph;
 
 import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.UnmodifiableIterator;
 
 import java.util.AbstractSet;
@@ -32,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -368,25 +368,19 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
 
         Iterator<EndpointPair<N>> resultWithDoubleSelfLoop;
         if (orderedNodeConnections == null) {
-            resultWithDoubleSelfLoop =
-                    Iterators.concat(
-                            Iterators.transform(
-                                    predecessors().iterator(),
-                                    (N predecessor) -> EndpointPair.ordered(predecessor, thisNode)),
-                            Iterators.transform(
-                                    successors().iterator(),
-                                    (N successor) -> EndpointPair.ordered(thisNode, successor)));
+            resultWithDoubleSelfLoop = Stream.of(
+                            predecessors().stream().map((N predecessor) -> EndpointPair.ordered(predecessor, thisNode)),
+                            successors().stream().map((N successor) -> EndpointPair.ordered(thisNode, successor)))
+                    .flatMap(Function.identity()).iterator();
         } else {
-            resultWithDoubleSelfLoop =
-                    Iterators.transform(
-                            orderedNodeConnections.iterator(),
-                            (NodeConnection<N> connection) -> {
-                                if (connection instanceof NodeConnection.Succ) {
-                                    return EndpointPair.ordered(thisNode, connection.node);
-                                } else {
-                                    return EndpointPair.ordered(connection.node, thisNode);
-                                }
-                            });
+            resultWithDoubleSelfLoop = orderedNodeConnections.stream()
+                    .map((NodeConnection<N> connection) -> {
+                        if (connection instanceof NodeConnection.Succ) {
+                            return EndpointPair.ordered(thisNode, connection.node);
+                        } else {
+                            return EndpointPair.ordered(connection.node, thisNode);
+                        }
+                    }).iterator();
         }
 
         AtomicBoolean alreadySeenSelfLoop = new AtomicBoolean(false);

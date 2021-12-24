@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.graph.Graphs.checkNonNegative;
 import static com.google.common.graph.Graphs.checkPositive;
 import static java.util.Objects.requireNonNull;
@@ -43,10 +41,10 @@ abstract class AbstractDirectedNetworkConnections<N, E> implements NetworkConnec
     private int selfLoopCount;
 
     AbstractDirectedNetworkConnections(Map<E, N> inEdgeMap, Map<E, N> outEdgeMap, int selfLoopCount) {
-        this.inEdgeMap = checkNotNull(inEdgeMap);
-        this.outEdgeMap = checkNotNull(outEdgeMap);
+        this.inEdgeMap = Preconditions.checkNotNull(inEdgeMap);
+        this.outEdgeMap = Preconditions.checkNotNull(outEdgeMap);
         this.selfLoopCount = checkNonNegative(selfLoopCount);
-        checkState(selfLoopCount <= inEdgeMap.size() && selfLoopCount <= outEdgeMap.size());
+        Preconditions.checkState(selfLoopCount <= inEdgeMap.size() && selfLoopCount <= outEdgeMap.size());
     }
 
     @Override
@@ -98,22 +96,22 @@ abstract class AbstractDirectedNetworkConnections<N, E> implements NetworkConnec
 
     @Override
     public void addInEdge(E edge, N node, boolean isSelfLoop) {
-        checkNotNull(edge);
-        checkNotNull(node);
+        Preconditions.checkNotNull(edge);
+        Preconditions.checkNotNull(node);
 
         if (isSelfLoop) {
             checkPositive(++selfLoopCount);
         }
         N previousNode = inEdgeMap.put(edge, node);
-        checkState(previousNode == null);
+        Preconditions.checkState(previousNode == null);
     }
 
     @Override
     public void addOutEdge(E edge, N node) {
-        checkNotNull(edge);
-        checkNotNull(node);
+        Preconditions.checkNotNull(edge);
+        Preconditions.checkNotNull(node);
 
         N previousNode = outEdgeMap.put(edge, node);
-        checkState(previousNode == null);
+        Preconditions.checkState(previousNode == null);
     }
 }
