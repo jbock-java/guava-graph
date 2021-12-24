@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.AbstractIterator;
-
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Map;

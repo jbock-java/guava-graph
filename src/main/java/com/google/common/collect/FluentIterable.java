@@ -14,23 +14,11 @@
 
 package com.google.common.collect;
 
-import com.google.common.annotations.Beta;
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.annotations.GwtIncompatible;
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
 import java.util.stream.Stream;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A discouraged (but not deprecated) precursor to Java's superior {@link Stream} library.
@@ -124,108 +112,6 @@ public abstract class FluentIterable<E> implements Iterable<E> {
             @Override
             public Iterator<E> iterator() {
                 return iterable.iterator();
-            }
-        };
-    }
-
-    /**
-     * Returns a fluent iterable that combines two iterables. The returned iterable has an iterator
-     * that traverses the elements in {@code a}, followed by the elements in {@code b}. The source
-     * iterators are not polled until necessary.
-     *
-     * <p>The returned iterable's iterator supports {@code remove()} when the corresponding input
-     * iterator supports it.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@link Stream#concat}.
-     *
-     * @since 20.0
-     */
-    @Beta
-    public static <T> FluentIterable<T> concat(
-            Iterable<? extends T> a, Iterable<? extends T> b) {
-        return concatNoDefensiveCopy(a, b);
-    }
-
-    /**
-     * Returns a fluent iterable that combines three iterables. The returned iterable has an iterator
-     * that traverses the elements in {@code a}, followed by the elements in {@code b}, followed by
-     * the elements in {@code c}. The source iterators are not polled until necessary.
-     *
-     * <p>The returned iterable's iterator supports {@code remove()} when the corresponding input
-     * iterator supports it.
-     *
-     * <p><b>{@code Stream} equivalent:</b> use nested calls to {@link Stream#concat}, or see the
-     * advice in {@link #concat(Iterable...)}.
-     *
-     * @since 20.0
-     */
-    @Beta
-    public static <T> FluentIterable<T> concat(
-            Iterable<? extends T> a, Iterable<? extends T> b, Iterable<? extends T> c) {
-        return concatNoDefensiveCopy(a, b, c);
-    }
-
-    /**
-     * Returns a fluent iterable that combines four iterables. The returned iterable has an iterator
-     * that traverses the elements in {@code a}, followed by the elements in {@code b}, followed by
-     * the elements in {@code c}, followed by the elements in {@code d}. The source iterators are not
-     * polled until necessary.
-     *
-     * <p>The returned iterable's iterator supports {@code remove()} when the corresponding input
-     * iterator supports it.
-     *
-     * <p><b>{@code Stream} equivalent:</b> use nested calls to {@link Stream#concat}, or see the
-     * advice in {@link #concat(Iterable...)}.
-     *
-     * @since 20.0
-     */
-    @Beta
-    public static <T> FluentIterable<T> concat(
-            Iterable<? extends T> a,
-            Iterable<? extends T> b,
-            Iterable<? extends T> c,
-            Iterable<? extends T> d) {
-        return concatNoDefensiveCopy(a, b, c, d);
-    }
-
-    /**
-     * Returns a fluent iterable that combines several iterables. The returned iterable has an
-     * iterator that traverses the elements of each iterable in {@code inputs}. The input iterators
-     * are not polled until necessary.
-     *
-     * <p>The returned iterable's iterator supports {@code remove()} when the corresponding input
-     * iterator supports it.
-     *
-     * <p><b>{@code Stream} equivalent:</b> to concatenate an arbitrary number of streams, use {@code
-     * Stream.of(stream1, stream2, ...).flatMap(s -> s)}. If the sources are iterables, use {@code
-     * Stream.of(iter1, iter2, ...).flatMap(Streams::stream)}.
-     *
-     * @throws NullPointerException if any of the provided iterables is {@code null}
-     * @since 20.0
-     */
-    @Beta
-    public static <T> FluentIterable<T> concat(
-            Iterable<? extends T>... inputs) {
-        return concatNoDefensiveCopy(Arrays.copyOf(inputs, inputs.length));
-    }
-
-    /** Concatenates a varargs array of iterables without making a defensive copy of the array. */
-    private static <T> FluentIterable<T> concatNoDefensiveCopy(
-            final Iterable<? extends T>... inputs) {
-        for (Iterable<? extends T> input : inputs) {
-            checkNotNull(input);
-        }
-        return new FluentIterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return Iterators.concat(
-                        /* lazily generate the iterators on each input only as needed */
-                        new AbstractIndexedListIterator<Iterator<? extends T>>(inputs.length) {
-                            @Override
-                            public Iterator<? extends T> get(int i) {
-                                return inputs[i].iterator();
-                            }
-                        });
             }
         };
     }

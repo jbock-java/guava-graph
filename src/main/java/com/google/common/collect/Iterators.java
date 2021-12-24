@@ -356,23 +356,6 @@ public final class Iterators {
     }
 
     /**
-     * Returns an iterator that cycles indefinitely over the provided elements.
-     *
-     * <p>The returned iterator supports {@code remove()}. After {@code remove()} is called,
-     * subsequent cycles omit the removed element, but {@code elements} does not change. The
-     * iterator's {@code hasNext()} method returns {@code true} until all of the original elements
-     * have been removed.
-     *
-     * <p><b>Warning:</b> Typical uses of the resulting iterator may produce an infinite loop. You
-     * should use an explicit {@code break} or be certain that you will eventually remove all the
-     * elements.
-     */
-    @SafeVarargs
-    public static <T> Iterator<T> cycle(T... elements) {
-        return cycle(Lists.newArrayList(elements));
-    }
-
-    /**
      * Returns an Iterator that walks the specified array, nulling out elements behind it. This can
      * avoid memory leaks when an element is no longer necessary.
      *
@@ -573,38 +556,6 @@ public final class Iterators {
                 }
             }
         };
-    }
-
-    /**
-     * Returns a view of {@code unfiltered} containing all elements that satisfy the input predicate
-     * {@code retainIfTrue}.
-     */
-    public static <T> UnmodifiableIterator<T> filter(
-            Iterator<T> unfiltered, Predicate<? super T> retainIfTrue) {
-        checkNotNull(unfiltered);
-        checkNotNull(retainIfTrue);
-        return new AbstractIterator<T>() {
-            @Override
-            protected T computeNext() {
-                while (unfiltered.hasNext()) {
-                    T element = unfiltered.next();
-                    if (retainIfTrue.apply(element)) {
-                        return element;
-                    }
-                }
-                return endOfData();
-            }
-        };
-    }
-
-    /**
-     * Returns a view of {@code unfiltered} containing all elements that are of the type {@code
-     * desiredType}.
-     */
-    @SuppressWarnings("unchecked") // can cast to <T> because non-Ts are removed
-    @GwtIncompatible // Class.isInstance
-    public static <T> UnmodifiableIterator<T> filter(Iterator<?> unfiltered, Class<T> desiredType) {
-        return (UnmodifiableIterator<T>) filter(unfiltered, instanceOf(desiredType));
     }
 
     /**

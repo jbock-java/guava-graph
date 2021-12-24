@@ -129,22 +129,6 @@ public final class Iterables {
     }
 
     /**
-     * Combines two iterables into a single iterable. The returned iterable has an iterator that
-     * traverses the elements in {@code a}, followed by the elements in {@code b}. The source
-     * iterators are not polled until necessary.
-     *
-     * <p>The returned iterable's iterator supports {@code remove()} when the corresponding input
-     * iterator supports it.
-     *
-     * <p><b>Java 8 users:</b> The {@code Stream} equivalent of this method is {@code Stream.concat(a,
-     * b)}.
-     */
-    public static <T> Iterable<T> concat(
-            Iterable<? extends T> a, Iterable<? extends T> b) {
-        return FluentIterable.concat(a, b);
-    }
-
-    /**
      * Returns a view of {@code iterable} containing its first {@code limitSize} elements. If {@code
      * iterable} contains fewer than {@code limitSize} elements, the returned view contains all of its
      * elements. The returned iterable's iterator supports {@code remove()} if {@code iterable}'s

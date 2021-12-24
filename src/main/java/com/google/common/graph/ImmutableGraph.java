@@ -23,8 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * A {@link Graph} whose elements and structural relationships will never change. Instances of this
  * class may be obtained with {@link #copyOf(Graph)}.
@@ -65,7 +63,7 @@ public class ImmutableGraph<N> extends ForwardingGraph<N> {
      */
     @Deprecated
     public static <N> ImmutableGraph<N> copyOf(ImmutableGraph<N> graph) {
-        return checkNotNull(graph);
+        return Preconditions.checkNotNull(graph);
     }
 
     @Override

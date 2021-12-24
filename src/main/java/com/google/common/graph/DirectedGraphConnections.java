@@ -16,7 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.UnmodifiableIterator;
 
 import java.util.AbstractSet;
@@ -235,7 +234,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
         } else {
             return new AbstractSet<N>() {
                 @Override
-                public UnmodifiableIterator<N> iterator() {
+                public Iterator<N> iterator() {
                     Iterator<NodeConnection<N>> nodeConnections = orderedNodeConnections.iterator();
                     Set<N> seenNodes = new HashSet<>();
                     return new AbstractIterator<N>() {
@@ -270,7 +269,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
     public Set<N> predecessors() {
         return new AbstractSet<N>() {
             @Override
-            public UnmodifiableIterator<N> iterator() {
+            public Iterator<N> iterator() {
                 if (orderedNodeConnections == null) {
                     Iterator<Entry<N, Object>> entries = adjacentNodeValues.entrySet().iterator();
                     return new AbstractIterator<N>() {
@@ -318,7 +317,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
     public Set<N> successors() {
         return new AbstractSet<N>() {
             @Override
-            public UnmodifiableIterator<N> iterator() {
+            public Iterator<N> iterator() {
                 if (orderedNodeConnections == null) {
                     Iterator<Entry<N, Object>> entries = adjacentNodeValues.entrySet().iterator();
                     return new AbstractIterator<N>() {

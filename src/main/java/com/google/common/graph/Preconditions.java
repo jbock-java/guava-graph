@@ -14,8 +14,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.base.Strings;
-
 import static com.google.common.base.Strings.lenientFormat;
 
 /**
@@ -87,13 +85,6 @@ import static com.google.common.base.Strings.lenientFormat;
  * <p><b>{@code java.util.Objects.requireNonNull()}</b>
  *
  * <p><b>Only {@code %s} is supported</b>
- *
- * <p>{@code Preconditions} uses {@link Strings#lenientFormat} to format error message template
- * strings. This only supports the {@code "%s"} specifier, not the full range of {@link
- * java.util.Formatter} specifiers. However, note that if the number of arguments does not match the
- * number of occurrences of {@code "%s"} in the format string, {@code Preconditions} will still
- * behave as expected, and will still include all argument values in the error message; the message
- * will simply not be formatted exactly as intended.
  *
  * <p><b>More information</b>
  *

@@ -26,12 +26,11 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.function.Function;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.CollectPreconditions.checkNonnegative;
 
 /**
  * Static utility methods pertaining to {@link Map} instances (including instances of {@link
- * SortedMap}). Also see this class's counterparts {@link Lists} and {@link Sets}.
+ * SortedMap}).
  *
  * <p>See the Guava User Guide article on <a href=
  * "https://github.com/google/guava/wiki/CollectionUtilitiesExplained#maps"> {@code Maps}</a>.
@@ -128,18 +127,5 @@ public final class Maps {
             result.put(k, function.apply(k));
         }
         return result;
-    }
-
-    /**
-     * Delegates to {@link Map#get}. Returns {@code null} on {@code ClassCastException} and {@code
-     * NullPointerException}.
-     */
-    static <V> V safeGet(Map<?, V> map, Object key) {
-        checkNotNull(map);
-        try {
-            return map.get(key);
-        } catch (ClassCastException | NullPointerException e) {
-            return null;
-        }
     }
 }

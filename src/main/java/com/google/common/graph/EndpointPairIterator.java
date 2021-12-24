@@ -16,9 +16,7 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.Sets;
-
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -115,7 +113,7 @@ abstract class EndpointPairIterator<N> extends AbstractIterator<EndpointPair<N>>
 
         private Undirected(BaseGraph<N> graph) {
             super(graph);
-            this.visitedNodes = Sets.newHashSetWithExpectedSize(graph.nodes().size() + 1);
+            this.visitedNodes = new HashSet<>((int) (1.5 * graph.nodes().size() + 1));
         }
 
         @Override

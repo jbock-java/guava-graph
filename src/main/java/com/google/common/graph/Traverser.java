@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.AbstractIterator;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
