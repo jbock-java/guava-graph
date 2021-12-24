@@ -16,13 +16,12 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Sets;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.math.IntMath;
 
 import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -66,10 +65,17 @@ abstract class AbstractDirectedNetworkConnections<N, E> implements NetworkConnec
         return new AbstractSet<E>() {
             @Override
             public UnmodifiableIterator<E> iterator() {
-                Iterable<E> incidentEdges =
-                        (selfLoopCount == 0)
-                                ? Iterables.concat(inEdgeMap.keySet(), outEdgeMap.keySet())
-                                : Util.union(inEdgeMap.keySet(), outEdgeMap.keySet());
+                Iterable<E> incidentEdges;
+                Set<E> inEdges = inEdgeMap.keySet();
+                Set<E> outEdges = outEdgeMap.keySet();
+                if (selfLoopCount == 0) {
+                    ArrayList<E> concat = new ArrayList<>((int) (1.5 * (inEdges.size() + outEdges.size())));
+                    concat.addAll(inEdges);
+                    concat.addAll(outEdges);
+                    incidentEdges = concat;
+                } else {
+                    incidentEdges = Util.union(inEdges, outEdges);
+                }
                 return Iterators.unmodifiableIterator(incidentEdges.iterator());
             }
 

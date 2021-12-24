@@ -21,7 +21,6 @@ import com.google.common.annotations.GwtCompatible;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
@@ -67,40 +66,6 @@ public final class Iterables {
     }
 
     /**
-     * Adds all elements in {@code iterable} to {@code collection}.
-     *
-     * @return {@code true} if {@code collection} was modified as a result of this operation.
-     */
-    public static <T> boolean addAll(
-            Collection<T> addTo, Iterable<? extends T> elementsToAdd) {
-        if (elementsToAdd instanceof Collection) {
-            Collection<? extends T> c = (Collection<? extends T>) elementsToAdd;
-            return addTo.addAll(c);
-        }
-        return Iterators.addAll(addTo, checkNotNull(elementsToAdd).iterator());
-    }
-
-    /**
-     * Returns the number of elements in the specified iterable that equal the specified object. This
-     * implementation avoids a full iteration when the iterable is a {@link Multiset} or {@link Set}.
-     *
-     * <p><b>Java 8 users:</b> In most cases, the {@code Stream} equivalent of this method is {@code
-     * stream.filter(element::equals).count()}. If {@code element} might be null, use {@code
-     * stream.filter(Predicate.isEqual(element)).count()} instead.
-     *
-     * @see java.util.Collections#frequency(Collection, Object) Collections.frequency(Collection,
-     *     Object)
-     */
-    public static int frequency(Iterable<?> iterable, Object element) {
-        if ((iterable instanceof Multiset)) {
-            return ((Multiset<?>) iterable).count(element);
-        } else if ((iterable instanceof Set)) {
-            return ((Set<?>) iterable).contains(element) ? 1 : 0;
-        }
-        return Iterators.frequency(iterable.iterator(), element);
-    }
-
-    /**
      * Returns an iterable whose iterators cycle indefinitely over the elements of {@code iterable}.
      *
      * <p>That iterator supports {@code remove()} if {@code iterable.iterator()} does. After {@code
@@ -120,7 +85,7 @@ public final class Iterables {
      */
     public static <T> Iterable<T> cycle(final Iterable<T> iterable) {
         checkNotNull(iterable);
-        return new FluentIterable<T>() {
+        return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
                 return Iterators.cycle(iterable);

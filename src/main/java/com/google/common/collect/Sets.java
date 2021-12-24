@@ -224,9 +224,6 @@ public final class Sets {
 
     static boolean removeAllImpl(Set<?> set, Collection<?> collection) {
         checkNotNull(collection); // for GWT
-        if (collection instanceof Multiset) {
-            collection = ((Multiset<?>) collection).elementSet();
-        }
         /*
          * AbstractSet.removeAll(List) has quadratic behavior if the list size
          * is just more than the set's size.  We augment the test by
