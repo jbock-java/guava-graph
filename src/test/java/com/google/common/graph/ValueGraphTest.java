@@ -16,15 +16,14 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.truth.Truth8;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;

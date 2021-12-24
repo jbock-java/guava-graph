@@ -116,9 +116,6 @@ public abstract class FluentIterable<E> implements Iterable<E> {
     /**
      * Returns a fluent iterable that wraps {@code iterable}, or {@code iterable} itself if it is
      * already a {@code FluentIterable}.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@link Collection#stream} if {@code iterable} is a {@link
-     * Collection}; {@link Streams#stream(Iterable)} otherwise.
      */
     public static <E> FluentIterable<E> from(final Iterable<E> iterable) {
         return (iterable instanceof FluentIterable)
@@ -129,34 +126,6 @@ public abstract class FluentIterable<E> implements Iterable<E> {
                 return iterable.iterator();
             }
         };
-    }
-
-    /**
-     * Returns a fluent iterable containing {@code elements} in the specified order.
-     *
-     * <p>The returned iterable is an unmodifiable view of the input array.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@link java.util.stream.Stream#of(Object[])
-     * Stream.of(T...)}.
-     *
-     * @since 20.0 (since 18.0 as an overload of {@code of})
-     */
-    @Beta
-    public static <E> FluentIterable<E> from(E[] elements) {
-        return from(Arrays.asList(elements));
-    }
-
-    /**
-     * Construct a fluent iterable from another fluent iterable. This is obviously never necessary,
-     * but is intended to help call out cases where one migration from {@code Iterable} to {@code
-     * FluentIterable} has obviated the need to explicitly convert to a {@code FluentIterable}.
-     *
-     * @deprecated instances of {@code FluentIterable} don't need to be converted to {@code
-     *     FluentIterable}
-     */
-    @Deprecated
-    public static <E> FluentIterable<E> from(FluentIterable<E> iterable) {
-        return checkNotNull(iterable);
     }
 
     /**

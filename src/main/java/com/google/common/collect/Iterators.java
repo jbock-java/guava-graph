@@ -198,49 +198,6 @@ public final class Iterators {
     }
 
     /**
-     * Removes every element that satisfies the provided predicate from the iterator. The iterator
-     * will be left exhausted: its {@code hasNext()} method will return {@code false}.
-     *
-     * @param removeFrom the iterator to (potentially) remove elements from
-     * @param predicate a predicate that determines whether an element should be removed
-     * @return {@code true} if any elements were removed from the iterator
-     * @since 2.0
-     */
-    public static <T> boolean removeIf(
-            Iterator<T> removeFrom, Predicate<? super T> predicate) {
-        checkNotNull(predicate);
-        boolean modified = false;
-        while (removeFrom.hasNext()) {
-            if (predicate.apply(removeFrom.next())) {
-                removeFrom.remove();
-                modified = true;
-            }
-        }
-        return modified;
-    }
-
-    /**
-     * Traverses an iterator and removes every element that does not belong to the provided
-     * collection. The iterator will be left exhausted: its {@code hasNext()} method will return
-     * {@code false}.
-     *
-     * @param removeFrom the iterator to (potentially) remove elements from
-     * @param elementsToRetain the elements to retain
-     * @return {@code true} if any element was removed from {@code iterator}
-     */
-    public static boolean retainAll(Iterator<?> removeFrom, Collection<?> elementsToRetain) {
-        checkNotNull(elementsToRetain);
-        boolean result = false;
-        while (removeFrom.hasNext()) {
-            if (!elementsToRetain.contains(removeFrom.next())) {
-                removeFrom.remove();
-                result = true;
-            }
-        }
-        return result;
-    }
-
-    /**
      * Determines whether two iterators contain equal elements in the same order. More specifically,
      * this method returns {@code true} if {@code iterator1} and {@code iterator2} contain the same
      * number of elements and every element of {@code iterator1} is equal to the corresponding element

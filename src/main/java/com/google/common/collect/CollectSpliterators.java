@@ -35,67 +35,6 @@ final class CollectSpliterators {
     private CollectSpliterators() {
     }
 
-    static <T> Spliterator<T> indexed(
-            int size, int extraCharacteristics, IntFunction<T> function) {
-        return indexed(size, extraCharacteristics, function, null);
-    }
-
-    static <T> Spliterator<T> indexed(
-            int size,
-            int extraCharacteristics,
-            IntFunction<T> function,
-            Comparator<? super T> comparator) {
-        if (comparator != null) {
-            checkArgument((extraCharacteristics & Spliterator.SORTED) != 0);
-        }
-        class WithCharacteristics implements Spliterator<T> {
-            private final Spliterator.OfInt delegate;
-
-            WithCharacteristics(Spliterator.OfInt delegate) {
-                this.delegate = delegate;
-            }
-
-            @Override
-            public boolean tryAdvance(Consumer<? super T> action) {
-                return delegate.tryAdvance((IntConsumer) i -> action.accept(function.apply(i)));
-            }
-
-            @Override
-            public void forEachRemaining(Consumer<? super T> action) {
-                delegate.forEachRemaining((IntConsumer) i -> action.accept(function.apply(i)));
-            }
-
-            @Override
-            public Spliterator<T> trySplit() {
-                Spliterator.OfInt split = delegate.trySplit();
-                return (split == null) ? null : new WithCharacteristics(split);
-            }
-
-            @Override
-            public long estimateSize() {
-                return delegate.estimateSize();
-            }
-
-            @Override
-            public int characteristics() {
-                return Spliterator.ORDERED
-                        | Spliterator.SIZED
-                        | Spliterator.SUBSIZED
-                        | extraCharacteristics;
-            }
-
-            @Override
-            public Comparator<? super T> getComparator() {
-                if (hasCharacteristics(Spliterator.SORTED)) {
-                    return comparator;
-                } else {
-                    throw new IllegalStateException();
-                }
-            }
-        }
-        return new WithCharacteristics(IntStream.range(0, size).spliterator());
-    }
-
     /**
      * Returns a {@code Spliterator} over the elements of {@code fromSpliterator} mapped by {@code
      * function}.
@@ -136,64 +75,6 @@ final class CollectSpliterators {
                         & ~(Spliterator.DISTINCT | Spliterator.NONNULL | Spliterator.SORTED);
             }
         };
-    }
-
-    /** Returns a {@code Spliterator} filtered by the specified predicate. */
-    static <T> Spliterator<T> filter(
-            Spliterator<T> fromSpliterator, Predicate<? super T> predicate) {
-        checkNotNull(fromSpliterator);
-        checkNotNull(predicate);
-        class Splitr implements Spliterator<T>, Consumer<T> {
-            T holder = null;
-
-            @Override
-            public void accept(T t) {
-                this.holder = t;
-            }
-
-            @Override
-            public boolean tryAdvance(Consumer<? super T> action) {
-                while (fromSpliterator.tryAdvance(this)) {
-                    try {
-                        // The cast is safe because tryAdvance puts a T into `holder`.
-                        T next = holder;
-                        if (predicate.test(next)) {
-                            action.accept(next);
-                            return true;
-                        }
-                    } finally {
-                        holder = null;
-                    }
-                }
-                return false;
-            }
-
-            @Override
-            public Spliterator<T> trySplit() {
-                Spliterator<T> fromSplit = fromSpliterator.trySplit();
-                return (fromSplit == null) ? null : filter(fromSplit, predicate);
-            }
-
-            @Override
-            public long estimateSize() {
-                return fromSpliterator.estimateSize() / 2;
-            }
-
-            @Override
-            public Comparator<? super T> getComparator() {
-                return fromSpliterator.getComparator();
-            }
-
-            @Override
-            public int characteristics() {
-                return fromSpliterator.characteristics()
-                        & (Spliterator.DISTINCT
-                        | Spliterator.NONNULL
-                        | Spliterator.ORDERED
-                        | Spliterator.SORTED);
-            }
-        }
-        return new Splitr();
     }
 
     /**

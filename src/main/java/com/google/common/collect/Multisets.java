@@ -205,16 +205,6 @@ public final class Multisets {
         }
     }
 
-    static <E> Iterator<E> elementIterator(
-            Iterator<Entry<E>> entryIterator) {
-        return new TransformedIterator<Entry<E>, E>(entryIterator) {
-            @Override
-                E transform(Entry<E> entry) {
-                return entry.getElement();
-            }
-        };
-    }
-
     abstract static class ElementSet<E> extends Sets.ImprovedAbstractSet<E> {
         abstract Multiset<E> multiset();
 
@@ -370,15 +360,6 @@ public final class Multisets {
                         | (entrySpliterator.characteristics()
                         & (Spliterator.ORDERED | Spliterator.NONNULL | Spliterator.IMMUTABLE)),
                 multiset.size());
-    }
-
-    /** An implementation of {@link Multiset#size}. */
-    static int linearTimeSizeImpl(Multiset<?> multiset) {
-        long size = 0;
-        for (Entry<?> entry : multiset.entrySet()) {
-            size += entry.getCount();
-        }
-        return Ints.saturatedCast(size);
     }
 
     /** Used to avoid http://bugs.sun.com/view_bug.do?bug_id=6558557 */

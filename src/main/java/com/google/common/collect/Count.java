@@ -14,14 +14,12 @@
 
 package com.google.common.collect;
 
-import java.io.Serializable;
-
 /**
  * A mutable value of type {@code int}, for multisets to use in tracking counts of values.
  *
  * @author Louis Wasserman
  */
-final class Count implements Serializable {
+final class Count {
     private int value;
 
     Count(int value) {

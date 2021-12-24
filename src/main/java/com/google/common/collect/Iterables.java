@@ -17,13 +17,12 @@
 package com.google.common.collect;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.base.Predicate;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Spliterator;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -161,7 +160,7 @@ public final class Iterables {
      */
     @SafeVarargs
     public static <T> Iterable<T> cycle(T... elements) {
-        return cycle(Lists.newArrayList(elements));
+        return cycle(List.of(elements));
     }
 
     /**
@@ -178,32 +177,6 @@ public final class Iterables {
     public static <T> Iterable<T> concat(
             Iterable<? extends T> a, Iterable<? extends T> b) {
         return FluentIterable.concat(a, b);
-    }
-
-    /**
-     * Combines three iterables into a single iterable. The returned iterable has an iterator that
-     * traverses the elements in {@code a}, followed by the elements in {@code b}, followed by the
-     * elements in {@code c}. The source iterators are not polled until necessary.
-     *
-     * <p>The returned iterable's iterator supports {@code remove()} when the corresponding input
-     * iterator supports it.
-     *
-     * <p><b>Java 8 users:</b> The {@code Stream} equivalent of this method is {@code
-     * Streams.concat(a, b, c)}.
-     */
-    public static <T> Iterable<T> concat(
-            Iterable<? extends T> a, Iterable<? extends T> b, Iterable<? extends T> c) {
-        return FluentIterable.concat(a, b, c);
-    }
-
-    /**
-     * Returns {@code true} if any element in {@code iterable} satisfies the predicate.
-     *
-     * <p><b>{@code Stream} equivalent:</b> {@link Stream#anyMatch}.
-     */
-    public static <T> boolean any(
-            Iterable<T> iterable, Predicate<? super T> predicate) {
-        return Iterators.any(iterable.iterator(), predicate);
     }
 
     /**
