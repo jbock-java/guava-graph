@@ -314,12 +314,4 @@ final class RegularImmutableSortedSet<E> extends ImmutableSortedSet<E> {
     ImmutableList<E> createAsList() {
         return (size() <= 1) ? elements : new ImmutableSortedAsList<E>(this, elements);
     }
-
-    @Override
-    ImmutableSortedSet<E> createDescendingSet() {
-        Comparator<? super E> reversedOrder = Collections.reverseOrder(comparator);
-        return isEmpty()
-                ? emptySet(reversedOrder)
-                : new RegularImmutableSortedSet<E>(elements.reverse(), reversedOrder);
-    }
 }

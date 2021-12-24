@@ -21,9 +21,11 @@ import com.google.common.annotations.GwtIncompatible;
 
 import java.util.Comparator;
 import java.util.NavigableSet;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -248,27 +250,14 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
         throw new UnsupportedOperationException();
     }
 
-    @GwtIncompatible // NavigableSet
-    transient ImmutableSortedSet<E> descendingSet;
-
     /** @since 12.0 */
     @GwtIncompatible // NavigableSet
     @Override
-    public ImmutableSortedSet<E> descendingSet() {
-        // racy single-check idiom
-        ImmutableSortedSet<E> result = descendingSet;
-        if (result == null) {
-            result = descendingSet = createDescendingSet();
-            result.descendingSet = this;
-        }
+    public NavigableSet<E> descendingSet() {
+        TreeSet<E> result = new TreeSet<>(comparator.reversed());
+        result.addAll(this);
         return result;
     }
-
-    // Most classes should implement this as new DescendingImmutableSortedSet<E>(this),
-    // but we push down that implementation because ProGuard can't eliminate it even when it's always
-    // overridden.
-    @GwtIncompatible // NavigableSet
-    abstract ImmutableSortedSet<E> createDescendingSet();
 
     @Override
     public Spliterator<E> spliterator() {
