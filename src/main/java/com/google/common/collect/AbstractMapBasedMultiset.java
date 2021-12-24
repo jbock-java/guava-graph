@@ -63,14 +63,8 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E>
         this.backingMap = backingMap;
     }
 
-    /** Used during deserialization only. The backing map must be empty. */
-    void setBackingMap(Map<E, Count> backingMap) {
-        this.backingMap = backingMap;
-    }
-
     // Required Implementations
-
-    /**
+        /**
      * {@inheritDoc}
      *
      * <p>Invoking {@link Multiset.Entry#getCount} on an entry in the returned set always returns the

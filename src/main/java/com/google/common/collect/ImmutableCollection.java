@@ -19,6 +19,7 @@ package com.google.common.collect;
 import com.google.common.annotations.GwtCompatible;
 
 import java.util.AbstractCollection;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -311,14 +312,19 @@ public abstract class ImmutableCollection<E> extends AbstractCollection<E> {
      *
      * @since 2.0
      */
-    public ImmutableList<E> asList() {
+    public List<E> asList() {
         switch (size()) {
             case 0:
                 return ImmutableList.of();
             case 1:
                 return ImmutableList.of(iterator().next());
             default:
-                return new RegularImmutableAsList<E>(this, toArray());
+                Object[] ar = toArray();
+                List<E> result = new ArrayList<>((int) (ar.length * 1.5));
+                for (Object o : ar) {
+                    result.add((E) o);
+                }
+                return result;
         }
     }
 
