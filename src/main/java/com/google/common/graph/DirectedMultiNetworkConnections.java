@@ -16,9 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.Collections;
@@ -27,9 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.graph.GraphConstants.INNER_CAPACITY;
 import static com.google.common.graph.GraphConstants.INNER_LOAD_FACTOR;
+import static java.util.Objects.requireNonNull;
 
 /**
  * An implementation of {@link NetworkConnections} for directed networks with parallel edges.
@@ -47,8 +44,8 @@ final class DirectedMultiNetworkConnections<N, E> extends AbstractDirectedNetwor
 
     static <N, E> DirectedMultiNetworkConnections<N, E> of() {
         return new DirectedMultiNetworkConnections<>(
-                new HashMap<E, N>(INNER_CAPACITY, INNER_LOAD_FACTOR),
-                new HashMap<E, N>(INNER_CAPACITY, INNER_LOAD_FACTOR),
+                new HashMap<>(INNER_CAPACITY, INNER_LOAD_FACTOR),
+                new HashMap<>(INNER_CAPACITY, INNER_LOAD_FACTOR),
                 0);
     }
 
@@ -59,33 +56,41 @@ final class DirectedMultiNetworkConnections<N, E> extends AbstractDirectedNetwor
                 Collections.unmodifiableMap(new LinkedHashMap<>(outEdges)), selfLoopCount);
     }
 
-    private transient Reference<Multiset<N>> predecessorsReference;
+    private transient Reference<Map<N, Integer>> predecessorsReference;
 
     @Override
     public Set<N> predecessors() {
-        return Collections.unmodifiableSet(predecessorsMultiset().elementSet());
+        return Collections.unmodifiableSet(predecessorsMultiset().keySet());
     }
 
-    private Multiset<N> predecessorsMultiset() {
-        Multiset<N> predecessors = getReference(predecessorsReference);
+    private Map<N, Integer> predecessorsMultiset() {
+        Map<N, Integer> predecessors = getReference(predecessorsReference);
         if (predecessors == null) {
-            predecessors = HashMultiset.create(inEdgeMap.values());
+            predecessors = new HashMap<>();
+            for (N node : inEdgeMap.values()) {
+                Integer count = predecessors.getOrDefault(node, 0);
+                predecessors.put(node, count + 1);
+            }
             predecessorsReference = new SoftReference<>(predecessors);
         }
         return predecessors;
     }
 
-    private transient Reference<Multiset<N>> successorsReference;
+    private transient Reference<Map<N, Integer>> successorsReference;
 
     @Override
     public Set<N> successors() {
-        return Collections.unmodifiableSet(successorsMultiset().elementSet());
+        return Collections.unmodifiableSet(successorsMultiset().keySet());
     }
 
-    private Multiset<N> successorsMultiset() {
-        Multiset<N> successors = getReference(successorsReference);
+    private Map<N, Integer> successorsMultiset() {
+        Map<N, Integer> successors = getReference(successorsReference);
         if (successors == null) {
-            successors = HashMultiset.create(outEdgeMap.values());
+            successors = new HashMap<>();
+            for (N node : outEdgeMap.values()) {
+                Integer count = successors.getOrDefault(node, 0);
+                successors.put(node, count + 1);
+            }
             successorsReference = new SoftReference<>(successors);
         }
         return successors;
@@ -93,10 +98,10 @@ final class DirectedMultiNetworkConnections<N, E> extends AbstractDirectedNetwor
 
     @Override
     public Set<E> edgesConnecting(N node) {
-        return new MultiEdgesConnecting<E>(outEdgeMap, node) {
+        return new MultiEdgesConnecting<>(outEdgeMap, node) {
             @Override
             public int size() {
-                return successorsMultiset().count(node);
+                return successorsMultiset().getOrDefault(node, 0);
             }
         };
     }
@@ -104,9 +109,9 @@ final class DirectedMultiNetworkConnections<N, E> extends AbstractDirectedNetwor
     @Override
     public N removeInEdge(E edge, boolean isSelfLoop) {
         N node = super.removeInEdge(edge, isSelfLoop);
-        Multiset<N> predecessors = getReference(predecessorsReference);
+        Map<N, Integer> predecessors = getReference(predecessorsReference);
         if (predecessors != null) {
-            checkState(predecessors.remove(node));
+            predecessors.compute(node, (n, count) -> requireNonNull(count) == 1 ? null : count - 1);
         }
         return node;
     }
@@ -114,9 +119,9 @@ final class DirectedMultiNetworkConnections<N, E> extends AbstractDirectedNetwor
     @Override
     public N removeOutEdge(E edge) {
         N node = super.removeOutEdge(edge);
-        Multiset<N> successors = getReference(successorsReference);
+        Map<N, Integer> successors = getReference(successorsReference);
         if (successors != null) {
-            checkState(successors.remove(node));
+            successors.compute(node, (n, count) -> requireNonNull(count) == 1 ? null : count - 1);
         }
         return node;
     }
@@ -124,18 +129,18 @@ final class DirectedMultiNetworkConnections<N, E> extends AbstractDirectedNetwor
     @Override
     public void addInEdge(E edge, N node, boolean isSelfLoop) {
         super.addInEdge(edge, node, isSelfLoop);
-        Multiset<N> predecessors = getReference(predecessorsReference);
+        Map<N, Integer> predecessors = getReference(predecessorsReference);
         if (predecessors != null) {
-            checkState(predecessors.add(node));
+            predecessors.compute(node, (n, count) -> count == null ? 1 : count + 1);
         }
     }
 
     @Override
     public void addOutEdge(E edge, N node) {
         super.addOutEdge(edge, node);
-        Multiset<N> successors = getReference(successorsReference);
+        Map<N, Integer> successors = getReference(successorsReference);
         if (successors != null) {
-            checkState(successors.add(node));
+            successors.compute(node, (n, count) -> count == null ? 1 : count + 1);
         }
     }
 
