@@ -105,7 +105,7 @@ public abstract class AbstractStandardDirectedNetworkTest extends AbstractNetwor
             fail(ERROR_MODIFIABLE_COLLECTION);
         } catch (UnsupportedOperationException e) {
             addEdge(N1, N2, E12);
-            // TODO
+            // TODO https://github.com/google/guava/issues/5843
 //            assertThat(network.incidentEdges(N1)).containsExactlyElementsIn(incidentEdges);
         }
     }
@@ -160,7 +160,7 @@ public abstract class AbstractStandardDirectedNetworkTest extends AbstractNetwor
             fail(ERROR_MODIFIABLE_COLLECTION);
         } catch (UnsupportedOperationException e) {
             addEdge(N1, N2, E12);
-            // TODO
+            // TODO https://github.com/google/guava/issues/5843
 //            assertThat(network.edgesConnecting(N1, N2)).containsExactlyElementsIn(edgesConnecting);
         }
     }
@@ -215,7 +215,7 @@ public abstract class AbstractStandardDirectedNetworkTest extends AbstractNetwor
             fail(ERROR_MODIFIABLE_COLLECTION);
         } catch (UnsupportedOperationException e) {
             addEdge(N1, N2, E12);
-            // TODO
+            // TODO https://github.com/google/guava/issues/5843
 //            assertThat(network.predecessors(N2)).containsExactlyElementsIn(predecessors);
         }
     }
@@ -234,7 +234,7 @@ public abstract class AbstractStandardDirectedNetworkTest extends AbstractNetwor
             fail(ERROR_MODIFIABLE_COLLECTION);
         } catch (UnsupportedOperationException e) {
             addEdge(N1, N2, E12);
-            // TODO
+            // TODO https://github.com/google/guava/issues/5843
 //            assertThat(successors).containsExactlyElementsIn(network.successors(N1));
         }
     }
