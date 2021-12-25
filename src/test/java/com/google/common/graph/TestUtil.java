@@ -16,10 +16,10 @@
 
 package com.google.common.graph;
 
-import static com.google.common.truth.Truth.assertThat;
-
-import com.google.common.collect.Iterators;
+import java.util.Iterator;
 import java.util.Set;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Utility methods used in various common.graph tests. */
 final class TestUtil {
@@ -78,12 +78,21 @@ final class TestUtil {
      * contains(). Verify that these sets are consistent with the elements of their iterator.
      */
     static <T> Set<T> sanityCheckSet(Set<T> set) {
-        assertThat(set).hasSize(Iterators.size(set.iterator()));
+        assertThat(set).hasSize(size(set.iterator()));
         for (Object element : set) {
             assertThat(set).contains(element);
         }
         assertThat(set).doesNotContain(new Object());
         assertThat(set).isEqualTo(Util.setOf(set));
         return set;
+    }
+
+    private static int size(Iterator<?> iterator) {
+        long count = 0L;
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        return Math.toIntExact(count);
     }
 }

@@ -17,7 +17,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Iterables;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -27,11 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
@@ -188,8 +187,8 @@ public class TraverserTest {
     @Test
     public void forGraph_breadthFirst_infinite() {
         Iterable<Integer> result =
-                Traverser.forGraph(fixedSuccessors(Iterables.cycle(1, 2, 3))).breadthFirst(0);
-        assertThat(Iterables.limit(result, 4)).containsExactly(0, 1, 2, 3).inOrder();
+                Traverser.forGraph(fixedSuccessors(cycle(1, 2, 3))).breadthFirst(0);
+        assertThat(limit(result, 4)).containsExactly(0, 1, 2, 3).inOrder();
     }
 
     @Test
@@ -266,7 +265,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forGraph_breadthFirst_tree() throws Exception {
+    public void forGraph_breadthFirst_tree() {
         Traverser<Character> traverser = Traverser.forGraph(TREE);
 
         assertEqualCharNodes(traverser.breadthFirst('h'), "hdegabcf");
@@ -275,7 +274,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forGraph_breadthFirstIterable_tree() throws Exception {
+    public void forGraph_breadthFirstIterable_tree() {
         Traverser<Character> traverser = Traverser.forGraph(TREE);
 
         assertEqualCharNodes(traverser.breadthFirst(charactersOf("hg")), "hgdefabc");
@@ -343,11 +342,11 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(DIAMOND_GRAPH);
         Iterable<Character> result = Traverser.forGraph(graph).breadthFirst('a');
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 1);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 2);
     }
 
@@ -356,11 +355,11 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(DIAMOND_GRAPH);
         Iterable<Character> result = Traverser.forGraph(graph).breadthFirst(charactersOf("ab"));
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 2);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 3);
     }
 
@@ -384,8 +383,8 @@ public class TraverserTest {
     @Test
     public void forGraph_depthFirstPreOrder_infinite() {
         Iterable<Integer> result =
-                Traverser.forGraph(fixedSuccessors(Iterables.cycle(1, 2, 3))).depthFirstPreOrder(0);
-        assertThat(Iterables.limit(result, 3)).containsExactly(0, 1, 2).inOrder();
+                Traverser.forGraph(fixedSuccessors(cycle(1, 2, 3))).depthFirstPreOrder(0);
+        assertThat(limit(result, 3)).containsExactly(0, 1, 2).inOrder();
     }
 
     @Test
@@ -462,7 +461,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forGraph_depthFirstPreOrder_tree() throws Exception {
+    public void forGraph_depthFirstPreOrder_tree() {
         Traverser<Character> traverser = Traverser.forGraph(TREE);
 
         assertEqualCharNodes(traverser.depthFirstPreOrder('h'), "hdabcegf");
@@ -471,7 +470,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forGraph_depthFirstPreOrderIterable_tree() throws Exception {
+    public void forGraph_depthFirstPreOrderIterable_tree() {
         Traverser<Character> traverser = Traverser.forGraph(TREE);
 
         assertEqualCharNodes(traverser.depthFirstPreOrder(charactersOf("hg")), "hdabcegf");
@@ -533,11 +532,11 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(DIAMOND_GRAPH);
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPreOrder('a');
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 1);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 2);
     }
 
@@ -546,11 +545,11 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(DIAMOND_GRAPH);
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPreOrder(charactersOf("ac"));
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 1, 'c', 1);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 2, 'c', 1);
     }
 
@@ -643,7 +642,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forGraph_depthFirstPostOrder_tree() throws Exception {
+    public void forGraph_depthFirstPostOrder_tree() {
         Traverser<Character> traverser = Traverser.forGraph(TREE);
 
         assertEqualCharNodes(traverser.depthFirstPostOrder('h'), "abcdefgh");
@@ -652,7 +651,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forGraph_depthFirstPostOrderIterable_tree() throws Exception {
+    public void forGraph_depthFirstPostOrderIterable_tree() {
         Traverser<Character> traverser = Traverser.forGraph(TREE);
 
         assertEqualCharNodes(traverser.depthFirstPostOrder(charactersOf("hg")), "abcdefgh");
@@ -715,11 +714,11 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(DIAMOND_GRAPH);
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPostOrder('a');
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "db");
+        assertEqualCharNodes(limit(result, 2), "db");
         assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 1, 'd', 1);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "db");
+        assertEqualCharNodes(limit(result, 2), "db");
         assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 2, 'd', 2);
     }
 
@@ -728,17 +727,17 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(DIAMOND_GRAPH);
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPostOrder(charactersOf("ac"));
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "db");
+        assertEqualCharNodes(limit(result, 2), "db");
         assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 1, 'c', 1, 'd', 1);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "db");
+        assertEqualCharNodes(limit(result, 2), "db");
         assertThat(graph.requestedNodes).containsExactly('a', 3, 'b', 2, 'c', 1, 'd', 2);
     }
 
     @Test
     @SuppressWarnings("CheckReturnValue")
-    public void forTree_acceptsDirectedGraph() throws Exception {
+    public void forTree_acceptsDirectedGraph() {
         MutableGraph<String> graph = GraphBuilder.directed().build();
         graph.putEdge("a", "b");
 
@@ -746,7 +745,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_withUndirectedGraph_throws() throws Exception {
+    public void forTree_withUndirectedGraph_throws() {
         MutableGraph<String> graph = GraphBuilder.undirected().build();
         graph.putEdge("a", "b");
 
@@ -759,7 +758,7 @@ public class TraverserTest {
 
     @Test
     @SuppressWarnings("CheckReturnValue")
-    public void forTree_acceptsDirectedValueGraph() throws Exception {
+    public void forTree_acceptsDirectedValueGraph() {
         MutableValueGraph<String, Integer> valueGraph = ValueGraphBuilder.directed().build();
         valueGraph.putEdgeValue("a", "b", 11);
 
@@ -767,7 +766,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_withUndirectedValueGraph_throws() throws Exception {
+    public void forTree_withUndirectedValueGraph_throws() {
         MutableValueGraph<String, Integer> valueGraph = ValueGraphBuilder.undirected().build();
         valueGraph.putEdgeValue("a", "b", 11);
 
@@ -780,7 +779,7 @@ public class TraverserTest {
 
     @Test
     @SuppressWarnings("CheckReturnValue")
-    public void forTree_acceptsDirectedNetwork() throws Exception {
+    public void forTree_acceptsDirectedNetwork() {
         MutableNetwork<String, Integer> network = NetworkBuilder.directed().build();
         network.addEdge("a", "b", 11);
 
@@ -788,7 +787,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_withUndirectedNetwork_throws() throws Exception {
+    public void forTree_withUndirectedNetwork_throws() {
         MutableNetwork<String, Integer> network = NetworkBuilder.undirected().build();
         network.addEdge("a", "b", 11);
 
@@ -802,12 +801,12 @@ public class TraverserTest {
     @Test
     public void forTree_breadthFirst_infinite() {
         Iterable<Integer> result =
-                Traverser.forTree(fixedSuccessors(Iterables.cycle(1, 2, 3))).breadthFirst(0);
-        assertThat(Iterables.limit(result, 8)).containsExactly(0, 1, 2, 3, 1, 2, 3, 1).inOrder();
+                Traverser.forTree(fixedSuccessors(cycle(1, 2, 3))).breadthFirst(0);
+        assertThat(limit(result, 8)).containsExactly(0, 1, 2, 3, 1, 2, 3, 1).inOrder();
     }
 
     @Test
-    public void forTree_breadthFirst_tree() throws Exception {
+    public void forTree_breadthFirst_tree() {
         Traverser<Character> traverser = Traverser.forTree(TREE);
 
         assertEqualCharNodes(traverser.breadthFirst('h'), "hdegabcf");
@@ -816,7 +815,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_breadthFirstIterable_tree() throws Exception {
+    public void forTree_breadthFirstIterable_tree() {
         Traverser<Character> traverser = Traverser.forTree(TREE);
 
         assertEqualCharNodes(traverser.breadthFirst(charactersOf("")), "");
@@ -826,7 +825,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_breadthFirst_cyclicGraphContainingTree() throws Exception {
+    public void forTree_breadthFirst_cyclicGraphContainingTree() {
         Traverser<Character> traverser = Traverser.forTree(CYCLIC_GRAPH_CONTAINING_TREE);
 
         assertEqualCharNodes(traverser.breadthFirst('a'), "abcd");
@@ -835,7 +834,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_breadthFirstIterable_cyclicGraphContainingTree() throws Exception {
+    public void forTree_breadthFirstIterable_cyclicGraphContainingTree() {
         Traverser<Character> traverser = Traverser.forTree(CYCLIC_GRAPH_CONTAINING_TREE);
 
         assertEqualCharNodes(traverser.breadthFirst(charactersOf("a")), "abcd");
@@ -844,7 +843,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_breadthFirst_graphContainingTreeAndDiamond() throws Exception {
+    public void forTree_breadthFirst_graphContainingTreeAndDiamond() {
         Traverser<Character> traverser = Traverser.forTree(GRAPH_CONTAINING_TREE_AND_DIAMOND);
 
         assertEqualCharNodes(traverser.breadthFirst('a'), "abcd");
@@ -853,7 +852,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_breadthFirstIterable_graphContainingTreeAndDiamond() throws Exception {
+    public void forTree_breadthFirstIterable_graphContainingTreeAndDiamond() {
         Traverser<Character> traverser = Traverser.forTree(GRAPH_CONTAINING_TREE_AND_DIAMOND);
 
         assertEqualCharNodes(traverser.breadthFirst(charactersOf("a")), "abcd");
@@ -913,11 +912,11 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(TREE);
         Iterable<Character> result = Traverser.forGraph(graph).breadthFirst('h');
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "hd");
+        assertEqualCharNodes(limit(result, 2), "hd");
         assertThat(graph.requestedNodes).containsExactly('h', 2, 'd', 1);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "hd");
+        assertEqualCharNodes(limit(result, 2), "hd");
         assertThat(graph.requestedNodes).containsExactly('h', 3, 'd', 2);
     }
 
@@ -926,23 +925,23 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(TREE);
         Iterable<Character> result = Traverser.forGraph(graph).breadthFirst(charactersOf("dg"));
 
-        assertEqualCharNodes(Iterables.limit(result, 3), "dga");
+        assertEqualCharNodes(limit(result, 3), "dga");
         assertThat(graph.requestedNodes).containsExactly('a', 1, 'd', 2, 'g', 2);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 3), "dga");
+        assertEqualCharNodes(limit(result, 3), "dga");
         assertThat(graph.requestedNodes).containsExactly('a', 2, 'd', 3, 'g', 3);
     }
 
     @Test
     public void forTree_depthFirstPreOrder_infinite() {
         Iterable<Integer> result =
-                Traverser.forTree(fixedSuccessors(Iterables.cycle(1, 2, 3))).depthFirstPreOrder(0);
-        assertThat(Iterables.limit(result, 3)).containsExactly(0, 1, 1).inOrder();
+                Traverser.forTree(fixedSuccessors(cycle(1, 2, 3))).depthFirstPreOrder(0);
+        assertThat(limit(result, 3)).containsExactly(0, 1, 1).inOrder();
     }
 
     @Test
-    public void forTree_depthFirstPreOrderIterable_tree() throws Exception {
+    public void forTree_depthFirstPreOrderIterable_tree() {
         Traverser<Character> traverser = Traverser.forTree(TREE);
 
         assertEqualCharNodes(traverser.depthFirstPreOrder(charactersOf("h")), "hdabcegf");
@@ -951,7 +950,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_depthFirstPreOrderIterableIterable_tree() throws Exception {
+    public void forTree_depthFirstPreOrderIterableIterable_tree() {
         Traverser<Character> traverser = Traverser.forTree(TREE);
 
         assertEqualCharNodes(traverser.depthFirstPreOrder(charactersOf("")), "");
@@ -961,7 +960,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_depthFirstPreOrder_cyclicGraphContainingTree() throws Exception {
+    public void forTree_depthFirstPreOrder_cyclicGraphContainingTree() {
         Traverser<Character> traverser = Traverser.forTree(CYCLIC_GRAPH_CONTAINING_TREE);
 
         assertEqualCharNodes(traverser.depthFirstPreOrder('a'), "abcd");
@@ -970,7 +969,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_depthFirstPreOrderIterable_cyclicGraphContainingTree() throws Exception {
+    public void forTree_depthFirstPreOrderIterable_cyclicGraphContainingTree() {
         Traverser<Character> traverser = Traverser.forTree(CYCLIC_GRAPH_CONTAINING_TREE);
 
         assertEqualCharNodes(traverser.depthFirstPreOrder(charactersOf("a")), "abcd");
@@ -979,7 +978,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_depthFirstPreOrder_graphContainingTreeAndDiamond() throws Exception {
+    public void forTree_depthFirstPreOrder_graphContainingTreeAndDiamond() {
         Traverser<Character> traverser = Traverser.forTree(GRAPH_CONTAINING_TREE_AND_DIAMOND);
 
         assertEqualCharNodes(traverser.depthFirstPreOrder('a'), "abcd");
@@ -988,7 +987,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_depthFirstPreOrderIterable_graphContainingTreeAndDiamond() throws Exception {
+    public void forTree_depthFirstPreOrderIterable_graphContainingTreeAndDiamond() {
         Traverser<Character> traverser = Traverser.forTree(GRAPH_CONTAINING_TREE_AND_DIAMOND);
 
         assertEqualCharNodes(traverser.depthFirstPreOrder(charactersOf("a")), "abcd");
@@ -1050,11 +1049,11 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(TREE);
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPreOrder('h');
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "hd");
+        assertEqualCharNodes(limit(result, 2), "hd");
         assertThat(graph.requestedNodes).containsExactly('h', 2, 'd', 1);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "hd");
+        assertEqualCharNodes(limit(result, 2), "hd");
         assertThat(graph.requestedNodes).containsExactly('h', 3, 'd', 2);
     }
 
@@ -1063,16 +1062,16 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(TREE);
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPreOrder(charactersOf("dg"));
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "da");
+        assertEqualCharNodes(limit(result, 2), "da");
         assertThat(graph.requestedNodes).containsExactly('a', 1, 'd', 2, 'g', 1);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "da");
+        assertEqualCharNodes(limit(result, 2), "da");
         assertThat(graph.requestedNodes).containsExactly('a', 2, 'd', 3, 'g', 1);
     }
 
     @Test
-    public void forTree_depthFirstPostOrder_tree() throws Exception {
+    public void forTree_depthFirstPostOrder_tree() {
         Traverser<Character> traverser = Traverser.forTree(TREE);
 
         assertEqualCharNodes(traverser.depthFirstPostOrder('h'), "abcdefgh");
@@ -1081,7 +1080,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_depthFirstPostOrderIterable_tree() throws Exception {
+    public void forTree_depthFirstPostOrderIterable_tree() {
         Traverser<Character> traverser = Traverser.forTree(TREE);
 
         assertEqualCharNodes(traverser.depthFirstPostOrder(charactersOf("")), "");
@@ -1091,7 +1090,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_depthFirstPostOrder_cyclicGraphContainingTree() throws Exception {
+    public void forTree_depthFirstPostOrder_cyclicGraphContainingTree() {
         Traverser<Character> traverser = Traverser.forTree(CYCLIC_GRAPH_CONTAINING_TREE);
 
         assertEqualCharNodes(traverser.depthFirstPostOrder('a'), "cdba");
@@ -1100,7 +1099,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_depthFirstPostOrderIterable_cyclicGraphContainingTree() throws Exception {
+    public void forTree_depthFirstPostOrderIterable_cyclicGraphContainingTree() {
         Traverser<Character> traverser = Traverser.forTree(CYCLIC_GRAPH_CONTAINING_TREE);
 
         assertEqualCharNodes(traverser.depthFirstPostOrder(charactersOf("a")), "cdba");
@@ -1109,7 +1108,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_depthFirstPostOrder_graphContainingTreeAndDiamond() throws Exception {
+    public void forTree_depthFirstPostOrder_graphContainingTreeAndDiamond() {
         Traverser<Character> traverser = Traverser.forTree(GRAPH_CONTAINING_TREE_AND_DIAMOND);
 
         assertEqualCharNodes(traverser.depthFirstPostOrder('a'), "cdba");
@@ -1118,7 +1117,7 @@ public class TraverserTest {
     }
 
     @Test
-    public void forTree_depthFirstPostOrderIterable_graphContainingTreeAndDiamond() throws Exception {
+    public void forTree_depthFirstPostOrderIterable_graphContainingTreeAndDiamond() {
         Traverser<Character> traverser = Traverser.forTree(GRAPH_CONTAINING_TREE_AND_DIAMOND);
 
         assertEqualCharNodes(traverser.depthFirstPostOrder(charactersOf("a")), "cdba");
@@ -1180,11 +1179,11 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(TREE);
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPostOrder('h');
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('h', 2, 'd', 1, 'a', 1, 'b', 1);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('h', 3, 'd', 2, 'a', 2, 'b', 2);
     }
 
@@ -1193,11 +1192,11 @@ public class TraverserTest {
         RequestSavingGraph graph = new RequestSavingGraph(TREE);
         Iterable<Character> result = Traverser.forGraph(graph).depthFirstPostOrder(charactersOf("dg"));
 
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('a', 1, 'b', 1, 'd', 2, 'g', 1);
 
         // Iterate again to see if calculation is done again
-        assertEqualCharNodes(Iterables.limit(result, 2), "ab");
+        assertEqualCharNodes(limit(result, 2), "ab");
         assertThat(graph.requestedNodes).containsExactly('a', 2, 'b', 2, 'd', 3, 'g', 1);
     }
 
@@ -1218,7 +1217,7 @@ public class TraverserTest {
     private static SuccessorsFunction<Character> createGraph(boolean directed, String... edges) {
         Multimap<Character, Character> graphMap = Multimap.create();
         for (String edge : edges) {
-            checkArgument(
+            Preconditions.checkArgument(
                     edge.length() == 2, "Expecting each edge to consist of 2 characters but got %s", edge);
             char node1 = edge.charAt(0);
             char node2 = edge.charAt(1);
@@ -1228,15 +1227,12 @@ public class TraverserTest {
             }
         }
 
-        return new SuccessorsFunction<Character>() {
-            @Override
-            public Iterable<? extends Character> successors(Character node) {
-                checkArgument(
-                        graphMap.containsKey(node) || graphMap.containsValue(node),
-                        "Node %s is not an element of this graph",
-                        node);
-                return immutableSortedCopy(graphMap.get(node));
-            }
+        return node -> {
+            Preconditions.checkArgument(
+                    graphMap.containsKey(node) || graphMap.containsValue(node),
+                    "Node %s is not an element of this graph",
+                    node);
+            return immutableSortedCopy(graphMap.get(node));
         };
     }
 
@@ -1270,7 +1266,7 @@ public class TraverserTest {
         final Map<Character, Integer> requestedNodes = new HashMap<>();
 
         RequestSavingGraph(SuccessorsFunction<Character> delegate) {
-            this.delegate = checkNotNull(delegate);
+            this.delegate = Preconditions.checkNotNull(delegate);
         }
 
         @Override
@@ -1280,12 +1276,25 @@ public class TraverserTest {
         }
     }
 
-    private static <N> SuccessorsFunction<N> fixedSuccessors(final Iterable<N> successors) {
-        return new SuccessorsFunction<N>() {
+    private static <N> SuccessorsFunction<N> fixedSuccessors(Iterable<N> successors) {
+        return n -> successors;
+    }
+
+    private static <T> Iterable<T> limit(Iterable<T> iterable, int limitSize) {
+        return () -> StreamSupport.stream(iterable.spliterator(), false).limit(limitSize).iterator();
+    }
+
+    private static <T> Iterable<T> cycle(T... elements) {
+        return () -> Stream.generate(new Supplier<T>() {
+
+            int offset;
+
             @Override
-            public Iterable<N> successors(N n) {
-                return successors;
+            public T get() {
+                T result = elements[offset++];
+                offset = Math.floorMod(offset, elements.length);
+                return result;
             }
-        };
+        }).iterator();
     }
 }

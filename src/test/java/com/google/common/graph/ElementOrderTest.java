@@ -22,7 +22,6 @@ import org.junit.runners.JUnit4;
 
 import java.util.Comparator;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.ElementOrder.insertion;
 import static com.google.common.graph.ElementOrder.unordered;
 import static com.google.common.truth.Truth.assertThat;
@@ -230,7 +229,7 @@ public final class ElementOrderTest {
         final Integer value;
 
         NonComparableSuperClass(Integer value) {
-            this.value = checkNotNull(value);
+            this.value = Preconditions.checkNotNull(value);
         }
 
         @Override
