@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.GraphConstants.INNER_CAPACITY;
 import static com.google.common.graph.GraphConstants.INNER_LOAD_FACTOR;
 
@@ -38,7 +37,7 @@ final class UndirectedGraphConnections<N, V> implements GraphConnections<N, V> {
     private final Map<N, V> adjacentNodeValues;
 
     private UndirectedGraphConnections(Map<N, V> adjacentNodeValues) {
-        this.adjacentNodeValues = checkNotNull(adjacentNodeValues);
+        this.adjacentNodeValues = Preconditions.checkNotNull(adjacentNodeValues);
     }
 
     static <N, V> UndirectedGraphConnections<N, V> of(ElementOrder<N> incidentEdgeOrder) {

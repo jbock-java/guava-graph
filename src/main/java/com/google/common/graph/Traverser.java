@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -59,7 +57,7 @@ public abstract class Traverser<N> {
     private final SuccessorsFunction<N> successorFunction;
 
     private Traverser(SuccessorsFunction<N> successorFunction) {
-        this.successorFunction = checkNotNull(successorFunction);
+        this.successorFunction = Preconditions.checkNotNull(successorFunction);
     }
 
     /**
@@ -170,10 +168,10 @@ public abstract class Traverser<N> {
      */
     public static <N> Traverser<N> forTree(SuccessorsFunction<N> tree) {
         if (tree instanceof BaseGraph) {
-            checkArgument(((BaseGraph<?>) tree).isDirected(), "Undirected graphs can never be trees.");
+            Preconditions.checkArgument(((BaseGraph<?>) tree).isDirected(), "Undirected graphs can never be trees.");
         }
         if (tree instanceof Network) {
-            checkArgument(((Network<?, ?>) tree).isDirected(), "Undirected networks can never be trees.");
+            Preconditions.checkArgument(((Network<?, ?>) tree).isDirected(), "Undirected networks can never be trees.");
         }
         return new Traverser<N>(tree) {
             @Override
@@ -404,7 +402,7 @@ public abstract class Traverser<N> {
                 N visitNext(Deque<Iterator<? extends N>> horizon) {
                     Iterator<? extends N> top = horizon.getFirst();
                     if (top.hasNext()) {
-                        return checkNotNull(top.next());
+                        return Preconditions.checkNotNull(top.next());
                     }
                     horizon.removeFirst();
                     return null;

@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Maps;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -94,7 +92,7 @@ public final class ImmutableValueGraph<N, V> extends StandardValueGraph<N, V> {
                 ? DirectedGraphConnections.ofImmutable(
                 node, graph.incidentEdges(node), successorNodeToValueFn)
                 : UndirectedGraphConnections.ofImmutable(
-                Maps.asMap(graph.adjacentNodes(node), successorNodeToValueFn));
+                Util.asMap(graph.adjacentNodes(node), successorNodeToValueFn));
     }
 
     /**

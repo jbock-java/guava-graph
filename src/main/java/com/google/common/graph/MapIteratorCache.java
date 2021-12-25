@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.UnmodifiableIterator;
-
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -97,10 +95,10 @@ class MapIteratorCache<K, V> {
     final Set<K> unmodifiableKeySet() {
         return new AbstractSet<K>() {
             @Override
-            public UnmodifiableIterator<K> iterator() {
+            public Iterator<K> iterator() {
                 Iterator<Entry<K, V>> entryIterator = backingMap.entrySet().iterator();
 
-                return new UnmodifiableIterator<K>() {
+                return new Iterator<K>() {
                     @Override
                     public boolean hasNext() {
                         return entryIterator.hasNext();

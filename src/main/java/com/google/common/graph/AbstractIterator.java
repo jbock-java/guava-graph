@@ -19,8 +19,6 @@ package com.google.common.graph;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static com.google.common.base.Preconditions.checkState;
-
 /**
  * This class provides a skeletal implementation of the {@code Iterator} interface, to make this
  * interface easier to implement for certain types of data sources.
@@ -111,7 +109,7 @@ abstract class AbstractIterator<T> implements Iterator<T> {
 
     @Override
     public final boolean hasNext() {
-        checkState(state != State.FAILED);
+        Preconditions.checkState(state != State.FAILED);
         switch (state) {
             case DONE:
                 return false;

@@ -16,13 +16,9 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Maps;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A {@link Network} whose elements and structural relationships will never change. Instances of
@@ -63,7 +59,7 @@ public final class ImmutableNetwork<N, E> extends StandardNetwork<N, E> {
      */
     @Deprecated
     public static <N, E> ImmutableNetwork<N, E> copyOf(ImmutableNetwork<N, E> network) {
-        return checkNotNull(network);
+        return Preconditions.checkNotNull(network);
     }
 
     @Override
@@ -95,15 +91,15 @@ public final class ImmutableNetwork<N, E> extends StandardNetwork<N, E> {
 
     private static <N, E> NetworkConnections<N, E> connectionsOf(Network<N, E> network, N node) {
         if (network.isDirected()) {
-            Map<E, N> inEdgeMap = Maps.asMap(network.inEdges(node), sourceNodeFn(network));
-            Map<E, N> outEdgeMap = Maps.asMap(network.outEdges(node), targetNodeFn(network));
+            Map<E, N> inEdgeMap = Util.asMap(network.inEdges(node), sourceNodeFn(network));
+            Map<E, N> outEdgeMap = Util.asMap(network.outEdges(node), targetNodeFn(network));
             int selfLoopCount = network.edgesConnecting(node, node).size();
             return network.allowsParallelEdges()
                     ? DirectedMultiNetworkConnections.ofImmutable(inEdgeMap, outEdgeMap, selfLoopCount)
                     : DirectedNetworkConnections.ofImmutable(inEdgeMap, outEdgeMap, selfLoopCount);
         } else {
             Map<E, N> incidentEdgeMap =
-                    Maps.asMap(network.incidentEdges(node), adjacentNodeFn(network, node));
+                    Util.asMap(network.incidentEdges(node), adjacentNodeFn(network, node));
             return network.allowsParallelEdges()
                     ? UndirectedMultiNetworkConnections.ofImmutable(incidentEdgeMap)
                     : UndirectedNetworkConnections.ofImmutable(incidentEdgeMap);

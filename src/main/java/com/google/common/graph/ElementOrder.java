@@ -16,16 +16,13 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Maps;
-
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.TreeMap;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Used to represent the order of elements in a data structure that supports different options for
@@ -66,9 +63,9 @@ public final class ElementOrder<T> {
     }
 
     private ElementOrder(Type type, Comparator<T> comparator) {
-        this.type = checkNotNull(type);
+        this.type = Preconditions.checkNotNull(type);
         this.comparator = comparator;
-        checkState((type == Type.SORTED) == (comparator != null));
+        Preconditions.checkState((type == Type.SORTED) == (comparator != null));
     }
 
     /** Returns an instance which specifies that no ordering is guaranteed. */
@@ -133,7 +130,7 @@ public final class ElementOrder<T> {
      * determined by {@code comparator}.
      */
     public static <S> ElementOrder<S> sorted(Comparator<S> comparator) {
-        return new ElementOrder<>(Type.SORTED, checkNotNull(comparator));
+        return new ElementOrder<>(Type.SORTED, Preconditions.checkNotNull(comparator));
     }
 
     /** Returns the type of ordering used. */
@@ -185,10 +182,10 @@ public final class ElementOrder<T> {
     <K extends T, V> Map<K, V> createMap(int expectedSize) {
         switch (type) {
             case UNORDERED:
-                return Maps.newHashMapWithExpectedSize(expectedSize);
+                return new HashMap<>((int) (1.5 * expectedSize));
             case INSERTION:
             case STABLE:
-                return Maps.newLinkedHashMapWithExpectedSize(expectedSize);
+                return new LinkedHashMap<>((int) (1.5 * expectedSize));
             case SORTED:
                 return new TreeMap<>(comparator());
             default:

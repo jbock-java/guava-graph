@@ -18,8 +18,6 @@ package com.google.common.graph;
 
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.Graphs.checkNonNegative;
 
 /**
@@ -135,7 +133,7 @@ public final class GraphBuilder<N> extends AbstractGraphBuilder<N> {
      */
     public <N1 extends N> GraphBuilder<N1> nodeOrder(ElementOrder<N1> nodeOrder) {
         GraphBuilder<N1> newBuilder = cast();
-        newBuilder.nodeOrder = checkNotNull(nodeOrder);
+        newBuilder.nodeOrder = Preconditions.checkNotNull(nodeOrder);
         return newBuilder;
     }
 
@@ -153,14 +151,14 @@ public final class GraphBuilder<N> extends AbstractGraphBuilder<N> {
      * @since 29.0
      */
     public <N1 extends N> GraphBuilder<N1> incidentEdgeOrder(ElementOrder<N1> incidentEdgeOrder) {
-        checkArgument(
+        Preconditions.checkArgument(
                 incidentEdgeOrder.type() == ElementOrder.Type.UNORDERED
                         || incidentEdgeOrder.type() == ElementOrder.Type.STABLE,
                 "The given elementOrder (%s) is unsupported. incidentEdgeOrder() only supports"
                         + " ElementOrder.unordered() and ElementOrder.stable().",
                 incidentEdgeOrder);
         GraphBuilder<N1> newBuilder = cast();
-        newBuilder.incidentEdgeOrder = checkNotNull(incidentEdgeOrder);
+        newBuilder.incidentEdgeOrder = Preconditions.checkNotNull(incidentEdgeOrder);
         return newBuilder;
     }
 

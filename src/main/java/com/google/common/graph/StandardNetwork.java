@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.GraphConstants.DEFAULT_EDGE_COUNT;
 import static com.google.common.graph.GraphConstants.DEFAULT_NODE_COUNT;
 import static com.google.common.graph.GraphConstants.EDGE_NOT_IN_GRAPH;
@@ -150,7 +148,7 @@ class StandardNetwork<N, E> extends AbstractNetwork<N, E> {
         if (!allowsSelfLoops && nodeU == nodeV) { // just an optimization, only check reference equality
             return Set.of();
         }
-        checkArgument(containsNode(nodeV), NODE_NOT_IN_GRAPH, nodeV);
+        Preconditions.checkArgument(containsNode(nodeV), NODE_NOT_IN_GRAPH, nodeV);
         return connectionsU.edgesConnecting(nodeV);
     }
 
@@ -177,7 +175,7 @@ class StandardNetwork<N, E> extends AbstractNetwork<N, E> {
     final NetworkConnections<N, E> checkedConnections(N node) {
         NetworkConnections<N, E> connections = nodeConnections.get(node);
         if (connections == null) {
-            checkNotNull(node);
+            Preconditions.checkNotNull(node);
             throw new IllegalArgumentException(String.format(NODE_NOT_IN_GRAPH, node));
         }
         return connections;
@@ -186,7 +184,7 @@ class StandardNetwork<N, E> extends AbstractNetwork<N, E> {
     final N checkedReferenceNode(E edge) {
         N referenceNode = edgeToReferenceNode.get(edge);
         if (referenceNode == null) {
-            checkNotNull(edge);
+            Preconditions.checkNotNull(edge);
             throw new IllegalArgumentException(String.format(EDGE_NOT_IN_GRAPH, edge));
         }
         return referenceNode;

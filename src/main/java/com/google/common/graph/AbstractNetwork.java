@@ -26,8 +26,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.GraphConstants.ENDPOINTS_MISMATCH;
 import static com.google.common.graph.GraphConstants.MULTIPLE_EDGES_CONNECTING;
 
@@ -209,14 +207,14 @@ public abstract class AbstractNetwork<N, E> implements Network<N, E> {
 
     @Override
     public boolean hasEdgeConnecting(N nodeU, N nodeV) {
-        checkNotNull(nodeU);
-        checkNotNull(nodeV);
+        Preconditions.checkNotNull(nodeU);
+        Preconditions.checkNotNull(nodeV);
         return nodes().contains(nodeU) && successors(nodeU).contains(nodeV);
     }
 
     @Override
     public boolean hasEdgeConnecting(EndpointPair<N> endpoints) {
-        checkNotNull(endpoints);
+        Preconditions.checkNotNull(endpoints);
         if (!isOrderingCompatible(endpoints)) {
             return false;
         }
@@ -228,8 +226,8 @@ public abstract class AbstractNetwork<N, E> implements Network<N, E> {
      * the directionality of this graph.
      */
     protected final void validateEndpoints(EndpointPair<?> endpoints) {
-        checkNotNull(endpoints);
-        checkArgument(isOrderingCompatible(endpoints), ENDPOINTS_MISMATCH);
+        Preconditions.checkNotNull(endpoints);
+        Preconditions.checkArgument(isOrderingCompatible(endpoints), ENDPOINTS_MISMATCH);
     }
 
     protected final boolean isOrderingCompatible(EndpointPair<?> endpoints) {

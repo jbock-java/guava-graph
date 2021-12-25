@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.graph.GraphConstants.DEFAULT_NODE_COUNT;
 import static com.google.common.graph.Graphs.checkNonNegative;
 
@@ -128,19 +127,19 @@ class StandardValueGraph<N, V> extends AbstractValueGraph<N, V> {
 
     @Override
     public boolean hasEdgeConnecting(N nodeU, N nodeV) {
-        return hasEdgeConnectingInternal(checkNotNull(nodeU), checkNotNull(nodeV));
+        return hasEdgeConnectingInternal(Preconditions.checkNotNull(nodeU), Preconditions.checkNotNull(nodeV));
     }
 
     @Override
     public boolean hasEdgeConnecting(EndpointPair<N> endpoints) {
-        checkNotNull(endpoints);
+        Preconditions.checkNotNull(endpoints);
         return isOrderingCompatible(endpoints)
                 && hasEdgeConnectingInternal(endpoints.nodeU(), endpoints.nodeV());
     }
 
     @Override
     public V edgeValueOrDefault(N nodeU, N nodeV, V defaultValue) {
-        return edgeValueOrDefaultInternal(checkNotNull(nodeU), checkNotNull(nodeV), defaultValue);
+        return edgeValueOrDefaultInternal(Preconditions.checkNotNull(nodeU), Preconditions.checkNotNull(nodeV), defaultValue);
     }
 
     @Override
@@ -157,7 +156,7 @@ class StandardValueGraph<N, V> extends AbstractValueGraph<N, V> {
     private final GraphConnections<N, V> checkedConnections(N node) {
         GraphConnections<N, V> connections = nodeConnections.get(node);
         if (connections == null) {
-            checkNotNull(node);
+            Preconditions.checkNotNull(node);
             throw new IllegalArgumentException("Node " + node + " is not an element of this graph.");
         }
         return connections;

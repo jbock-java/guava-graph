@@ -16,9 +16,6 @@
 
 package com.google.common.graph;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.graph.GraphConstants.SELF_LOOPS_NOT_ALLOWED;
 import static com.google.common.graph.Graphs.checkNonNegative;
 import static com.google.common.graph.Graphs.checkPositive;
@@ -55,7 +52,7 @@ final class StandardMutableValueGraph<N, V> extends StandardValueGraph<N, V>
 
     @Override
     public boolean addNode(N node) {
-        checkNotNull(node, "node");
+        Preconditions.checkNotNull(node, "node");
 
         if (containsNode(node)) {
             return false;
@@ -72,18 +69,18 @@ final class StandardMutableValueGraph<N, V> extends StandardValueGraph<N, V>
      */
     private GraphConnections<N, V> addNodeInternal(N node) {
         GraphConnections<N, V> connections = newConnections();
-        checkState(nodeConnections.put(node, connections) == null);
+        Preconditions.checkState(nodeConnections.put(node, connections) == null);
         return connections;
     }
 
     @Override
     public V putEdgeValue(N nodeU, N nodeV, V value) {
-        checkNotNull(nodeU, "nodeU");
-        checkNotNull(nodeV, "nodeV");
-        checkNotNull(value, "value");
+        Preconditions.checkNotNull(nodeU, "nodeU");
+        Preconditions.checkNotNull(nodeV, "nodeV");
+        Preconditions.checkNotNull(value, "value");
 
         if (!allowsSelfLoops()) {
-            checkArgument(!nodeU.equals(nodeV), SELF_LOOPS_NOT_ALLOWED, nodeU);
+            Preconditions.checkArgument(!nodeU.equals(nodeV), SELF_LOOPS_NOT_ALLOWED, nodeU);
         }
 
         GraphConnections<N, V> connectionsU = nodeConnections.get(nodeU);
@@ -110,7 +107,7 @@ final class StandardMutableValueGraph<N, V> extends StandardValueGraph<N, V>
 
     @Override
     public boolean removeNode(N node) {
-        checkNotNull(node, "node");
+        Preconditions.checkNotNull(node, "node");
 
         GraphConnections<N, V> connections = nodeConnections.get(node);
         if (connections == null) {
@@ -133,7 +130,7 @@ final class StandardMutableValueGraph<N, V> extends StandardValueGraph<N, V>
         if (isDirected()) { // In undirected graphs, the successor and predecessor sets are equal.
             for (N predecessor : connections.predecessors()) {
                 // requireNonNull is safe because the node is a predecessor.
-                checkState(
+                Preconditions.checkState(
                         requireNonNull(nodeConnections.getWithoutCaching(predecessor)).removeSuccessor(node)
                                 != null);
                 --edgeCount;
@@ -146,8 +143,8 @@ final class StandardMutableValueGraph<N, V> extends StandardValueGraph<N, V>
 
     @Override
     public V removeEdge(N nodeU, N nodeV) {
-        checkNotNull(nodeU, "nodeU");
-        checkNotNull(nodeV, "nodeV");
+        Preconditions.checkNotNull(nodeU, "nodeU");
+        Preconditions.checkNotNull(nodeV, "nodeV");
 
         GraphConnections<N, V> connectionsU = nodeConnections.get(nodeU);
         GraphConnections<N, V> connectionsV = nodeConnections.get(nodeV);

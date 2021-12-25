@@ -18,9 +18,6 @@ package com.google.common.graph;
 
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.graph.GraphConstants.PARALLEL_EDGES_NOT_ALLOWED;
 import static com.google.common.graph.GraphConstants.REUSING_EDGE;
 import static com.google.common.graph.GraphConstants.SELF_LOOPS_NOT_ALLOWED;
@@ -49,7 +46,7 @@ final class StandardMutableNetwork<N, E> extends StandardNetwork<N, E>
 
     @Override
     public boolean addNode(N node) {
-        checkNotNull(node, "node");
+        Preconditions.checkNotNull(node, "node");
 
         if (containsNode(node)) {
             return false;
@@ -66,20 +63,20 @@ final class StandardMutableNetwork<N, E> extends StandardNetwork<N, E>
      */
     private NetworkConnections<N, E> addNodeInternal(N node) {
         NetworkConnections<N, E> connections = newConnections();
-        checkState(nodeConnections.put(node, connections) == null);
+        Preconditions.checkState(nodeConnections.put(node, connections) == null);
         return connections;
     }
 
     @Override
     public boolean addEdge(N nodeU, N nodeV, E edge) {
-        checkNotNull(nodeU, "nodeU");
-        checkNotNull(nodeV, "nodeV");
-        checkNotNull(edge, "edge");
+        Preconditions.checkNotNull(nodeU, "nodeU");
+        Preconditions.checkNotNull(nodeV, "nodeV");
+        Preconditions.checkNotNull(edge, "edge");
 
         if (containsEdge(edge)) {
             EndpointPair<N> existingIncidentNodes = incidentNodes(edge);
             EndpointPair<N> newIncidentNodes = EndpointPair.of(this, nodeU, nodeV);
-            checkArgument(
+            Preconditions.checkArgument(
                     existingIncidentNodes.equals(newIncidentNodes),
                     REUSING_EDGE,
                     edge,
@@ -89,7 +86,7 @@ final class StandardMutableNetwork<N, E> extends StandardNetwork<N, E>
         }
         NetworkConnections<N, E> connectionsU = nodeConnections.get(nodeU);
         if (!allowsParallelEdges()) {
-            checkArgument(
+            Preconditions.checkArgument(
                     !(connectionsU != null && connectionsU.successors().contains(nodeV)),
                     PARALLEL_EDGES_NOT_ALLOWED,
                     nodeU,
@@ -97,7 +94,7 @@ final class StandardMutableNetwork<N, E> extends StandardNetwork<N, E>
         }
         boolean isSelfLoop = nodeU.equals(nodeV);
         if (!allowsSelfLoops()) {
-            checkArgument(!isSelfLoop, SELF_LOOPS_NOT_ALLOWED, nodeU);
+            Preconditions.checkArgument(!isSelfLoop, SELF_LOOPS_NOT_ALLOWED, nodeU);
         }
 
         if (connectionsU == null) {
@@ -121,7 +118,7 @@ final class StandardMutableNetwork<N, E> extends StandardNetwork<N, E>
 
     @Override
     public boolean removeNode(N node) {
-        checkNotNull(node, "node");
+        Preconditions.checkNotNull(node, "node");
 
         NetworkConnections<N, E> connections = nodeConnections.get(node);
         if (connections == null) {
@@ -139,7 +136,7 @@ final class StandardMutableNetwork<N, E> extends StandardNetwork<N, E>
 
     @Override
     public boolean removeEdge(E edge) {
-        checkNotNull(edge, "edge");
+        Preconditions.checkNotNull(edge, "edge");
 
         N nodeU = edgeToReferenceNode.get(edge);
         if (nodeU == null) {

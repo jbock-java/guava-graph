@@ -16,11 +16,8 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Maps;
-
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -28,7 +25,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.graph.GraphConstants.NODE_NOT_IN_GRAPH;
 import static java.util.Objects.requireNonNull;
 
@@ -63,7 +59,7 @@ public final class Graphs {
         }
 
         Map<Object, NodeVisitState> visitedNodes =
-                Maps.newHashMapWithExpectedSize(graph.nodes().size());
+                new HashMap<>((int) (1.5 * graph.nodes().size()));
         for (N node : graph.nodes()) {
             if (subgraphHasCycle(graph, visitedNodes, node, null)) {
                 return true;
@@ -167,9 +163,8 @@ public final class Graphs {
                     visitedNodes.addAll(reachableNodes);
                     int pairwiseMatch = 1; // start at 1 to include self-loops
                     for (N nodeU : reachableNodes) {
-                        for (N nodeV : Iterables.limit(reachableNodes, pairwiseMatch++)) {
-                            transitiveClosure.putEdge(nodeU, nodeV);
-                        }
+                        reachableNodes.stream().limit(pairwiseMatch++).forEach(nodeV ->
+                                transitiveClosure.putEdge(nodeU, nodeV));
                     }
                 }
             }
@@ -190,7 +185,7 @@ public final class Graphs {
      * @throws IllegalArgumentException if {@code node} is not present in {@code graph}
      */
     public static <N> Set<N> reachableNodes(Graph<N> graph, N node) {
-        checkArgument(graph.nodes().contains(node), NODE_NOT_IN_GRAPH, node);
+        Preconditions.checkArgument(graph.nodes().contains(node), NODE_NOT_IN_GRAPH, node);
         return Util.setOf(Traverser.forGraph(graph).breadthFirst(node));
     }
 
@@ -282,9 +277,9 @@ public final class Graphs {
             return new IncidentEdgeSet<N>(this, node) {
                 @Override
                 public Iterator<EndpointPair<N>> iterator() {
-                    return Iterators.transform(
-                            delegate().incidentEdges(node).iterator(),
-                            edge -> EndpointPair.of(delegate(), edge.nodeV(), edge.nodeU()));
+                    return delegate().incidentEdges(node).stream()
+                            .map(edge -> EndpointPair.of(delegate(), edge.nodeV(), edge.nodeU()))
+                            .iterator();
                 }
             };
         }
@@ -597,22 +592,22 @@ public final class Graphs {
     }
 
     static int checkNonNegative(int value) {
-        checkArgument(value >= 0, "Not true that %s is non-negative.", value);
+        Preconditions.checkArgument(value >= 0, "Not true that %d is non-negative.", value);
         return value;
     }
 
     static long checkNonNegative(long value) {
-        checkArgument(value >= 0, "Not true that %s is non-negative.", value);
+        Preconditions.checkArgument(value >= 0, "Not true that %d is non-negative.", value);
         return value;
     }
 
     static int checkPositive(int value) {
-        checkArgument(value > 0, "Not true that %s is positive.", value);
+        Preconditions.checkArgument(value > 0, "Not true that %d is positive.", value);
         return value;
     }
 
     static long checkPositive(long value) {
-        checkArgument(value > 0, "Not true that %s is positive.", value);
+        Preconditions.checkArgument(value > 0, "Not true that %d is positive.", value);
         return value;
     }
 

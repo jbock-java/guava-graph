@@ -16,7 +16,6 @@
 
 package com.google.common.graph;
 
-import com.google.common.collect.Maps;
 import com.google.common.graph.GraphConstants.Presence;
 
 import java.util.LinkedHashMap;
@@ -88,7 +87,7 @@ public class ImmutableGraph<N> extends ForwardingGraph<N> {
         return graph.isDirected()
                 ? DirectedGraphConnections.ofImmutable(node, graph.incidentEdges(node), edgeValueFn)
                 : UndirectedGraphConnections.ofImmutable(
-                Maps.asMap(graph.adjacentNodes(node), edgeValueFn));
+                Util.asMap(graph.adjacentNodes(node), edgeValueFn));
     }
 
     @Override
