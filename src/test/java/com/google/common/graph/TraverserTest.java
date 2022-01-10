@@ -1223,9 +1223,9 @@ public class TraverserTest {
                     edge.length() == 2, "Expecting each edge to consist of 2 characters but got %s", edge);
             char node1 = edge.charAt(0);
             char node2 = edge.charAt(1);
-            graphMap.merge(node1, Set.of(node2), Util::mutableUnion);
+            graphMap.merge(node1, Set.of(node2), Util::union);
             if (!directed) {
-                graphMap.merge(node2, Set.of(node1), Util::mutableUnion);
+                graphMap.merge(node2, Set.of(node1), Util::union);
             }
         }
 

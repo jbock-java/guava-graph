@@ -1,14 +1,12 @@
 package com.google.common.graph;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class Util {
 
@@ -20,22 +18,13 @@ class Util {
         for (E element : elements) {
             result.add(element);
         }
-        return Collections.unmodifiableSet(result);
+        return result;
     }
 
     static <E> Set<E> difference(Set<E> set1, Set<E> set2) {
-        LinkedHashSet<E> result = set1.stream()
+        return set1.stream()
                 .filter(e -> !set2.contains(e))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-        return Collections.unmodifiableSet(result);
-    }
-
-    static <E> Set<E> mutableUnion(Set<E> set1, Set<E> set2) {
-        if (set1 instanceof HashSet) {
-            set1.addAll(set2);
-            return set1;
-        }
-        return union(set1, set2);
     }
 
     static <E> Set<E> union(Set<E> set1, Set<E> set2) {

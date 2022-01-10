@@ -16,17 +16,18 @@
 
 package com.google.common.graph;
 
+import org.junit.After;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+
 import static com.google.common.graph.GraphConstants.ENDPOINTS_MISMATCH;
 import static com.google.common.graph.TestUtil.assertEdgeNotInGraphErrorMessage;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import org.junit.After;
-import org.junit.Test;
 
 /**
  * Abstract base class for testing directed {@link Network} implementations defined in this package.
@@ -99,15 +100,9 @@ public abstract class AbstractStandardDirectedNetworkTest extends AbstractNetwor
         }
 
         addNode(N1);
-        Set<String> incidentEdges = network.incidentEdges(N1);
-        try {
-            incidentEdges.add(E12);
-            fail(ERROR_MODIFIABLE_COLLECTION);
-        } catch (UnsupportedOperationException e) {
-            addEdge(N1, N2, E12);
-            // TODO https://github.com/google/guava/issues/5843
-//            assertThat(network.incidentEdges(N1)).containsExactlyElementsIn(incidentEdges);
-        }
+        // TODO https://github.com/google/guava/issues/5843
+        addEdge(N1, N2, E12);
+        assertThat(network.incidentEdges(N1)).containsExactlyElementsIn(Set.of(E12));
     }
 
     @Override
@@ -118,14 +113,8 @@ public abstract class AbstractStandardDirectedNetworkTest extends AbstractNetwor
         }
 
         addNode(N1);
-        Set<Integer> adjacentNodes = network.adjacentNodes(N1);
-        try {
-            adjacentNodes.add(N2);
-            fail(ERROR_MODIFIABLE_COLLECTION);
-        } catch (UnsupportedOperationException e) {
-            addEdge(N1, N2, E12);
-            assertThat(network.adjacentNodes(N1)).containsExactlyElementsIn(Set.of(2));
-        }
+        addEdge(N1, N2, E12);
+        assertThat(network.adjacentNodes(N1)).containsExactlyElementsIn(Set.of(2));
     }
 
     @Override
@@ -135,14 +124,9 @@ public abstract class AbstractStandardDirectedNetworkTest extends AbstractNetwor
         }
 
         addEdge(N1, N2, E12);
-        Set<String> adjacentEdges = network.adjacentEdges(E12);
-        try {
-            adjacentEdges.add(E23);
-            fail(ERROR_MODIFIABLE_COLLECTION);
-        } catch (UnsupportedOperationException e) {
-            addEdge(N2, N3, E23);
-            assertThat(network.adjacentEdges(E12)).containsExactlyElementsIn(Set.of("2-3"));
-        }
+        addEdge(N2, N3, E23);
+        assertThat(network.adjacentEdges(E12)).containsExactlyElementsIn(Set.of("2-3"));
+        assertThat(network.adjacentEdges(E23)).containsExactlyElementsIn(Set.of("1-2"));
     }
 
     @Override
