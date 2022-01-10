@@ -170,12 +170,7 @@ public final class ElementOrderTest {
     @Test
     public void customComparator() {
         Comparator<NonComparableSuperClass> comparator =
-                new Comparator<NonComparableSuperClass>() {
-                    @Override
-                    public int compare(NonComparableSuperClass left, NonComparableSuperClass right) {
-                        return left.value.compareTo(right.value);
-                    }
-                };
+                Comparator.comparing(left -> left.value);
 
         MutableGraph<NonComparableSuperClass> graph =
                 GraphBuilder.undirected().nodeOrder(ElementOrder.sorted(comparator)).build();

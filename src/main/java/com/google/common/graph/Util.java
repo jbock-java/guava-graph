@@ -1,6 +1,7 @@
 package com.google.common.graph;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -29,11 +30,19 @@ class Util {
         return Collections.unmodifiableSet(result);
     }
 
+    static <E> Set<E> mutableUnion(Set<E> set1, Set<E> set2) {
+        if (set1 instanceof HashSet) {
+            set1.addAll(set2);
+            return set1;
+        }
+        return union(set1, set2);
+    }
+
     static <E> Set<E> union(Set<E> set1, Set<E> set2) {
-        LinkedHashSet<E> result = Stream.concat(
-                set1.stream(), set2.stream().filter((E e) -> !set1.contains(e)))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-        return Collections.unmodifiableSet(result);
+        Set<E> result = new LinkedHashSet<>(Math.max(4, (int) (1.5 * (set1.size() + set2.size()))));
+        result.addAll(set1);
+        result.addAll(set2);
+        return result;
     }
 
     static <K, V> Map<K, V> asMap(

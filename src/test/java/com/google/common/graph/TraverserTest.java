@@ -22,7 +22,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1215,28 +1217,28 @@ public class TraverserTest {
      * <p>The {@code successors} are always returned in alphabetical order.
      */
     private static SuccessorsFunction<Character> createGraph(boolean directed, String... edges) {
-        Multimap<Character, Character> graphMap = Multimap.create();
+        Map<Character, Set<Character>> graphMap = new LinkedHashMap<>();
         for (String edge : edges) {
             Preconditions.checkArgument(
                     edge.length() == 2, "Expecting each edge to consist of 2 characters but got %s", edge);
             char node1 = edge.charAt(0);
             char node2 = edge.charAt(1);
-            graphMap.put(node1, node2);
+            graphMap.merge(node1, Set.of(node2), Util::mutableUnion);
             if (!directed) {
-                graphMap.put(node2, node1);
+                graphMap.merge(node2, Set.of(node1), Util::mutableUnion);
             }
         }
 
         return node -> {
             Preconditions.checkArgument(
-                    graphMap.containsKey(node) || graphMap.containsValue(node),
+                    graphMap.containsKey(node) || graphMap.values().stream().anyMatch(set -> set.contains(node)),
                     "Node %s is not an element of this graph",
                     node);
-            return immutableSortedCopy(graphMap.get(node));
+            return immutableSortedCopy(graphMap.getOrDefault(node, Set.of()));
         };
     }
 
-    private static <E extends Comparable<E>> List<E> immutableSortedCopy(Set<E> set) {
+    private static <E extends Comparable<E>> List<E> immutableSortedCopy(Collection<E> set) {
         return set.stream().sorted().collect(Collectors.toList());
     }
 
