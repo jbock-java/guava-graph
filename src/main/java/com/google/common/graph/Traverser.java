@@ -85,7 +85,7 @@ public abstract class Traverser<N> {
      * @param graph {@link SuccessorsFunction} representing a general graph that may have cycles.
      */
     public static <N> Traverser<N> forGraph(SuccessorsFunction<N> graph) {
-        return new Traverser<N>(graph) {
+        return new Traverser<>(graph) {
             @Override
             Traversal<N> newTraversal() {
                 return Traversal.inGraph(graph);
@@ -173,7 +173,7 @@ public abstract class Traverser<N> {
         if (tree instanceof Network) {
             Preconditions.checkArgument(((Network<?, ?>) tree).isDirected(), "Undirected networks can never be trees.");
         }
-        return new Traverser<N>(tree) {
+        return new Traverser<>(tree) {
             @Override
             Traversal<N> newTraversal() {
                 return Traversal.inTree(tree);
@@ -228,12 +228,7 @@ public abstract class Traverser<N> {
      */
     public final Iterable<N> breadthFirst(Iterable<? extends N> startNodes) {
         Set<N> validated = validate(startNodes);
-        return new Iterable<N>() {
-            @Override
-            public Iterator<N> iterator() {
-                return newTraversal().breadthFirst(validated.iterator());
-            }
-        };
+        return () -> newTraversal().breadthFirst(validated.iterator());
     }
 
     /**
@@ -283,12 +278,7 @@ public abstract class Traverser<N> {
      */
     public final Iterable<N> depthFirstPreOrder(Iterable<? extends N> startNodes) {
         Set<N> validated = validate(startNodes);
-        return new Iterable<N>() {
-            @Override
-            public Iterator<N> iterator() {
-                return newTraversal().preOrder(validated.iterator());
-            }
-        };
+        return () -> newTraversal().preOrder(validated.iterator());
     }
 
     /**
@@ -338,12 +328,7 @@ public abstract class Traverser<N> {
      */
     public final Iterable<N> depthFirstPostOrder(Iterable<? extends N> startNodes) {
         Set<N> validated = validate(startNodes);
-        return new Iterable<N>() {
-            @Override
-            public Iterator<N> iterator() {
-                return newTraversal().postOrder(validated.iterator());
-            }
-        };
+        return () -> newTraversal().postOrder(validated.iterator());
     }
 
     abstract Traversal<N> newTraversal();
@@ -371,7 +356,7 @@ public abstract class Traverser<N> {
 
         static <N> Traversal<N> inGraph(SuccessorsFunction<N> graph) {
             Set<N> visited = new HashSet<>();
-            return new Traversal<N>(graph) {
+            return new Traversal<>(graph) {
                 @Override
                 N visitNext(Deque<Iterator<? extends N>> horizon) {
                     Iterator<? extends N> top = horizon.getFirst();
@@ -397,7 +382,7 @@ public abstract class Traverser<N> {
         }
 
         static <N> Traversal<N> inTree(SuccessorsFunction<N> tree) {
-            return new Traversal<N>(tree) {
+            return new Traversal<>(tree) {
                 @Override
                 N visitNext(Deque<Iterator<? extends N>> horizon) {
                     Iterator<? extends N> top = horizon.getFirst();
@@ -427,7 +412,7 @@ public abstract class Traverser<N> {
         private Iterator<N> topDown(Iterator<? extends N> startNodes, InsertionOrder order) {
             Deque<Iterator<? extends N>> horizon = new ArrayDeque<>();
             horizon.add(startNodes);
-            return new AbstractIterator<N>() {
+            return new AbstractIterator<>() {
                 @Override
                 protected N computeNext() {
                     do {
@@ -451,7 +436,7 @@ public abstract class Traverser<N> {
             Deque<N> ancestorStack = new ArrayDeque<>();
             Deque<Iterator<? extends N>> horizon = new ArrayDeque<>();
             horizon.add(startNodes);
-            return new AbstractIterator<N>() {
+            return new AbstractIterator<>() {
                 @Override
                 protected N computeNext() {
                     for (N next = visitNext(horizon); next != null; next = visitNext(horizon)) {

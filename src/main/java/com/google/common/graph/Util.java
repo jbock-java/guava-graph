@@ -1,12 +1,12 @@
 package com.google.common.graph;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 class Util {
 
@@ -14,11 +14,8 @@ class Util {
     }
 
     static <E> Set<E> setOf(Iterable<? extends E> elements) {
-        LinkedHashSet<E> result = new LinkedHashSet<>();
-        for (E element : elements) {
-            result.add(element);
-        }
-        return result;
+        return StreamSupport.stream(elements.spliterator(), false)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     static <E> Set<E> difference(Set<E> set1, Set<E> set2) {
@@ -28,7 +25,7 @@ class Util {
     }
 
     static <E> Set<E> union(Set<E> set1, Set<E> set2) {
-        Set<E> result = new LinkedHashSet<>(Math.max(4, (int) (1.5 * (set1.size() + set2.size()))));
+        var result = new LinkedHashSet<E>(Math.max(4, (int) (1.5 * (set1.size() + set2.size()))));
         result.addAll(set1);
         result.addAll(set2);
         return result;
@@ -36,7 +33,7 @@ class Util {
 
     static <K, V> Map<K, V> asMap(
             Set<K> set, Function<? super K, V> function) {
-        LinkedHashMap<K, V> result = new LinkedHashMap<>((int) (set.size() * 1.5));
+        var result = new LinkedHashMap<K, V>(Math.max(4, (int) (1.5 * set.size())));
         for (K k : set) {
             result.put(k, function.apply(k));
         }
