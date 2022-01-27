@@ -1,3 +1,4 @@
-module com.google.common.graph {
-    exports com.google.common.graph;
+module io.jbock.common.graph {
+
+    exports io.jbock.common.graph;
 }
